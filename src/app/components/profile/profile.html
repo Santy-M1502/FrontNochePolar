@@ -1,0 +1,75 @@
+<!-- (11) (cloudinary) Perfil con funcionalidad de imagen y subida de archivos -->
+<div class="mm-outer">
+  <div class="mm-tiles"></div>
+  <div class="mm-stage">
+    <header class="mm-header">
+      <div class="mm-logo">MM2</div>
+      <h1 class="mm-title">MI PERFIL</h1>
+      <p class="mm-sub">Información de la cuenta</p>
+    </header>
+
+    <main class="mm-panel">
+      @if (isLoading) {
+        <div class="mm-loading">Cargando información del usuario...</div>
+      }
+
+      @if (!isLoading && user) {
+        <section class="mm-profile">
+          <div class="mm-profile-top">
+            <!-- Mostrar imagen de perfil o avatar con inicial -->
+            <div class="mm-avatar-container">
+              @if (user.profileImage) {
+                <img [src]="user.profileImage" alt="Avatar" class="mm-avatar-img" />
+              } @else {
+                <div class="mm-avatar">{{ user.username.charAt(0).toUpperCase() }}</div>
+              }
+
+              <!-- Botón para cambiar imagen (input oculto) -->
+              <label
+                for="avatar-input"
+                class="mm-avatar-upload"
+                [class.uploading]="isUploadingImage"
+              >
+                @if (isUploadingImage) {
+                  <span>📤</span>
+                } @else {
+                  <span>📷</span>
+                }
+              </label>
+              <input
+                id="avatar-input"
+                type="file"
+                accept="image/*"
+                (change)="onImageSelected($event)"
+                style="display: none"
+              />
+            </div>
+
+            <div class="mm-userdata">
+              <div class="mm-line">
+                <span class="mm-key">Usuario:</span>
+                <span class="mm-value">{{ user.username }}</span>
+              </div>
+              <div class="mm-line">
+                <span class="mm-key">CONTRASEÑA:</span>
+                <span class="mm-value">••••••••</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mm-actions">
+            <button class="mm-btn mm-btn-secondary" (click)="logout()">CERRAR SESIÓN</button>
+          </div>
+        </section>
+      }
+
+      @if (!isLoading && !user) {
+        <section class="mm-error-state">
+          <h3>Error al cargar el perfil</h3>
+          <p>No se pudo cargar la información del usuario.</p>
+          <button class="mm-btn mm-btn-secondary" (click)="logout()">VOLVER AL LOGIN</button>
+        </section>
+      }
+    </main>
+  </div>
+</div>

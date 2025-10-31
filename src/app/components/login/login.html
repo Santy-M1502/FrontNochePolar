@@ -1,0 +1,64 @@
+<!-- (FRONTEND) frontend/src/app/components/login/login.html -->
+<!-- Plantilla estilo Mario Maker 2, ocupa 100% del ancho -->
+<div class="mm-outer">
+  <div class="mm-tiles"></div>
+  <div class="mm-stage">
+    <header class="mm-header">
+      <div class="mm-logo">MM2</div>
+      <h1 class="mm-title">INICIAR SESIÓN</h1>
+      <p class="mm-sub">Entra con tu cuenta para continuar</p>
+    </header>
+
+    <main class="mm-panel">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="mm-form">
+
+        <div class="mm-row">
+          <label for="username" class="mm-label">USUARIO</label>
+          <input id="username" type="text" formControlName="username" placeholder="Tu nombre de jugador"
+            [class.error]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched" />
+          @if (loginForm.get('username')?.invalid && loginForm.get('username')?.touched) {
+            <div class="mm-hint">
+              <small>El usuario es requerido</small>
+            </div>
+          }
+        </div>
+
+          <!-- (20) FILES_ORDER: 20) frontend/src/app/components/login/login.html -->
+
+        <div class="mm-row">
+          <label for="password" class="mm-label">CONTRASEÑA</label>
+          <input id="password" type="password" formControlName="password" placeholder="Tu contraseña"
+            [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" />
+          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+            <div class="mm-hint">
+              @if (loginForm.get('password')?.errors?.['required']) {
+                <small>La contraseña es requerida</small>
+              }
+              @if (loginForm.get('password')?.errors?.['minlength']) {
+                <small>Mínimo 6 caracteres</small>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mm-messages">
+          @if (errorMessage) {
+            <div class="mm-error">{{ errorMessage }}</div>
+          }
+        </div>
+
+        <div class="mm-actions">
+          <button type="submit" class="mm-btn mm-btn-primary" [disabled]="loginForm.invalid || isLoading">
+            @if (isLoading) {
+              <span>Cargando...</span>
+            } @else {
+              <span>ENTRAR</span>
+            }
+          </button>
+
+          <button type="button" class="mm-btn mm-btn-secondary" (click)="goToRegister()">REGISTRARSE</button>
+        </div>
+      </form>
+    </main>
+  </div>
+</div>

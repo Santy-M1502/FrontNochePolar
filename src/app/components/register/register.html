@@ -1,0 +1,126 @@
+<!-- frontend/src/app/components/register/register.html -->
+<div class="mm-outer">
+  <div class="mm-tiles"></div>
+
+  <div class="mm-stage">
+    <header class="mm-header">
+      <div class="mm-logo">MM2</div>
+      <h1 class="mm-title">REGISTRO</h1>
+      <p class="mm-sub">¡Crea tu cuenta y empieza a construir!</p>
+    </header>
+
+    <main class="mm-panel">
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="mm-form" novalidate>
+
+        <!-- USERNAME -->
+        <div class="mm-row">
+          <label for="username" class="mm-label">USUARIO</label>
+          <input id="username" type="text" formControlName="username" placeholder="Tu nombre de jugador"
+            [class.error]="controlInvalid('username')" />
+          <div class="mm-hint" *ngIf="controlTouched('username')">
+            <small *ngIf="registerForm.get('username')?.errors?.['required']">El usuario es requerido</small>
+            <small *ngIf="registerForm.get('username')?.errors?.['minlength']">Mínimo 3 caracteres</small>
+          </div>
+        </div>
+
+        <!-- NOMBRE / APELLIDO (inline) -->
+        <div class="mm-row mm-inline">
+          <div class="mm-col">
+            <label for="nombre" class="mm-label">NOMBRE</label>
+            <input id="nombre" type="text" formControlName="nombre" placeholder="Nombre"
+              [class.error]="controlInvalid('nombre')" />
+            <div class="mm-hint" *ngIf="controlTouched('nombre')">
+              <small *ngIf="registerForm.get('nombre')?.errors?.['required']">El nombre es requerido</small>
+            </div>
+          </div>
+
+          <div class="mm-col">
+            <label for="apellido" class="mm-label">APELLIDO</label>
+            <input id="apellido" type="text" formControlName="apellido" placeholder="Apellido"
+              [class.error]="controlInvalid('apellido')" />
+            <div class="mm-hint" *ngIf="controlTouched('apellido')">
+              <small *ngIf="registerForm.get('apellido')?.errors?.['required']">El apellido es requerido</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- EMAIL -->
+        <div class="mm-row">
+          <label for="email" class="mm-label">EMAIL</label>
+          <input id="email" type="email" formControlName="email" placeholder="tucorreo@ejemplo.com"
+            [class.error]="controlInvalid('email')" />
+          <div class="mm-hint" *ngIf="controlTouched('email')">
+            <small *ngIf="registerForm.get('email')?.errors?.['required']">El email es requerido</small>
+            <small *ngIf="registerForm.get('email')?.errors?.['email']">Email inválido</small>
+          </div>
+        </div>
+
+        <!-- PASSWORD -->
+        <div class="mm-row">
+          <label for="password" class="mm-label">CONTRASEÑA</label>
+          <input id="password" type="password" formControlName="password" placeholder="Contraseña segura"
+            [class.error]="controlInvalid('password')" />
+          <div class="mm-hint" *ngIf="controlTouched('password')">
+            <small *ngIf="registerForm.get('password')?.errors?.['required']">La contraseña es requerida</small>
+            <small *ngIf="registerForm.get('password')?.errors?.['minlength']">Mínimo 6 caracteres</small>
+          </div>
+        </div>
+
+        <!-- CONFIRM PASSWORD -->
+        <div class="mm-row">
+          <label for="confirmPassword" class="mm-label">CONFIRMAR CONTRASEÑA</label>
+          <input id="confirmPassword" type="password" formControlName="confirmPassword" placeholder="Repite la contraseña"
+            [class.error]="controlInvalid('confirmPassword') || (registerForm.errors?.['passwordMismatch'] && controlTouched('confirmPassword'))" />
+          <div class="mm-hint" *ngIf="controlTouched('confirmPassword')">
+            <small *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">Debes confirmar la contraseña</small>
+          </div>
+          <div class="mm-hint" *ngIf="registerForm.errors?.['passwordMismatch'] && controlTouched('confirmPassword')">
+            <small>Las contraseñas no coinciden</small>
+          </div>
+        </div>
+
+        <!-- FECHA DE NACIMIENTO -->
+        <div class="mm-row">
+          <label for="fechaNacimiento" class="mm-label">FECHA DE NACIMIENTO</label>
+          <input id="fechaNacimiento" type="date" formControlName="fechaNacimiento"
+            [class.error]="controlInvalid('fechaNacimiento')" />
+          <div class="mm-hint" *ngIf="controlTouched('fechaNacimiento')">
+            <small *ngIf="registerForm.get('fechaNacimiento')?.errors?.['required']">La fecha es requerida</small>
+            <small *ngIf="registerForm.get('fechaNacimiento')?.errors?.['pattern']">Fecha inválida</small>
+          </div>
+        </div>
+
+        <!-- DESCRIPCION -->
+        <div class="mm-row">
+          <label for="descripcion" class="mm-label">DESCRIPCIÓN (opcional)</label>
+          <textarea id="descripcion" rows="3" formControlName="descripcion" placeholder="Cuenta algo sobre ti..."></textarea>
+        </div>
+
+        <!-- FOTO (opcional) -->
+        <div class="mm-row">
+          <label for="avatar" class="mm-label">FOTO DE PERFIL (opcional)</label>
+          <input id="avatar" type="file" accept="image/*" (change)="onFileSelected($event)" />
+          <div class="mm-hint" *ngIf="avatarPreview">
+            <small>Previsualización:</small>
+            <div class="mm-avatar-preview"><img [src]="avatarPreview" alt="avatar preview" /></div>
+          </div>
+        </div>
+
+        <!-- Mensajes -->
+        <div class="mm-messages">
+          <div class="mm-success" *ngIf="successMessage">{{ successMessage }}</div>
+          <div class="mm-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+        </div>
+
+        <div class="mm-actions">
+          <button type="submit" class="mm-btn mm-btn-primary" [disabled]="registerForm.invalid || isLoading">
+            <span *ngIf="isLoading">Registrando...</span>
+            <span *ngIf="!isLoading">REGISTRARSE</span>
+          </button>
+
+          <button type="button" class="mm-btn mm-btn-secondary" (click)="goToLogin()">YA TENGO CUENTA</button>
+        </div>
+      </form>
+    </main>
+  </div>
+</div>
