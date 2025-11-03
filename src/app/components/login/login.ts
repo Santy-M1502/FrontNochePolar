@@ -1,4 +1,3 @@
-// frontend/src/app/components/login/login.ts
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -7,7 +6,7 @@ import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
-  standalone: true, // <-- componente standalone para poder usar `imports`
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
@@ -35,20 +34,30 @@ export class LoginComponent {
   }
 
   onSubmit(): void {
-    if (!this.loginForm.valid) return;
-    this.isLoading = true;
-    this.errorMessage = '';
+      if (!this.loginForm.valid) return;
+      this.isLoading = true;
+      this.errorMessage = '';
 
-    this.authService.login(this.loginForm.value).subscribe({
-      next: () => {
-        this.isLoading = false;
-        this.router.navigate(['/profile']);
-      },
-      error: () => {
-        this.isLoading = false;
-        this.errorMessage = 'Credenciales inválidas. Por favor, inténtalo de nuevo.';
-      }
-    });
+      this.authService.login(this.loginForm.value).subscribe({
+    next: (res) => {
+      console.log('Login correcto, token guardado:', res.access_token);
+      this.authService.getProfile().subscribe({
+        next: (user) => {
+          this.authService.updateCurrentUser(user);
+          this.isLoading = false;
+          this.router.navigate(['/profile']);
+        },
+        error: () => {
+          this.isLoading = false;
+          this.errorMessage = 'No se pudo cargar el perfil.';
+        }
+      });
+    },
+    error: () => {
+      this.isLoading = false;
+      this.errorMessage = 'Credenciales inválidas. Por favor, inténtalo de nuevo.';
+    }
+  });
   }
 
   goToRegister(): void {
