@@ -16,12 +16,18 @@ export class RegisterComponent {
   errorMessage = '';
   successMessage = '';
   selectedFile: File | null = null;
+  fileError = '';
+
   avatarPreview: string = `data:image/svg+xml;utf8,
     <svg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'>
       <rect fill='none' width='96' height='96'/>
       <circle cx='48' cy='30' r='18' fill='%23b77bff'/>
       <ellipse cx='48' cy='70' rx='26' ry='12' fill='%23341a52'/>
     </svg>`;
+
+  descripcionCount = 0;
+  private MAX_DESCRIPCION = 200;
+  private MAX_AVATAR_BYTES = 5 * 1024 * 1024; // 5MB
 
   constructor(
     private fb: FormBuilder,
@@ -35,9 +41,12 @@ export class RegisterComponent {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]],
-      fechaNacimiento: ['', [Validators.required]],
-      descripcion: [''],
+      fechaNacimiento: ['', [Validators.required, Validators.pattern('^\\d{4}-\\d{2}-\\d{2}$')]],
+      descripcion: ['', [Validators.maxLength(this.MAX_DESCRIPCION)]],
     }, { validators: this.passwordMatchValidator });
+
+    // inicializar contador si hay valor por defecto
+    this.descripcionCount = (this.registerForm.get('descripcion')?.value || '').length;
   }
 
   passwordMatchValidator(form: FormGroup) {
@@ -56,53 +65,140 @@ export class RegisterComponent {
   }
 
   onFileSelected(event: Event) {
+    this.fileError = '';
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) {
       this.selectedFile = null;
-      this.avatarPreview = `data:image/svg+xml;utf8,
-    <svg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'>
-      <rect fill='none' width='96' height='96'/>
-      <circle cx='48' cy='30' r='18' fill='%23b77bff'/>
-      <ellipse cx='48' cy='70' rx='26' ry='12' fill='%23341a52'/>
-    </svg>`;
       return;
     }
-    this.selectedFile = input.files[0];
+
+    const file = input.files[0];
+
+    // tipo
+    if (!file.type.startsWith('image/')) {
+      this.fileError = 'Solo se permiten archivos de imagen (JPG, PNG, GIF).';
+      this.selectedFile = null;
+      return;
+    }
+
+    // tamaño
+    if (file.size > this.MAX_AVATAR_BYTES) {
+      this.fileError = 'La imagen es demasiado grande. Máximo 5MB.';
+      this.selectedFile = null;
+      return;
+    }
+
+    // si pasa validaciones, preview
+    this.selectedFile = file;
     const reader = new FileReader();
     reader.onload = () => this.avatarPreview = reader.result as string;
-    reader.readAsDataURL(this.selectedFile);
+    reader.readAsDataURL(file);
+  }
+
+  onDescripcionInput(event: Event) {
+    const ta = event.target as HTMLTextAreaElement;
+    let value = ta.value || '';
+    if (value.length > this.MAX_DESCRIPCION) {
+      value = value.slice(0, this.MAX_DESCRIPCION);
+      // actualizar textarea y form control sin disparar eventos extras
+      this.registerForm.get('descripcion')?.setValue(value, { emitEvent: false });
+    }
+    this.descripcionCount = value.length;
   }
 
   onSubmit(): void {
-    if (this.registerForm.invalid) return;
-    this.isLoading = true;
-    this.errorMessage = '';
-    this.successMessage = '';
+  this.registerForm.markAllAsTouched();
+  this.errorMessage = '';
+  this.successMessage = '';
 
-    const form = this.registerForm.value;
-    const payload = {
-      username: form.username,
-      nombre: form.nombre,
-      apellido: form.apellido,
-      email: form.email,
-      password: form.password,
-      fecha: form.fechaNacimiento,
-      descripcion: form.descripcion,
-    };
+  if (this.registerForm.invalid) {
+    this.errorMessage = 'Corrige los errores del formulario.';
+    return;
+  }
 
-    this.userService.register(payload).subscribe({
-      next: () => {
+  this.isLoading = true;
+  const form = this.registerForm.value;
+  const payload = {
+    username: form.username,
+    nombre: form.nombre,
+    apellido: form.apellido,
+    email: form.email,
+    password: form.password,
+    fecha: form.fechaNacimiento,
+    descripcion: form.descripcion,
+  };
+
+  // Si hay archivo, intento enviar todo junto (Opción A)
+  if (this.selectedFile) {
+    this.userService.registerWithAvatar(payload, this.selectedFile).subscribe({
+      next: (res) => {
+        // res puede venir como { user: {...} } o el user directo; adaptá según tu API
         this.isLoading = false;
-        this.successMessage = 'Usuario registrado exitosamente. Redirigiendo al login...';
-        setTimeout(() => this.router.navigate(['/login']), 1500);
+        this.successMessage = 'Registrado correctamente. Redirigiendo...';
+        setTimeout(() => this.router.navigate(['/login']), 1200);
       },
       error: (err) => {
+        // Si backend no soporta FormData en /register, hacemos Opción B:
+        if (err?.status === 415 || err?.status === 400) {
+          // intentar registro normal y luego upload (Opción B)
+          this.tryRegisterThenUpload(payload);
+          return;
+        }
         this.isLoading = false;
         this.errorMessage = err?.error?.message || 'Error al registrar usuario.';
-        if (err?.error?.details) this.errorMessage = (err.error.details).join(' ');
       }
     });
+    return;
   }
+
+  // si no hay archivo, registro normal
+  this.userService.register(payload).subscribe({
+    next: (createdUser) => {
+      // si API devuelve access_token en vez de user, adaptá (ver más abajo)
+      this.isLoading = false;
+      this.successMessage = 'Usuario registrado. Redirigiendo...';
+      setTimeout(() => this.router.navigate(['/login']), 1000);
+    },
+    error: (err) => {
+      this.isLoading = false;
+      this.errorMessage = err?.error?.message || 'Error al registrar usuario.';
+    }
+  });
+}
+
+// Helper: registro normal y luego subir avatar (Opción B)
+private tryRegisterThenUpload(payload: any) {
+  this.userService.register(payload).subscribe({
+    next: (createdUser: any) => {
+      // createdUser debería incluir id (_id o id)
+      const userId = createdUser?._id || createdUser?.id || createdUser?.user?._id;
+      if (this.selectedFile && userId) {
+        this.userService.uploadAvatarForNewUser(userId, this.selectedFile).subscribe({
+          next: (u) => {
+            this.isLoading = false;
+            this.successMessage = 'Registrado y avatar subido correctamente.';
+            setTimeout(() => this.router.navigate(['/login']), 900);
+          },
+          error: (err) => {
+            this.isLoading = false;
+            this.successMessage = 'Registrado correctamente. Error subiendo avatar.';
+            this.errorMessage = err?.error?.message || 'Error subiendo avatar.';
+            setTimeout(() => this.router.navigate(['/login']), 1200);
+          }
+        });
+      } else {
+        this.isLoading = false;
+        this.successMessage = 'Usuario registrado correctamente.';
+        setTimeout(() => this.router.navigate(['/login']), 900);
+      }
+    },
+    error: (err) => {
+      this.isLoading = false;
+      this.errorMessage = err?.error?.message || 'Error al registrar usuario.';
+    }
+  });
+}
+
 
   goToLogin(): void {
     this.router.navigate(['/login']);

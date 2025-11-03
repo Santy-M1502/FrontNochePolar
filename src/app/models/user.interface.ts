@@ -5,6 +5,9 @@ export interface User {
   username: string;
   profileImage?: string;
   cloudinaryPublicId?: string;
+  bio?: string;
+  followers?: number;
+  following?: number;
 }
 
 export interface CreateUserDto {

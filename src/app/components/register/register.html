@@ -17,8 +17,14 @@
             <div class="orbit"></div>
             <div class="satellite"></div>
           </div>
+
           <button type="button" class="upload-btn" (click)="avatarInput.click()">Subir Foto</button>
           <input #avatarInput id="avatar" type="file" accept="image/*" (change)="onFileSelected($event)" hidden />
+
+          <!-- error de archivo -->
+          <div class="mm-hint" *ngIf="fileError">
+            <small class="error-text">{{ fileError }}</small>
+          </div>
         </div>
 
         <!-- USERNAME -->
@@ -88,13 +94,21 @@
             [class.error]="controlInvalid('fechaNacimiento')" />
           <div class="mm-hint" *ngIf="controlTouched('fechaNacimiento')">
             <small *ngIf="registerForm.get('fechaNacimiento')?.errors?.['required']">La fecha es requerida</small>
-            <small *ngIf="registerForm.get('fechaNacimiento')?.errors?.['pattern']">Fecha inválida</small>
+            <small *ngIf="registerForm.get('fechaNacimiento')?.errors?.['pattern']">Fecha inválida (YYYY-MM-DD)</small>
           </div>
         </div>
 
         <!-- DESCRIPCIÓN -->
         <div class="field">
-          <textarea id="descripcion" rows="3" formControlName="descripcion" placeholder="DESCRIPCIÓN (opcional)"></textarea>
+          <textarea id="descripcion" rows="4" formControlName="descripcion" placeholder="DESCRIPCIÓN (opcional)"
+            maxlength="200" (input)="onDescripcionInput($event)"></textarea>
+
+          <div class="mm-hint" style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+            <div *ngIf="controlTouched('descripcion') && registerForm.get('descripcion')?.errors">
+              <small *ngIf="registerForm.get('descripcion')?.errors?.['maxlength']">Máx. 200 caracteres</small>
+            </div>
+            <small [class.warning]="descripcionCount === 200">{{ descripcionCount }}/200</small>
+          </div>
         </div>
 
         <!-- Mensajes -->
