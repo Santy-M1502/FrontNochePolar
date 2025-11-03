@@ -1,66 +1,203 @@
-/* (11) (cloudinary) Estilos de perfil con funcionalidad de imagen de perfil */
-.mm-outer { width:100%; min-height:100vh; box-sizing:border-box; font-family: "Press Start 2P", "Courier New", monospace; background: linear-gradient(#7ec0ff 0%, #9fe0ff 40%); padding:0; overflow-x:hidden; }
-.mm-tiles { position:absolute; top:0; left:0; right:0; height:220px; background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.06) 0 1px, transparent 1px 32px), repeating-linear-gradient(90deg, rgba(0,0,0,0.06) 0 1px, transparent 1px 32px); opacity:0.12; pointer-events:none; }
-.mm-stage { position:relative; width:100%; min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:24px; box-sizing:border-box; }
-.mm-header { width:100%; max-width:1200px; text-align:center; margin:12px 0 8px; z-index:2; }
-.mm-logo { display:inline-block; background:#ffdd57; color:#8b4a00; padding:6px 10px; border:4px solid #6b3f00; border-bottom-width:8px; font-weight:bold; margin-bottom:8px; box-shadow:4px 6px 0 rgba(0,0,0,0.25); }
-.mm-title { font-size:22px; letter-spacing:2px; margin:6px 0; color:#2b2b2b; text-shadow:2px 2px 0 rgba(255,255,255,0.25); }
-.mm-panel { width:100%; max-width:1200px; background:linear-gradient(#fff7ea,#ffd8a6); border-top:8px solid #c47b00; border-left:8px solid #c47b00; border-right:8px solid #c47b00; box-shadow:8px 10px 0 rgba(0,0,0,0.18); padding:20px; margin:12px 0 40px; box-sizing:border-box; z-index:2; }
-.mm-loading { text-align:center; color:#666; }
-.mm-profile { display:flex; flex-direction:column; gap:16px; }
-.mm-profile-top { display:flex; gap:16px; align-items:center; }
+/* --- Fondo / Stage (mismo estilo que ya tenías) --- */
+.mm-outer {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url('../../../assets/backgroundLogin.jpg') center/cover no-repeat;
+  padding: 20px;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
 
-/* Contenedor de avatar con funcionalidad de subida de imagen */
-.mm-avatar-container { position: relative; display: inline-block; }
+.mm-stage {
+  width: 450px;
+  max-width: 95vw;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius: 14px;
+  padding: 28px 22px 22px;
+  box-shadow: 0 8px 40px rgba(4,6,20,0.6);
+  border: 1px solid rgba(255,255,255,0.04);
+  backdrop-filter: blur(6px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-/* Avatar con imagen o inicial */
-.mm-avatar { width:96px; height:96px; border:6px solid #6b3f00; background:#ffdd57; color:#6b3f00; display:flex; align-items:center; justify-content:center; font-size:40px; font-weight:900; box-shadow:6px 8px 0 rgba(0,0,0,0.18); }
+/* Header */
+.mm-header { text-align: center; margin-bottom: 20px; }
+.mm-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(180deg, #a36aff, #7b3aff);
+  box-shadow: 0 6px 18px rgba(147,80,255,0.08);
+  margin: 0 auto 8px;
+}
+.mm-title { font-size: 22px; color: #fff; margin: 4px 0; }
+.mm-sub { font-size: 14px; color: rgba(230,230,230,0.9); }
 
-/* Avatar cuando es una imagen */
-.mm-avatar-img { width:96px; height:96px; border:6px solid #6b3f00; object-fit:cover; box-shadow:6px 8px 0 rgba(0,0,0,0.18); }
+/* Panel wrapper (asegura estructura interna) */
+.mm-panel {
+  width: 100%;
+  display: block;
+  padding: 6px 0 0;
+  box-sizing: border-box;
+}
 
-/* Botón de subida de imagen */
-.mm-avatar-upload { 
-  position: absolute; 
-  bottom: -6px; 
-  right: -6px; 
-  width: 32px; 
-  height: 32px; 
-  background: #ff6b6b; 
-  border: 3px solid #6b3f00; 
-  border-radius: 50%; 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  cursor: pointer; 
-  box-shadow: 3px 4px 0 rgba(0,0,0,0.2);
+/* Loading / error */
+.mm-loading { color: rgba(230,230,230,0.9); text-align:center; padding: 18px 0; }
+.mm-error-state { text-align:center; color: rgba(255,200,200,0.95); padding: 16px; }
+
+/* Perfil - top row */
+.mm-profile { width: 100%; }
+.mm-profile-top {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+/* Contenedor avatar */
+.mm-avatar-container {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Imagen de avatar */
+.mm-avatar-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid rgba(0,0,0,0.45);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.2));
+  box-shadow: 0 6px 20px rgba(75,39,119,0.18);
+  display: block;
+}
+
+/* Avatar con inicial (si no hay imagen) */
+.mm-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.2));
+  border: 4px solid rgba(0,0,0,0.45);
+  box-shadow: 0 6px 20px rgba(75,39,119,0.18);
+}
+
+/* Upload label (botón visible) */
+.mm-avatar-upload {
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #a36aff, #7b3aff);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  border: 0;
+  box-shadow: 0 8px 20px rgba(11,2,35,0.5);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* estado cargando (clase que pones desde TS) */
+.mm-avatar-upload.uploading {
+  opacity: 0.85;
+  transform: scale(0.98);
+}
+
+/* Datos del usuario al lado del avatar */
+.mm-userdata {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 140px;
+}
+
+/* Cada línea de dato */
+.mm-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+  border: 1px solid rgba(255,255,255,0.02);
+}
+
+/* clave / valor */
+.mm-key {
   font-size: 12px;
-  transition: all 0.2s ease;
+  color: rgba(200,200,200,0.9);
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+.mm-value {
+  font-size: 14px;
+  color: #fff;
+  font-weight: 700;
 }
 
-.mm-avatar-upload:hover { 
-  background: #ff5252; 
-  transform: translateY(-1px);
-  box-shadow: 3px 5px 0 rgba(0,0,0,0.2);
+/* Acciones (botón cerrar sesión) */
+.mm-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  justify-content: center;
 }
 
-.mm-avatar-upload.uploading { 
-  background: #4caf50; 
-  animation: pulse 1s infinite;
+.mm-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: 0;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  letter-spacing: 0.6px;
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+.mm-btn-secondary {
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  color: #b77bff;
+  border: 1px solid rgba(183,123,255,0.12);
+  text-shadow: 2px 2px 3px #000;
 }
 
-.mm-userdata { display:flex; flex-direction:column; gap:8px; }
-.mm-line { display:flex; gap:8px; align-items:center; }
-.mm-key { font-size:12px; font-weight:700; color:#2b2b2b; }
-.mm-value { font-size:13px; color:#333; word-break:break-all; }
-.mm-actions { display:flex; gap:12px; justify-content:flex-start; }
-.mm-btn { padding:12px 18px; font-weight:700; text-align:center; border:4px solid #6b3f00; box-shadow:6px 8px 0 rgba(0,0,0,0.2); cursor:pointer; background:#fff; }
-.mm-btn-secondary { background:linear-gradient(#ffd36b,#ffb84d); color:#6b3f00; }
-.mm-error-state { text-align:center; color:#666; }
-.mm-error-state h3 { color:#b00020; margin-bottom:8px; }
-@media(min-width:768px){ .mm-profile-top{ flex-direction:row; align-items:center;} }
+/* Responsive: reduce avatar y acomoda columnas */
+@media (max-width: 768px) {
+  .mm-avatar-container { width: 104px; height: 104px; }
+  .mm-avatar-img, .mm-avatar { width: 80px; height: 80px; font-size: 28px; border-width: 3px; }
+  .mm-userdata { min-width: 120px; }
+}
+
+@media (max-width: 420px) {
+  .mm-profile-top { flex-direction: column; align-items: center; gap: 12px; }
+  .mm-userdata { width: 100%; align-items: center; text-align: center; }
+  .mm-line { width: 100%; justify-content: center; gap: 12px; }
+  .mm-actions { flex-direction: column; }
+}
