@@ -45,7 +45,7 @@ export class LoginComponent {
         next: (user) => {
           this.authService.updateCurrentUser(user);
           this.isLoading = false;
-          this.router.navigate(['/profile']);
+          this.router.navigate(['/perfil']);
         },
         error: () => {
           this.isLoading = false;

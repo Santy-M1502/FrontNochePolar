@@ -27,7 +27,7 @@ export class RegisterComponent {
 
   descripcionCount = 0;
   private MAX_DESCRIPCION = 200;
-  private MAX_AVATAR_BYTES = 5 * 1024 * 1024; // 5MB
+  private MAX_AVATAR_BYTES = 5 * 1024 * 1024;
 
   constructor(
     private fb: FormBuilder,
@@ -45,7 +45,6 @@ export class RegisterComponent {
       descripcion: ['', [Validators.maxLength(this.MAX_DESCRIPCION)]],
     }, { validators: this.passwordMatchValidator });
 
-    // inicializar contador si hay valor por defecto
     this.descripcionCount = (this.registerForm.get('descripcion')?.value || '').length;
   }
 
@@ -74,21 +73,18 @@ export class RegisterComponent {
 
     const file = input.files[0];
 
-    // tipo
     if (!file.type.startsWith('image/')) {
       this.fileError = 'Solo se permiten archivos de imagen (JPG, PNG, GIF).';
       this.selectedFile = null;
       return;
     }
 
-    // tamaño
     if (file.size > this.MAX_AVATAR_BYTES) {
       this.fileError = 'La imagen es demasiado grande. Máximo 5MB.';
       this.selectedFile = null;
       return;
     }
 
-    // si pasa validaciones, preview
     this.selectedFile = file;
     const reader = new FileReader();
     reader.onload = () => this.avatarPreview = reader.result as string;
@@ -100,7 +96,6 @@ export class RegisterComponent {
     let value = ta.value || '';
     if (value.length > this.MAX_DESCRIPCION) {
       value = value.slice(0, this.MAX_DESCRIPCION);
-      // actualizar textarea y form control sin disparar eventos extras
       this.registerForm.get('descripcion')?.setValue(value, { emitEvent: false });
     }
     this.descripcionCount = value.length;
@@ -128,19 +123,15 @@ export class RegisterComponent {
     descripcion: form.descripcion,
   };
 
-  // Si hay archivo, intento enviar todo junto (Opción A)
   if (this.selectedFile) {
     this.userService.registerWithAvatar(payload, this.selectedFile).subscribe({
       next: (res) => {
-        // res puede venir como { user: {...} } o el user directo; adaptá según tu API
         this.isLoading = false;
         this.successMessage = 'Registrado correctamente. Redirigiendo...';
         setTimeout(() => this.router.navigate(['/login']), 1200);
       },
       error: (err) => {
-        // Si backend no soporta FormData en /register, hacemos Opción B:
         if (err?.status === 415 || err?.status === 400) {
-          // intentar registro normal y luego upload (Opción B)
           this.tryRegisterThenUpload(payload);
           return;
         }
@@ -151,10 +142,8 @@ export class RegisterComponent {
     return;
   }
 
-  // si no hay archivo, registro normal
   this.userService.register(payload).subscribe({
     next: (createdUser) => {
-      // si API devuelve access_token en vez de user, adaptá (ver más abajo)
       this.isLoading = false;
       this.successMessage = 'Usuario registrado. Redirigiendo...';
       setTimeout(() => this.router.navigate(['/login']), 1000);
@@ -166,11 +155,9 @@ export class RegisterComponent {
   });
 }
 
-// Helper: registro normal y luego subir avatar (Opción B)
 private tryRegisterThenUpload(payload: any) {
   this.userService.register(payload).subscribe({
     next: (createdUser: any) => {
-      // createdUser debería incluir id (_id o id)
       const userId = createdUser?._id || createdUser?.id || createdUser?.user?._id;
       if (this.selectedFile && userId) {
         this.userService.uploadAvatarForNewUser(userId, this.selectedFile).subscribe({
