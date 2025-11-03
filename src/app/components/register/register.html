@@ -70,6 +70,7 @@
           <div class="mm-hint" *ngIf="controlTouched('password')">
             <small *ngIf="registerForm.get('password')?.errors?.['required']">La contraseña es requerida</small>
             <small *ngIf="registerForm.get('password')?.errors?.['minlength']">Mínimo 6 caracteres</small>
+            <div *ngIf="controlTouched('password') && controlInvalid('password')" class="mm-hint"><small>La contraseña debe poseer al menos 8 caracteres, una mayúscula y un número.</small></div>
           </div>
         </div>
 

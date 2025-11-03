@@ -5,11 +5,12 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
 import { User } from '../../models/user.interface';
+import { SideNavComponent } from "../side-nav/side-nav";
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SideNavComponent],
   templateUrl: './profile.html',
   styleUrls: ['./profile.css']
 })

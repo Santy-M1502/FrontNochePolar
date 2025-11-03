@@ -1,4 +1,6 @@
 <div class="body">
+  <app-side-nav></app-side-nav>
+
   <div class="profile-page">
 
     <aside class="profile-sidebar">
@@ -14,41 +16,43 @@
           <label for="avatar-input" class="avatar-edit">📷</label>
           <input id="avatar-input" type="file" accept="image/*" style="display:none" (change)="onImageSelected($event)" />
         </div>
+
         <div class="user-basic">
           <h2 class="username">@{{ user?.username || 'usuario' }}</h2>
           <p class="bio">{{ user?.bio || 'Sin biografía aún' }}</p>
+
+          <div class="stats">
+            <div class="stat">
+              <div class="num">{{ posts?.length || 0 }}</div>
+              <div class="label">Publicaciones</div>
+            </div>
+            <div class="stat">
+              <div class="num">{{ user?.followers || 0 }}</div>
+              <div class="label">Seguidores</div>
+            </div>
+            <div class="stat">
+              <div class="num">{{ user?.following || 0 }}</div>
+              <div class="label">Siguiendo</div>
+            </div>
+          </div>
+
+          <div class="sidebar-actions">
+            <button class="btn primary" (click)="editProfile()">Editar perfil</button>
+            <button class="btn ghost" (click)="logout()">Cerrar sesión</button>
+          </div>
         </div>
       </div>
 
-      <div class="stats">
-        <div class="stat">
-          <div class="num">{{ posts?.length || 0 }}</div>
-          <div class="label">Publicaciones</div>
-        </div>
-        <div class="stat">
-          <div class="num">{{ user?.followers || 0 }}</div>
-          <div class="label">Seguidores</div>
-        </div>
-        <div class="stat">
-          <div class="num">{{ user?.following || 0 }}</div>
-          <div class="label">Siguiendo</div>
-        </div>
-      </div>
-
-      <div class="sidebar-actions">
-        <button class="btn primary" (click)="editProfile()">Editar perfil</button>
-        <button class="btn ghost" (click)="logout()">Cerrar sesión</button>
-      </div>
-
+      <!-- (oculto en desktop porque usamos tabs debajo del header) -->
       <nav class="sidebar-menu">
-        <a class="menu-item" (click)="selectSection('publicaciones')" [class.active]="activeSection==='publicaciones'">Publicaciones</a>
-        <a class="menu-item" (click)="selectSection('me-gusta')" [class.active]="activeSection==='me-gusta'">Me gusta</a>
-        <a class="menu-item" (click)="selectSection('guardados')" [class.active]="activeSection==='guardados'">Guardados</a>
+        <a class="menu-item" (click)="selectSection('publicaciones')" [class.active]="activeSection==='publicaciones'">Publicaciones {{this.posts.length}}</a>
+        <a class="menu-item" (click)="selectSection('me-gusta')" [class.active]="activeSection==='me-gusta'">Me gusta {{this.likedPosts.length}}</a>
+        <a class="menu-item" (click)="selectSection('guardados')" [class.active]="activeSection==='guardados'">Guardados {{this.savedPosts.length}}</a>
       </nav>
     </aside>
 
     <main class="profile-main">
-
+      <!-- tabs visibles, debajo del header -->
       <div class="tabs" role="tablist" aria-label="Secciones">
         <button class="tab" role="tab" aria-selected="{{activeSection==='publicaciones'}}"
           (click)="selectSection('publicaciones')" [class.active]="activeSection==='publicaciones'">Publicaciones</button>
@@ -59,7 +63,7 @@
       </div>
 
       <section class="timeline">
-
+        <!-- publicaciones -->
         <ng-container *ngIf="activeSection === 'publicaciones'">
           <ng-container *ngIf="posts && posts.length; else noPosts">
             <article class="post-card" *ngFor="let post of posts">
@@ -91,6 +95,7 @@
           </ng-container>
         </ng-container>
 
+        <!-- me gusta -->
         <ng-container *ngIf="activeSection === 'me-gusta'">
           <ng-container *ngIf="likedPosts && likedPosts.length; else noLikes">
             <article class="post-card" *ngFor="let post of likedPosts">
@@ -110,6 +115,7 @@
           </ng-container>
         </ng-container>
 
+        <!-- guardados -->
         <ng-container *ngIf="activeSection === 'guardados'">
           <ng-container *ngIf="savedPosts && savedPosts.length; else noSaved">
             <article class="post-card" *ngFor="let post of savedPosts">
@@ -140,7 +146,6 @@
         <ng-template #noSaved>
           <div class="empty">No hay guardados.</div>
         </ng-template>
-
       </section>
     </main>
 

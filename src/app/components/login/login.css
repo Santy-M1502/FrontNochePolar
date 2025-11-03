@@ -148,9 +148,10 @@
 }
 
 .forgot a {
-  color: rgba(230,230,230,0.9);
+  color: rgba(230,230,230,1);
   text-decoration: underline;
   font-weight: 600;
+  text-shadow: 0px 0px 5px #000;
 }
 
 .forgot a:hover {

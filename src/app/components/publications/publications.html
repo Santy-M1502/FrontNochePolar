@@ -1,1 +1,48 @@
-<p>publications works!</p>
+<div class="body">
+  <app-side-nav></app-side-nav>
+
+  <div class="feed-area">
+
+    <!-- PUBLICAR -->
+    <div class="composer">
+      <textarea [(ngModel)]="newPost" placeholder="¿Qué estás pensando?"></textarea>
+      <div class="composer-row">
+        <button class="btn primary" (click)="sendPost()">Publicar</button>
+      </div>
+    </div>
+
+    <!-- PUBLICACIONES -->
+    <div class="timeline">
+      <div class="post-card" *ngFor="let p of posts">
+        <img class="post-avatar" [src]="p.avatar">
+        <div class="post-body">
+          <div class="post-header">
+            <strong>{{ p.user }}</strong>
+            <span class="post-meta">{{ p.time }}</span>
+          </div>
+          <div class="post-content">{{ p.text }}</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <button class="chat-toggle" (click)="chatOpen = !chatOpen">💬</button>
+
+    <div class="chat-panel" [class.open]="chatOpen">
+        <button class="chat-close" (click)="chatOpen = false">×</button>
+
+        <div *ngIf="!tieneChats" class="empty-chat">
+            <p>No empezaste ningún chat.</p>
+            <small>Mandá tu primer mensaje.</small>
+        </div>
+
+        <div *ngIf="tieneChats" class="chat-box">
+            <div class="msg">Che, como va todo?</div>
+            <div class="msg me">Todo tranquilo acá.</div>
+            <div class="msg">A full con el proyecto?</div>
+            <div class="msg me">Sisi de una!</div>
+        </div>
+    </div>
+
+</div>
