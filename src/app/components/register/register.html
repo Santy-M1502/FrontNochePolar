@@ -21,13 +21,11 @@
           <button type="button" class="upload-btn" (click)="avatarInput.click()">Subir Foto</button>
           <input #avatarInput id="avatar" type="file" accept="image/*" (change)="onFileSelected($event)" hidden />
 
-          <!-- error de archivo -->
           <div class="mm-hint" *ngIf="fileError">
             <small class="error-text">{{ fileError }}</small>
           </div>
         </div>
 
-        <!-- USERNAME -->
         <div class="field">
           <input id="username" type="text" formControlName="username" placeholder="USUARIO"
             [class.error]="controlInvalid('username')" />
@@ -37,13 +35,13 @@
           </div>
         </div>
 
-        <!-- NOMBRE / APELLIDO -->
         <div class="mm-row mm-inline">
           <div class="field mm-col">
             <input id="nombre" type="text" formControlName="nombre" placeholder="NOMBRE"
               [class.error]="controlInvalid('nombre')" />
             <div class="mm-hint" *ngIf="controlTouched('nombre')">
               <small *ngIf="registerForm.get('nombre')?.errors?.['required']">El nombre es requerido</small>
+              <small *ngIf="registerForm.get('nombre')?.errors?.['minlength']">Mínimo 3 caracteres</small>
             </div>
           </div>
 
@@ -52,11 +50,11 @@
               [class.error]="controlInvalid('apellido')" />
             <div class="mm-hint" *ngIf="controlTouched('apellido')">
               <small *ngIf="registerForm.get('apellido')?.errors?.['required']">El apellido es requerido</small>
+              <small *ngIf="registerForm.get('apellido')?.errors?.['minlength']">Mínimo 3 caracteres</small>
             </div>
           </div>
         </div>
 
-        <!-- EMAIL -->
         <div class="field">
           <input id="email" type="email" formControlName="email" placeholder="EMAIL"
             [class.error]="controlInvalid('email')" />
@@ -66,7 +64,6 @@
           </div>
         </div>
 
-        <!-- PASSWORD -->
         <div class="field">
           <input id="password" type="password" formControlName="password" placeholder="CONTRASEÑA"
             [class.error]="controlInvalid('password')" />
@@ -76,7 +73,6 @@
           </div>
         </div>
 
-        <!-- CONFIRM PASSWORD -->
         <div class="field">
           <input id="confirmPassword" type="password" formControlName="confirmPassword" placeholder="CONFIRMAR CONTRASEÑA"
             [class.error]="controlInvalid('confirmPassword') || (registerForm.errors?.['passwordMismatch'] && controlTouched('confirmPassword'))" />
@@ -88,7 +84,6 @@
           </div>
         </div>
 
-        <!-- FECHA DE NACIMIENTO -->
         <div class="field">
           <input id="fechaNacimiento" type="date" formControlName="fechaNacimiento"
             [class.error]="controlInvalid('fechaNacimiento')" />
@@ -98,7 +93,6 @@
           </div>
         </div>
 
-        <!-- DESCRIPCIÓN -->
         <div class="field">
           <textarea id="descripcion" rows="4" formControlName="descripcion" placeholder="DESCRIPCIÓN (opcional)"
             maxlength="200" (input)="onDescripcionInput($event)"></textarea>
@@ -111,13 +105,11 @@
           </div>
         </div>
 
-        <!-- Mensajes -->
         <div class="mm-messages">
           <div class="mm-success" *ngIf="successMessage">{{ successMessage }}</div>
           <div class="mm-error" *ngIf="errorMessage">{{ errorMessage }}</div>
         </div>
 
-        <!-- BOTONES -->
         <div class="mm-actions">
           <button type="submit" class="mm-btn mm-btn-primary" [disabled]="registerForm.invalid || isLoading">
             <span *ngIf="isLoading">Registrando...</span>

@@ -21,6 +21,9 @@ export class ProfileComponent implements OnInit {
   posts: any[] = [];
   maxPostChars = 200;
   postCharCount = 0;
+  likedPosts: any[] = [];
+  savedPosts: any[] = [];
+  activeSection: 'publicaciones' | 'me-gusta' | 'guardados' = 'publicaciones';
 
   coverImage = 'https://res.cloudinary.com/dzwlpr7ay/image/upload/v1762178571/default-avatar_n9xfbe.avif';
   avatarAnon = 'https://res.cloudinary.com/dzwlpr7ay/image/upload/v1762178755/avatar-anon_vmiwkv.png';  
@@ -53,10 +56,16 @@ export class ProfileComponent implements OnInit {
           following: 10,
           profileImage: ''
         };
+
         this.posts = [
           { author: this.user, content: 'Primer post!', createdAt: new Date(), likes: 5, comments: [], shares: 1 },
-          { author: this.user, content: 'Hola mundo!', createdAt: new Date(), likes: 2, comments: [], shares: 0 }
+          { author: this.user, content: 'Hola mundo!', createdAt: new Date(), likes: 2, comments: [], shares: 0 },
+          { author: this.user, content: 'Ejemplo: Este mensaje sirve para ver cómo se verá una publicación en la sección Publicaciones.', createdAt: new Date(), likes: 12, comments: [{text:'Buen post'}], shares: 2 }
         ];
+
+        this.likedPosts = [ this.posts[2], this.posts[1] ];
+        this.savedPosts = [];
+
         this.isLoading = false;
       }, 400);
     }
@@ -105,6 +114,10 @@ export class ProfileComponent implements OnInit {
     } else {
       this.simulateUpload(file);
     }
+  }
+
+  selectSection(section: 'publicaciones' | 'me-gusta' | 'guardados'): void {
+    this.activeSection = section;
   }
 
   private simulateUpload(file: File): void {

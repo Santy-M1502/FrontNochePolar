@@ -1,124 +1,148 @@
 <div class="body">
   <div class="profile-page">
 
+    <aside class="profile-sidebar">
+      <div class="cover-wrap">
+        <img class="cover-img" [src]="coverImage" alt="Portada" />
+        <label for="cover-input" class="cover-edit">Cambiar portada</label>
+        <input id="cover-input" type="file" accept="image/*" style="display:none" (change)="onCoverSelected($event)" />
+      </div>
 
-<aside class="profile-sidebar">
-<div class="cover-wrap">
-  <img class="cover-img" [src]="coverImage" alt="Portada" />
-  <label for="cover-input" class="cover-edit">Cambiar portada</label>
-  <input id="cover-input" type="file" accept="image/*" style="display:none" (change)="onCoverSelected($event)" />
-</div>
+      <div class="avatar-row">
+        <div class="avatar-wrap">
+          <img class="avatar-img" [src]="user?.profileImage || avatarAnon" alt="Avatar" />
+          <label for="avatar-input" class="avatar-edit">📷</label>
+          <input id="avatar-input" type="file" accept="image/*" style="display:none" (change)="onImageSelected($event)" />
+        </div>
+        <div class="user-basic">
+          <h2 class="username">@{{ user?.username || 'usuario' }}</h2>
+          <p class="bio">{{ user?.bio || 'Sin biografía aún' }}</p>
+        </div>
+      </div>
 
-<div class="avatar-row">
-<div class="avatar-wrap">
-<img class="avatar-img" [src]="user?.profileImage || 'https://res.cloudinary.com/dzwlpr7ay/image/upload/v1762178755/avatar-anon_vmiwkv.png'" alt="Avatar" />
-<label for="avatar-input" class="avatar-edit">📷</label>
-<input id="avatar-input" type="file" accept="image/*" style="display:none" (change)="onImageSelected($event)" />
-</div>
-<div class="user-basic">
-<h2 class="username">@{{ user?.username || 'usuario' }}</h2>
-<p class="bio">{{ user?.bio || 'Sin biografía aún' }}</p>
-</div>
-</div>
+      <div class="stats">
+        <div class="stat">
+          <div class="num">{{ posts?.length || 0 }}</div>
+          <div class="label">Publicaciones</div>
+        </div>
+        <div class="stat">
+          <div class="num">{{ user?.followers || 0 }}</div>
+          <div class="label">Seguidores</div>
+        </div>
+        <div class="stat">
+          <div class="num">{{ user?.following || 0 }}</div>
+          <div class="label">Siguiendo</div>
+        </div>
+      </div>
 
+      <div class="sidebar-actions">
+        <button class="btn primary" (click)="editProfile()">Editar perfil</button>
+        <button class="btn ghost" (click)="logout()">Cerrar sesión</button>
+      </div>
 
-<div class="stats">
-<div class="stat">
-<div class="num">{{ posts?.length || 0 }}</div>
-<div class="label">Publicaciones</div>
-</div>
-<div class="stat">
-<div class="num">{{ user?.followers || 0 }}</div>
-<div class="label">Seguidores</div>
-</div>
-<div class="stat">
-<div class="num">{{ user?.following || 0 }}</div>
-<div class="label">Siguiendo</div>
-</div>
-</div>
+      <nav class="sidebar-menu">
+        <a class="menu-item" (click)="selectSection('publicaciones')" [class.active]="activeSection==='publicaciones'">Publicaciones</a>
+        <a class="menu-item" (click)="selectSection('me-gusta')" [class.active]="activeSection==='me-gusta'">Me gusta</a>
+        <a class="menu-item" (click)="selectSection('guardados')" [class.active]="activeSection==='guardados'">Guardados</a>
+      </nav>
+    </aside>
 
+    <main class="profile-main">
 
-<div class="sidebar-actions">
-<button class="btn primary" (click)="editProfile()">Editar perfil</button>
-<button class="btn ghost" (click)="logout()">Cerrar sesión</button>
-</div>
+      <div class="tabs" role="tablist" aria-label="Secciones">
+        <button class="tab" role="tab" aria-selected="{{activeSection==='publicaciones'}}"
+          (click)="selectSection('publicaciones')" [class.active]="activeSection==='publicaciones'">Publicaciones</button>
+        <button class="tab" role="tab" aria-selected="{{activeSection==='me-gusta'}}"
+          (click)="selectSection('me-gusta')" [class.active]="activeSection==='me-gusta'">Me gusta</button>
+        <button class="tab" role="tab" aria-selected="{{activeSection==='guardados'}}"
+          (click)="selectSection('guardados')" [class.active]="activeSection==='guardados'">Guardados</button>
+      </div>
 
+      <section class="timeline">
 
-<nav class="sidebar-menu">
-<a class="menu-item active">Publicaciones</a>
-<a class="menu-item">Me gusta</a>
-<a class="menu-item">Guardados</a>
-</nav>
-</aside>
+        <ng-container *ngIf="activeSection === 'publicaciones'">
+          <ng-container *ngIf="posts && posts.length; else noPosts">
+            <article class="post-card" *ngFor="let post of posts">
+              <div class="post-left">
+                <img class="post-avatar" [src]="post.author.profileImage || avatarAnon" alt="avatar" />
+              </div>
+              <div class="post-body">
+                <div class="post-header">
+                  <div class="post-user">
+                    <strong>{{ post.author.username }}</strong>
+                    <span class="post-meta">· {{ post.createdAt | date:'short' }}</span>
+                  </div>
+                  <button class="more">•••</button>
+                </div>
 
+                <div class="post-content">{{ post.content }}</div>
 
-<main class="profile-main">
-<section class="composer">
-  <textarea
-    placeholder="¿Qué estás pensando?"
-    [(ngModel)]="newPostText"
-    maxlength="{{ maxPostChars }}"
-    (input)="onNewPostInput($event)"
-    (paste)="onPostPaste($event)"
-    rows="3"
-  ></textarea>
+                <div class="post-media" *ngIf="post.image">
+                  <img [src]="post.image" alt="post image" />
+                </div>
 
-  <div class="composer-meta" style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
-    <div class="composer-left">
-      <label for="post-image" class="attach">📎</label>
-      <input id="post-image" type="file" accept="image/*" style="display:none" (change)="onPostImageSelected($event)" />
-    </div>
+                <div class="post-actions">
+                  <button class="icon">❤ {{ post.likes || 0 }}</button>
+                  <button class="icon">💬 {{ post.comments?.length || 0 }}</button>
+                  <button class="icon">↻ {{ post.shares || 0 }}</button>
+                </div>
+              </div>
+            </article>
+          </ng-container>
+        </ng-container>
 
-    <div style="display:flex;align-items:center;gap:12px">
-      <small class="char-counter" [class.limit]="postCharCount === maxPostChars">
-        {{ postCharCount }}/{{ maxPostChars }}
-      </small>
-      <button class="btn primary" (click)="publish()" [disabled]="!newPostText?.trim()">Publicar</button>
-    </div>
+        <ng-container *ngIf="activeSection === 'me-gusta'">
+          <ng-container *ngIf="likedPosts && likedPosts.length; else noLikes">
+            <article class="post-card" *ngFor="let post of likedPosts">
+              <div class="post-left">
+                <img class="post-avatar" [src]="post.author.profileImage || avatarAnon" alt="avatar" />
+              </div>
+              <div class="post-body">
+                <div class="post-header">
+                  <div class="post-user">
+                    <strong>{{ post.author.username }}</strong>
+                    <span class="post-meta">· {{ post.createdAt | date:'short' }}</span>
+                  </div>
+                </div>
+                <div class="post-content">{{ post.content }}</div>
+              </div>
+            </article>
+          </ng-container>
+        </ng-container>
+
+        <ng-container *ngIf="activeSection === 'guardados'">
+          <ng-container *ngIf="savedPosts && savedPosts.length; else noSaved">
+            <article class="post-card" *ngFor="let post of savedPosts">
+              <div class="post-left">
+                <img class="post-avatar" [src]="post.author.profileImage || avatarAnon" alt="avatar" />
+              </div>
+              <div class="post-body">
+                <div class="post-header">
+                  <div class="post-user">
+                    <strong>{{ post.author.username }}</strong>
+                    <span class="post-meta">· {{ post.createdAt | date:'short' }}</span>
+                  </div>
+                </div>
+                <div class="post-content">{{ post.content }}</div>
+              </div>
+            </article>
+          </ng-container>
+        </ng-container>
+
+        <ng-template #noPosts>
+          <div class="empty">No hay publicaciones aún.</div>
+        </ng-template>
+
+        <ng-template #noLikes>
+          <div class="empty">No te gusta ninguna publicación todavía.</div>
+        </ng-template>
+
+        <ng-template #noSaved>
+          <div class="empty">No hay guardados.</div>
+        </ng-template>
+
+      </section>
+    </main>
+
   </div>
-</section>
-
-
-
-
-<section class="timeline">
-<ng-container *ngIf="posts && posts.length; else noPosts">
-<article class="post-card" *ngFor="let post of posts">
-<div class="post-left">
-<img class="post-avatar" [src]="post.author.profileImage || '/assets/default-avatar.png'" alt="avatar" />
-</div>
-<div class="post-body">
-<div class="post-header">
-<div class="post-user">
-<strong>{{ post.author.username }}</strong>
-<span class="post-meta">· {{ post.createdAt | date:'short' }}</span>
-</div>
-<button class="more">•••</button>
-</div>
-
-
-<div class="post-content">{{ post.content }}</div>
-
-
-<div class="post-media" *ngIf="post.image">
-<img [src]="post.image" alt="post image" />
-</div>
-
-
-<div class="post-actions">
-<button class="icon">❤ {{ post.likes || 0 }}</button>
-<button class="icon">💬 {{ post.comments?.length || 0 }}</button>
-<button class="icon">↻ {{ post.shares || 0 }}</button>
-</div>
-</div>
-</article>
-</ng-container>
-<ng-template #noPosts>
-<div class="empty">No hay publicaciones aún.</div>
-</ng-template>
-</section>
-</main>
-
-
-</div>
 </div>
