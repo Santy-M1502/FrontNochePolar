@@ -1,64 +1,59 @@
-<!-- (FRONTEND) frontend/src/app/components/login/login.html -->
-<!-- Plantilla estilo Mario Maker 2, ocupa 100% del ancho -->
-<div class="mm-outer">
-  <div class="mm-tiles"></div>
-  <div class="mm-stage">
-    <header class="mm-header">
-      <div class="mm-logo">MM2</div>
-      <h1 class="mm-title">INICIAR SESIÓN</h1>
-      <p class="mm-sub">Entra con tu cuenta para continuar</p>
-    </header>
+<div class="login-root">
+<div class="login-card">
+<div class="avatar-wrap">
+<div class="avatar-ring">
+<div class="ring"></div>
+<img class="avatar" [src]="avatarUrl" alt="avatar anónimo" />
+<div class="orbit"></div>
+<div class="satellite" aria-hidden="true"></div>
+</div>
+</div>
 
-    <main class="mm-panel">
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="mm-form">
 
-        <div class="mm-row">
-          <label for="username" class="mm-label">USUARIO</label>
-          <input id="username" type="text" formControlName="username" placeholder="Tu nombre de jugador"
-            [class.error]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched" />
-          @if (loginForm.get('username')?.invalid && loginForm.get('username')?.touched) {
-            <div class="mm-hint">
-              <small>El usuario es requerido</small>
-            </div>
-          }
-        </div>
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
 
-          <!-- (20) FILES_ORDER: 20) frontend/src/app/components/login/login.html -->
 
-        <div class="mm-row">
-          <label for="password" class="mm-label">CONTRASEÑA</label>
-          <input id="password" type="password" formControlName="password" placeholder="Tu contraseña"
-            [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" />
-          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
-            <div class="mm-hint">
-              @if (loginForm.get('password')?.errors?.['required']) {
-                <small>La contraseña es requerida</small>
-              }
-              @if (loginForm.get('password')?.errors?.['minlength']) {
-                <small>Mínimo 6 caracteres</small>
-              }
-            </div>
-          }
-        </div>
+<label class="field">
+<div class="icon" aria-hidden="true">
+<!-- email SVG -->
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<path d="M3 6.5A2.5 2.5 0 0 1 5.5 4h13A2.5 2.5 0 0 1 21 6.5v11A2.5 2.5 0 0 1 18.5 20h-13A2.5 2.5 0 0 1 3 17.5v-11z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+<path d="M21 6.5L12 13 3 6.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+</svg>
+</div>
+<input type="email" formControlName="username" placeholder="Email" />
+</label>
 
-        <div class="mm-messages">
-          @if (errorMessage) {
-            <div class="mm-error">{{ errorMessage }}</div>
-          }
-        </div>
 
-        <div class="mm-actions">
-          <button type="submit" class="mm-btn mm-btn-primary" [disabled]="loginForm.invalid || isLoading">
-            @if (isLoading) {
-              <span>Cargando...</span>
-            } @else {
-              <span>ENTRAR</span>
-            }
-          </button>
+<label class="field">
+<div class="icon" aria-hidden="true">
+<!-- lock SVG -->
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<rect x="3" y="11" width="18" height="10" rx="2" stroke="currentColor" stroke-width="1.2" opacity="0.95"/>
+<path d="M7 11V8a5 5 0 0 1 10 0v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
+</svg>
+</div>
+<input id="password" type="password" formControlName="password" placeholder="Contraseña" />
+</label>
 
-          <button type="button" class="mm-btn mm-btn-secondary" (click)="goToRegister()">REGISTRARSE</button>
-        </div>
-      </form>
-    </main>
-  </div>
+
+<div class="forgot">
+<a (click)="goToForgot()">¿Olvidaste tu contraseña?</a>
+</div>
+
+
+<div *ngIf="errorMessage" class="hint">{{ errorMessage }}</div>
+
+
+<div class="actions">
+<button type="submit" class="btn primary" [disabled]="loginForm.invalid || isLoading">
+<span *ngIf="!isLoading">INICIAR SESIÓN</span>
+<span *ngIf="isLoading">Cargando...</span>
+</button>
+<button type="button" class="btn secondary" (click)="goToRegister()">REGISTRARSE</button>
+</div>
+
+
+</form>
+</div>
 </div>

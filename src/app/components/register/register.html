@@ -1,10 +1,8 @@
-<!-- frontend/src/app/components/register/register.html -->
 <div class="mm-outer">
   <div class="mm-tiles"></div>
 
   <div class="mm-stage">
     <header class="mm-header">
-      <div class="mm-logo">MM2</div>
       <h1 class="mm-title">REGISTRO</h1>
       <p class="mm-sub">¡Crea tu cuenta y empieza a construir!</p>
     </header>
@@ -12,10 +10,20 @@
     <main class="mm-panel">
       <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="mm-form" novalidate>
 
+        <div class="avatar-upload-wrap">
+          <div class="avatar-ring">
+            <div class="ring"></div>
+            <img [src]="avatarPreview" alt="avatar" class="avatar" />
+            <div class="orbit"></div>
+            <div class="satellite"></div>
+          </div>
+          <button type="button" class="upload-btn" (click)="avatarInput.click()">Subir Foto</button>
+          <input #avatarInput id="avatar" type="file" accept="image/*" (change)="onFileSelected($event)" hidden />
+        </div>
+
         <!-- USERNAME -->
-        <div class="mm-row">
-          <label for="username" class="mm-label">USUARIO</label>
-          <input id="username" type="text" formControlName="username" placeholder="Tu nombre de jugador"
+        <div class="field">
+          <input id="username" type="text" formControlName="username" placeholder="USUARIO"
             [class.error]="controlInvalid('username')" />
           <div class="mm-hint" *ngIf="controlTouched('username')">
             <small *ngIf="registerForm.get('username')?.errors?.['required']">El usuario es requerido</small>
@@ -23,20 +31,18 @@
           </div>
         </div>
 
-        <!-- NOMBRE / APELLIDO (inline) -->
+        <!-- NOMBRE / APELLIDO -->
         <div class="mm-row mm-inline">
-          <div class="mm-col">
-            <label for="nombre" class="mm-label">NOMBRE</label>
-            <input id="nombre" type="text" formControlName="nombre" placeholder="Nombre"
+          <div class="field mm-col">
+            <input id="nombre" type="text" formControlName="nombre" placeholder="NOMBRE"
               [class.error]="controlInvalid('nombre')" />
             <div class="mm-hint" *ngIf="controlTouched('nombre')">
               <small *ngIf="registerForm.get('nombre')?.errors?.['required']">El nombre es requerido</small>
             </div>
           </div>
 
-          <div class="mm-col">
-            <label for="apellido" class="mm-label">APELLIDO</label>
-            <input id="apellido" type="text" formControlName="apellido" placeholder="Apellido"
+          <div class="field mm-col">
+            <input id="apellido" type="text" formControlName="apellido" placeholder="APELLIDO"
               [class.error]="controlInvalid('apellido')" />
             <div class="mm-hint" *ngIf="controlTouched('apellido')">
               <small *ngIf="registerForm.get('apellido')?.errors?.['required']">El apellido es requerido</small>
@@ -45,9 +51,8 @@
         </div>
 
         <!-- EMAIL -->
-        <div class="mm-row">
-          <label for="email" class="mm-label">EMAIL</label>
-          <input id="email" type="email" formControlName="email" placeholder="tucorreo@ejemplo.com"
+        <div class="field">
+          <input id="email" type="email" formControlName="email" placeholder="EMAIL"
             [class.error]="controlInvalid('email')" />
           <div class="mm-hint" *ngIf="controlTouched('email')">
             <small *ngIf="registerForm.get('email')?.errors?.['required']">El email es requerido</small>
@@ -56,9 +61,8 @@
         </div>
 
         <!-- PASSWORD -->
-        <div class="mm-row">
-          <label for="password" class="mm-label">CONTRASEÑA</label>
-          <input id="password" type="password" formControlName="password" placeholder="Contraseña segura"
+        <div class="field">
+          <input id="password" type="password" formControlName="password" placeholder="CONTRASEÑA"
             [class.error]="controlInvalid('password')" />
           <div class="mm-hint" *ngIf="controlTouched('password')">
             <small *ngIf="registerForm.get('password')?.errors?.['required']">La contraseña es requerida</small>
@@ -67,9 +71,8 @@
         </div>
 
         <!-- CONFIRM PASSWORD -->
-        <div class="mm-row">
-          <label for="confirmPassword" class="mm-label">CONFIRMAR CONTRASEÑA</label>
-          <input id="confirmPassword" type="password" formControlName="confirmPassword" placeholder="Repite la contraseña"
+        <div class="field">
+          <input id="confirmPassword" type="password" formControlName="confirmPassword" placeholder="CONFIRMAR CONTRASEÑA"
             [class.error]="controlInvalid('confirmPassword') || (registerForm.errors?.['passwordMismatch'] && controlTouched('confirmPassword'))" />
           <div class="mm-hint" *ngIf="controlTouched('confirmPassword')">
             <small *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">Debes confirmar la contraseña</small>
@@ -80,8 +83,7 @@
         </div>
 
         <!-- FECHA DE NACIMIENTO -->
-        <div class="mm-row">
-          <label for="fechaNacimiento" class="mm-label">FECHA DE NACIMIENTO</label>
+        <div class="field">
           <input id="fechaNacimiento" type="date" formControlName="fechaNacimiento"
             [class.error]="controlInvalid('fechaNacimiento')" />
           <div class="mm-hint" *ngIf="controlTouched('fechaNacimiento')">
@@ -90,20 +92,9 @@
           </div>
         </div>
 
-        <!-- DESCRIPCION -->
-        <div class="mm-row">
-          <label for="descripcion" class="mm-label">DESCRIPCIÓN (opcional)</label>
-          <textarea id="descripcion" rows="3" formControlName="descripcion" placeholder="Cuenta algo sobre ti..."></textarea>
-        </div>
-
-        <!-- FOTO (opcional) -->
-        <div class="mm-row">
-          <label for="avatar" class="mm-label">FOTO DE PERFIL (opcional)</label>
-          <input id="avatar" type="file" accept="image/*" (change)="onFileSelected($event)" />
-          <div class="mm-hint" *ngIf="avatarPreview">
-            <small>Previsualización:</small>
-            <div class="mm-avatar-preview"><img [src]="avatarPreview" alt="avatar preview" /></div>
-          </div>
+        <!-- DESCRIPCIÓN -->
+        <div class="field">
+          <textarea id="descripcion" rows="3" formControlName="descripcion" placeholder="DESCRIPCIÓN (opcional)"></textarea>
         </div>
 
         <!-- Mensajes -->
@@ -112,6 +103,7 @@
           <div class="mm-error" *ngIf="errorMessage">{{ errorMessage }}</div>
         </div>
 
+        <!-- BOTONES -->
         <div class="mm-actions">
           <button type="submit" class="mm-btn mm-btn-primary" [disabled]="registerForm.invalid || isLoading">
             <span *ngIf="isLoading">Registrando...</span>
