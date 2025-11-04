@@ -27,8 +27,12 @@ export class ProfileComponent implements OnInit {
   activeSection: 'publicaciones' | 'me-gusta' | 'guardados' = 'publicaciones';
 
   coverImage = 'https://res.cloudinary.com/dzwlpr7ay/image/upload/v1762178571/default-avatar_n9xfbe.avif';
-  avatarAnon = 'https://res.cloudinary.com/dzwlpr7ay/image/upload/v1762178755/avatar-anon_vmiwkv.png';  
-  private createdUrls: string[] = []; 
+  avatarAnon = 'https://res.cloudinary.com/dzwlpr7ay/image/upload/v1762178755/avatar-anon_vmiwkv.png';
+  private createdUrls: string[] = [];
+
+  // NUEVO: mensajes para mostrar al usuario
+  userMessage: string = '';
+  messageType: 'error' | 'info' = 'info';
 
   constructor(
     private authService: AuthService,
@@ -70,19 +74,32 @@ export class ProfileComponent implements OnInit {
         this.isLoading = false;
       }, 400);
     }
-    if (!this.coverImage) this.coverImage = 'https://res.cloudinary.com/dzwlpr7ay/image/upload/v1762178571/default-avatar_n9xfbe.avif';
+
+    if (!this.coverImage) {
+      this.coverImage = 'https://res.cloudinary.com/dzwlpr7ay/image/upload/v1762178571/default-avatar_n9xfbe.avif';
+    }
+  }
+
+  // NUEVO: función para mostrar mensaje
+  showMessage(message: string, type: 'error' | 'info' = 'info', duration = 3000) {
+    this.userMessage = message;
+    this.messageType = type;
+    setTimeout(() => this.userMessage = '', duration);
   }
 
   onCoverSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (!input.files || !input.files[0]) return;
     const file = input.files[0];
-    if (!file.type.startsWith('image/')) { alert('Solo imágenes'); return; }
+
+    if (!file.type.startsWith('image/')) {
+      this.showMessage('Solo imágenes', 'error');
+      return;
+    }
 
     const url = URL.createObjectURL(file);
     this.createdUrls.push(url);
     this.coverImage = url;
-
   }
 
   onImageSelected(event: Event): void {
@@ -91,11 +108,11 @@ export class ProfileComponent implements OnInit {
     const file = input.files[0];
 
     if (!file.type.startsWith('image/')) {
-      alert('Selecciona solo archivos de imagen.');
+      this.showMessage('Selecciona solo archivos de imagen.', 'error');
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      alert('La imagen debe ser menor a 5MB.');
+      this.showMessage('La imagen debe ser menor a 5MB.', 'error');
       return;
     }
 
@@ -105,11 +122,11 @@ export class ProfileComponent implements OnInit {
         next: (updatedUser: User) => {
           this.user = updatedUser;
           this.isUploadingImage = false;
+          this.showMessage('Avatar subido correctamente.', 'info');
         },
-        error: (err) => {
-          console.error(err);
+        error: () => {
           this.isUploadingImage = false;
-          alert('Error subiendo avatar.');
+          this.showMessage('Error subiendo avatar.', 'error');
         }
       });
     } else {
@@ -126,6 +143,7 @@ export class ProfileComponent implements OnInit {
     setTimeout(() => {
       if (this.user) {
         this.user.profileImage = URL.createObjectURL(file);
+        this.showMessage('Avatar subido correctamente.', 'info');
       }
       this.isUploadingImage = false;
     }, 900);
@@ -135,34 +153,23 @@ export class ProfileComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (!input.files || !input.files[0]) return;
     const file = input.files[0];
+
     if (!file.type.startsWith('image/')) {
-      alert('Selecciona solo imágenes para la publicación.');
+      this.showMessage('Selecciona solo imágenes para la publicación.', 'error');
       return;
     }
 
     const imageUrl = URL.createObjectURL(file);
-    if (this.newPostText.trim()) {
-      this.posts.unshift({
-        author: this.user,
-        content: this.newPostText,
-        image: imageUrl,
-        createdAt: new Date(),
-        likes: 0,
-        comments: [],
-        shares: 0
-      });
-      this.newPostText = '';
-    } else {
-      this.posts.unshift({
-        author: this.user,
-        content: '',
-        image: imageUrl,
-        createdAt: new Date(),
-        likes: 0,
-        comments: [],
-        shares: 0
-      });
-    }
+    this.posts.unshift({
+      author: this.user,
+      content: this.newPostText.trim() || '',
+      image: imageUrl,
+      createdAt: new Date(),
+      likes: 0,
+      comments: [],
+      shares: 0
+    });
+    this.newPostText = '';
   }
 
   publish(): void {
@@ -185,36 +192,32 @@ export class ProfileComponent implements OnInit {
   logout(): void {
     if (this.authService?.logout) {
       this.authService.logout();
-    } else {
-      console.warn('AuthService.logout() no disponible, simulando.');
     }
     this.router.navigate(['/login']);
   }
 
   onNewPostInput(event: Event): void {
-  const ta = event.target as HTMLTextAreaElement;
-  let value = ta.value || '';
+    const ta = event.target as HTMLTextAreaElement;
+    let value = ta.value || '';
 
-  // asegurar que no pase el límite
-  if (value.length > this.maxPostChars) {
-    value = value.slice(0, this.maxPostChars);
-    this.newPostText = value; // sincronizar con ngModel
+    if (value.length > this.maxPostChars) {
+      value = value.slice(0, this.maxPostChars);
+      this.newPostText = value;
+    }
+
+    this.postCharCount = value.length;
   }
 
-  this.postCharCount = value.length;
-}
+  onPostPaste(event: ClipboardEvent): void {
+    const paste = (event.clipboardData?.getData('text') || '');
+    const current = this.newPostText || '';
+    const available = this.maxPostChars - current.length;
 
-// controlar pegado para no exceder límite
-onPostPaste(event: ClipboardEvent): void {
-  const paste = (event.clipboardData?.getData('text') || '');
-  const current = this.newPostText || '';
-  const available = this.maxPostChars - current.length;
-
-  if (paste.length > available) {
-    event.preventDefault();
-    const toInsert = paste.slice(0, available);
-    this.newPostText = (current + toInsert).slice(0, this.maxPostChars);
-    this.postCharCount = this.newPostText.length;
+    if (paste.length > available) {
+      event.preventDefault();
+      const toInsert = paste.slice(0, available);
+      this.newPostText = (current + toInsert).slice(0, this.maxPostChars);
+      this.postCharCount = this.newPostText.length;
+    }
   }
-}
 }

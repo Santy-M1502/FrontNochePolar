@@ -87,6 +87,27 @@
 .timeline{display:flex;flex-direction:column;gap:12px}
 .post-card{display:flex;gap:12px;background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
 
+.user-message {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  padding: 10px 15px;
+  border-radius: 6px;
+  font-weight: 500;
+  z-index: 999;
+  transition: all 0.3s ease;
+}
+
+.user-message.info {
+  background-color: #cce5ff;
+  color: #004085;
+}
+
+.user-message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
 /* responsive */
 @media (max-width:900px){
   .body{

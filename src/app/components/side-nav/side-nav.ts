@@ -39,7 +39,6 @@ import { RouterLink } from '@angular/router';
     nav {
       width: 220px;
       height: 100%;
-      padding: 18px 0;
       border-right: 1px solid rgba(255,255,255,0.05);
       background: rgba(10, 16, 34, 0.55);
       backdrop-filter: blur(14px);

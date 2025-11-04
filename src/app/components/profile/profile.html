@@ -52,7 +52,10 @@
     </aside>
 
     <main class="profile-main">
-      <!-- tabs visibles, debajo del header -->
+      <div class="user-message" *ngIf="userMessage" [ngClass]="messageType">
+        {{ userMessage }}
+      </div>
+
       <div class="tabs" role="tablist" aria-label="Secciones">
         <button class="tab" role="tab" aria-selected="{{activeSection==='publicaciones'}}"
           (click)="selectSection('publicaciones')" [class.active]="activeSection==='publicaciones'">Publicaciones</button>

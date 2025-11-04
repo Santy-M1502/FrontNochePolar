@@ -18,7 +18,7 @@ export class UserService {
   registerWithAvatar(userData: any, file: File): Observable<any> {
     const formData = new FormData();
     Object.keys(userData).forEach(k => formData.append(k, userData[k]));
-    formData.append('avatar', file);
+    formData.append('file', file);
 
     return this.http.post<any>(`${this.apiUrl}/usuarios/register`, formData);
   }
