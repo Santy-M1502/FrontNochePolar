@@ -28,11 +28,11 @@ import { RouterLink } from '@angular/router';
   `,
   styles: [`
     :host {
-      position: static;
+      position: sticky;
+      display:block;
       top: 0;
       left: 0;
-      height: 90vh;
-      z-index: 900;
+      height: 100vh;
     }
 
     /* NAV DESKTOP */
@@ -121,6 +121,14 @@ import { RouterLink } from '@angular/router';
 
     /* MOBILE MODE */
     @media (max-width: 820px) {
+      :host {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: auto;
+        z-index: 999;
+      }
       nav {
         transform: translateX(-120%);
       }
@@ -136,6 +144,7 @@ import { RouterLink } from '@angular/router';
     @media (min-width: 821px) {
       :host {
         width: 220px;
+        display: block;
       }
     }
   `]

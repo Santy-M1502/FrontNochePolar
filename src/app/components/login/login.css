@@ -7,6 +7,7 @@
   background: url('../../../assets/backgroundLogin.jpg') center/cover no-repeat;
   padding: 20px;
   box-sizing: border-box;
+  flex-direction: column;
 }
 
 /* tarjeta central */
@@ -114,6 +115,7 @@
   font-size: 14px;
   outline: none;
   transition: border-color .18s, box-shadow .18s;
+  text-shadow: 0px 0px 4px #000;
 }
 
 .field input::placeholder {
@@ -202,6 +204,11 @@
   color: #ff7b7b;
   margin-top: 4px;
 }
+
+/* Header */
+.mm-header { text-align: center; margin-bottom: 24px; }
+.mm-title { font-size: 22px; color: #fff; margin: 4px 0; }
+.mm-sub { font-size: 14px; color: rgba(230,230,230,0.9); }
 
 /* responsive */
 @media (max-width: 768px) {

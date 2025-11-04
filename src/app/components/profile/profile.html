@@ -20,27 +20,27 @@
         <div class="user-basic">
           <h2 class="username">@{{ user?.username || 'usuario' }}</h2>
           <p class="bio">{{ user?.bio || 'Sin biografía aún' }}</p>
-
-          <div class="stats">
-            <div class="stat">
-              <div class="num">{{ posts?.length || 0 }}</div>
-              <div class="label">Publicaciones</div>
-            </div>
-            <div class="stat">
-              <div class="num">{{ user?.followers || 0 }}</div>
-              <div class="label">Seguidores</div>
-            </div>
-            <div class="stat">
-              <div class="num">{{ user?.following || 0 }}</div>
-              <div class="label">Siguiendo</div>
-            </div>
-          </div>
-
-          <div class="sidebar-actions">
-            <button class="btn primary" (click)="editProfile()">Editar perfil</button>
-            <button class="btn ghost" (click)="logout()">Cerrar sesión</button>
-          </div>
         </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="num">{{ posts?.length || 0 }}</div>
+          <div class="label">Publicaciones</div>
+        </div>
+        <div class="stat">
+          <div class="num">{{ user?.followers || 0 }}</div>
+          <div class="label">Seguidores</div>
+        </div>
+        <div class="stat">
+          <div class="num">{{ user?.following || 0 }}</div>
+          <div class="label">Siguiendo</div>
+        </div>
+      </div>
+
+      <div class="sidebar-actions">
+        <button class="btn primary" (click)="editProfile()">Editar perfil</button>
+        <button class="btn ghost" (click)="logout()">Cerrar sesión</button>
       </div>
 
       <!-- (oculto en desktop porque usamos tabs debajo del header) -->

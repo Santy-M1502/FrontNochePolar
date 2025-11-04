@@ -10,7 +10,8 @@
     <main class="mm-panel">
       <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="mm-form" novalidate>
 
-        <div class="avatar-upload-wrap">
+        <!-- AVATAR -->
+        <div class="form-section avatar-upload-wrap">
           <div class="avatar-ring">
             <div class="ring"></div>
             <img [src]="avatarPreview" alt="avatar" class="avatar" />
@@ -26,28 +27,35 @@
           </div>
         </div>
 
-        <div class="field">
-          <input id="username" type="text" formControlName="username" placeholder="USUARIO"
-            [class.error]="controlInvalid('username')" />
-          <div class="mm-hint" *ngIf="controlTouched('username')">
-            <small *ngIf="registerForm.get('username')?.errors?.['required']">El usuario es requerido</small>
-            <small *ngIf="registerForm.get('username')?.errors?.['minlength']">Mínimo 3 caracteres</small>
+
+        <!-- USUARIO -->
+        <div class="form-section">
+          <div class="field">
+            <input id="username" type="text" formControlName="username" placeholder="USUARIO"
+                  [class.error]="controlInvalid('username')" />
+
+            <div class="mm-hint" *ngIf="controlTouched('username')">
+              <small *ngIf="registerForm.get('username')?.errors?.['required']">El usuario es requerido</small>
+              <small *ngIf="registerForm.get('username')?.errors?.['minlength']">Mínimo 3 caracteres</small>
+            </div>
           </div>
         </div>
 
-        <div class="mm-row mm-inline">
-          <div class="field mm-col">
+
+        <!-- NOMBRE + APELLIDO -->
+        <div class="form-section two-cols">
+          <div class="field">
             <input id="nombre" type="text" formControlName="nombre" placeholder="NOMBRE"
-              [class.error]="controlInvalid('nombre')" />
+                  [class.error]="controlInvalid('nombre')" />
             <div class="mm-hint" *ngIf="controlTouched('nombre')">
               <small *ngIf="registerForm.get('nombre')?.errors?.['required']">El nombre es requerido</small>
               <small *ngIf="registerForm.get('nombre')?.errors?.['minlength']">Mínimo 3 caracteres</small>
             </div>
           </div>
 
-          <div class="field mm-col">
+          <div class="field">
             <input id="apellido" type="text" formControlName="apellido" placeholder="APELLIDO"
-              [class.error]="controlInvalid('apellido')" />
+                  [class.error]="controlInvalid('apellido')" />
             <div class="mm-hint" *ngIf="controlTouched('apellido')">
               <small *ngIf="registerForm.get('apellido')?.errors?.['required']">El apellido es requerido</small>
               <small *ngIf="registerForm.get('apellido')?.errors?.['minlength']">Mínimo 3 caracteres</small>
@@ -55,62 +63,89 @@
           </div>
         </div>
 
-        <div class="field">
-          <input id="email" type="email" formControlName="email" placeholder="EMAIL"
-            [class.error]="controlInvalid('email')" />
-          <div class="mm-hint" *ngIf="controlTouched('email')">
-            <small *ngIf="registerForm.get('email')?.errors?.['required']">El email es requerido</small>
-            <small *ngIf="registerForm.get('email')?.errors?.['email']">Email inválido</small>
-          </div>
-        </div>
 
-        <div class="field">
-          <input id="password" type="password" formControlName="password" placeholder="CONTRASEÑA"
-            [class.error]="controlInvalid('password')" />
-          <div class="mm-hint" *ngIf="controlTouched('password')">
-            <small *ngIf="registerForm.get('password')?.errors?.['required']">La contraseña es requerida</small>
-            <small *ngIf="registerForm.get('password')?.errors?.['minlength']">Mínimo 6 caracteres</small>
-            <div *ngIf="controlTouched('password') && controlInvalid('password')" class="mm-hint"><small>La contraseña debe poseer al menos 8 caracteres, una mayúscula y un número.</small></div>
-          </div>
-        </div>
-
-        <div class="field">
-          <input id="confirmPassword" type="password" formControlName="confirmPassword" placeholder="CONFIRMAR CONTRASEÑA"
-            [class.error]="controlInvalid('confirmPassword') || (registerForm.errors?.['passwordMismatch'] && controlTouched('confirmPassword'))" />
-          <div class="mm-hint" *ngIf="controlTouched('confirmPassword')">
-            <small *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">Debes confirmar la contraseña</small>
-          </div>
-          <div class="mm-hint" *ngIf="registerForm.errors?.['passwordMismatch'] && controlTouched('confirmPassword')">
-            <small>Las contraseñas no coinciden</small>
-          </div>
-        </div>
-
-        <div class="field">
-          <input id="fechaNacimiento" type="date" formControlName="fechaNacimiento"
-            [class.error]="controlInvalid('fechaNacimiento')" />
-          <div class="mm-hint" *ngIf="controlTouched('fechaNacimiento')">
-            <small *ngIf="registerForm.get('fechaNacimiento')?.errors?.['required']">La fecha es requerida</small>
-            <small *ngIf="registerForm.get('fechaNacimiento')?.errors?.['pattern']">Fecha inválida (YYYY-MM-DD)</small>
-          </div>
-        </div>
-
-        <div class="field">
-          <textarea id="descripcion" rows="4" formControlName="descripcion" placeholder="DESCRIPCIÓN (opcional)"
-            maxlength="200" (input)="onDescripcionInput($event)"></textarea>
-
-          <div class="mm-hint" style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
-            <div *ngIf="controlTouched('descripcion') && registerForm.get('descripcion')?.errors">
-              <small *ngIf="registerForm.get('descripcion')?.errors?.['maxlength']">Máx. 200 caracteres</small>
+        <!-- EMAIL -->
+        <div class="form-section">
+          <div class="field">
+            <input id="email" type="email" formControlName="email" placeholder="EMAIL"
+                  [class.error]="controlInvalid('email')" />
+            <div class="mm-hint" *ngIf="controlTouched('email')">
+              <small *ngIf="registerForm.get('email')?.errors?.['required']">El email es requerido</small>
+              <small *ngIf="registerForm.get('email')?.errors?.['email']">Email inválido</small>
             </div>
-            <small [class.warning]="descripcionCount === 200">{{ descripcionCount }}/200</small>
           </div>
         </div>
 
+
+        <!-- CONTRASEÑA -->
+        <div class="form-section">
+          <div class="field">
+            <input id="password" type="password" formControlName="password" placeholder="CONTRASEÑA"
+                  [class.error]="controlInvalid('password')" />
+
+            <div class="mm-hint" *ngIf="controlTouched('password')">
+              <small *ngIf="registerForm.get('password')?.errors?.['required']">La contraseña es requerida</small>
+              <small *ngIf="registerForm.get('password')?.errors?.['minlength']">Mínimo 6 caracteres</small>
+              <small *ngIf="controlInvalid('password')">Debe tener al menos 8 caracteres, una mayúscula y un número.</small>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- CONFIRMAR CONTRASEÑA -->
+        <div class="form-section">
+          <div class="field">
+            <input id="confirmPassword" type="password" formControlName="confirmPassword" placeholder="CONFIRMAR CONTRASEÑA"
+                  [class.error]="controlInvalid('confirmPassword') || (registerForm.errors?.['passwordMismatch'] && controlTouched('confirmPassword'))" />
+
+            <div class="mm-hint" *ngIf="controlTouched('confirmPassword')">
+              <small *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">Debes confirmar la contraseña</small>
+            </div>
+
+            <div class="mm-hint" *ngIf="registerForm.errors?.['passwordMismatch'] && controlTouched('confirmPassword')">
+              <small>Las contraseñas no coinciden</small>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- FECHA -->
+        <div class="form-section">
+          <div class="field">
+            <input id="fechaNacimiento" type="date" formControlName="fechaNacimiento"
+                  [class.error]="controlInvalid('fechaNacimiento')" />
+
+            <div class="mm-hint" *ngIf="controlTouched('fechaNacimiento')">
+              <small *ngIf="registerForm.get('fechaNacimiento')?.errors?.['required']">La fecha es requerida</small>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- DESCRIPCIÓN -->
+        <div class="form-section">
+          <div class="field">
+            <textarea id="descripcion" rows="4" formControlName="descripcion" placeholder="DESCRIPCIÓN (opcional)"
+                      maxlength="200" (input)="onDescripcionInput($event)"></textarea>
+
+            <div class="mm-hint descripcion-row">
+              <div *ngIf="controlTouched('descripcion') && registerForm.get('descripcion')?.errors">
+                <small *ngIf="registerForm.get('descripcion')?.errors?.['maxlength']">Máx. 200 caracteres</small>
+              </div>
+              <small [class.warning]="descripcionCount === 200">{{ descripcionCount }}/200</small>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- MENSAJES -->
         <div class="mm-messages">
           <div class="mm-success" *ngIf="successMessage">{{ successMessage }}</div>
           <div class="mm-error" *ngIf="errorMessage">{{ errorMessage }}</div>
         </div>
 
+
+        <!-- BOTONES -->
         <div class="mm-actions">
           <button type="submit" class="mm-btn mm-btn-primary" [disabled]="registerForm.invalid || isLoading">
             <span *ngIf="isLoading">Registrando...</span>
@@ -119,6 +154,7 @@
 
           <button type="button" class="mm-btn mm-btn-secondary" (click)="goToLogin()">YA TENGO CUENTA</button>
         </div>
+
       </form>
     </main>
   </div>

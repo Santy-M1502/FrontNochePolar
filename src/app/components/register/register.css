@@ -201,10 +201,35 @@
   text-shadow: 2px 2px 3px #000;
 }
 
+.mm-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.two-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.descripcion-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 /* Responsivo */
 @media (max-width: 600px) {
   .mm-form {
     grid-template-columns: 1fr;
   }
   .mm-actions { flex-direction: column; }
+  .two-cols { grid-template-columns: 1fr; }
 }
