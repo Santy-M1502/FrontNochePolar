@@ -84,8 +84,6 @@
                   [class.error]="controlInvalid('password')" />
 
             <div class="mm-hint" *ngIf="controlTouched('password')">
-              <small *ngIf="registerForm.get('password')?.errors?.['required']">La contraseña es requerida</small>
-              <small *ngIf="registerForm.get('password')?.errors?.['minlength']">Mínimo 6 caracteres</small>
               <small *ngIf="controlInvalid('password')">Debe tener al menos 8 caracteres, una mayúscula y un número.</small>
             </div>
           </div>

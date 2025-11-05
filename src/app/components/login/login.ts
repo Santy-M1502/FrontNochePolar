@@ -40,7 +40,6 @@ export class LoginComponent {
 
       this.authService.login(this.loginForm.value).subscribe({
     next: (res) => {
-      console.log('Login correcto, token guardado:', res.access_token);
       this.authService.getProfile().subscribe({
         next: (user) => {
           this.authService.updateCurrentUser(user);

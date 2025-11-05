@@ -56,7 +56,7 @@ export class ProfileComponent implements OnInit {
       setTimeout(() => {
         this.user = {
           username: 'zerai',
-          bio: 'Soy Santi y me gusta programar',
+          descripcion: 'Soy Santi y me gusta programar',
           followers: 42,
           following: 10,
           profileImage: ''
@@ -80,7 +80,6 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  // NUEVO: función para mostrar mensaje
   showMessage(message: string, type: 'error' | 'info' = 'info', duration = 3000) {
     this.userMessage = message;
     this.messageType = type;
@@ -107,6 +106,12 @@ export class ProfileComponent implements OnInit {
     if (!input.files || !input.files[0]) return;
     const file = input.files[0];
 
+    console.log('📤 Archivo seleccionado:', {
+      name: file.name,
+      type: file.type,
+      size: file.size,
+    });
+
     if (!file.type.startsWith('image/')) {
       this.showMessage('Selecciona solo archivos de imagen.', 'error');
       return;
@@ -118,21 +123,25 @@ export class ProfileComponent implements OnInit {
 
     if (this.userService?.uploadAvatar) {
       this.isUploadingImage = true;
+      console.log('🚀 Enviando imagen al backend...');
       this.userService.uploadAvatar(file).subscribe({
         next: (updatedUser: User) => {
+          console.log('✅ Respuesta del servidor:', updatedUser);
           this.user = updatedUser;
           this.isUploadingImage = false;
           this.showMessage('Avatar subido correctamente.', 'info');
         },
-        error: () => {
+        error: (err) => {
           this.isUploadingImage = false;
+          console.error('❌ Error subiendo avatar:', err);
           this.showMessage('Error subiendo avatar.', 'error');
-        }
+        },
       });
     } else {
       this.simulateUpload(file);
     }
   }
+
 
   selectSection(section: 'publicaciones' | 'me-gusta' | 'guardados'): void {
     this.activeSection = section;

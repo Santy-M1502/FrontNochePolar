@@ -160,16 +160,17 @@ private tryRegisterThenUpload(payload: any) {
     next: (createdUser: any) => {
       const userId = createdUser?._id || createdUser?.id || createdUser?.user?._id;
       if (this.selectedFile && userId) {
+        // usamos endpoint sin auth si tu backend lo permite
         this.userService.uploadAvatarForNewUser(userId, this.selectedFile).subscribe({
-          next: (u) => {
+          next: () => {
             this.isLoading = false;
             this.successMessage = 'Registrado y avatar subido correctamente.';
             setTimeout(() => this.router.navigate(['/login']), 900);
           },
           error: (err) => {
+            console.error(err);
             this.isLoading = false;
-            this.successMessage = 'Registrado correctamente. Error subiendo avatar.';
-            this.errorMessage = err?.error?.message || 'Error subiendo avatar.';
+            this.errorMessage = 'Usuario registrado, pero error al subir avatar.';
             setTimeout(() => this.router.navigate(['/login']), 1200);
           }
         });
@@ -185,7 +186,6 @@ private tryRegisterThenUpload(payload: any) {
     }
   });
 }
-
 
   goToLogin(): void {
     this.router.navigate(['/login']);

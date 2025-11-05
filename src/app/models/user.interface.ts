@@ -5,7 +5,7 @@ export interface User {
   username: string;
   profileImage?: string;
   cloudinaryPublicId?: string;
-  bio?: string;
+  descripcion?: string;
   followers?: number;
   following?: number;
 }
