@@ -1,0 +1,294 @@
+/* --- Panel Principal del Chat --- */
+.chat-panel {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px); /* Un poco más de blur */
+  max-height: 80dvh;
+  position: relative;
+  background: rgba(10, 14, 30, 0.9); /* Un pelín más transparente */
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1); /* Sombra para despegarlo en PC */
+}
+
+/* --- Estado Vacío --- */
+.empty-chat {
+  text-align: center;
+  color: rgba(235, 243, 255, 0.6); /* Un poco más sutil */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Mejor centrado vertical */
+  align-items: center;
+  gap: 16px;
+  height: 100%;
+  padding: 20px;
+  flex-grow: 1;
+}
+
+/* Añadimos un ícono o emoji con CSS */
+.empty-chat::before {
+  content: '👋';
+  font-size: 48px;
+  opacity: 0.8;
+}
+
+/* --- Caja de Mensajes --- */
+.chat-box {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 10px; /* Un poco más de espacio */
+  overflow-y: auto;
+  flex-grow: 1;
+  padding-right: 8px; /* Espacio para el scrollbar */
+}
+
+/* Scrollbar personalizado para Webkit (Chrome, Safari, Edge) */
+.chat-box::-webkit-scrollbar {
+  width: 6px;
+}
+.chat-box::-webkit-scrollbar-track {
+  background: transparent;
+}
+.chat-box::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+}
+
+/* --- Burbujas de Mensaje --- */
+.msg {
+  padding: 10px 14px; /* Un poco más de padding */
+  border-radius: 18px; /* Más redondeado */
+  background: #2a2d3e; /* Un color de fondo más sólido */
+  max-width: 80%;
+  word-break: break-word;
+  color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Para la "colita" de la burbuja */
+  border-bottom-left-radius: 5px;
+  /* Animación sutil al aparecer */
+  animation: popIn 0.2s ease-out;
+}
+
+.msg.me {
+  align-self: flex-end;
+  background: linear-gradient(90deg, #3770c2, #1e457e); /* Gradiente más sutil */
+  color: #fff;
+  /* Colita en la otra esquina */
+  border-bottom-left-radius: 18px;
+  border-bottom-right-radius: 5px;
+}
+
+/* Animación para mensajes */
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* --- Área de Input --- */
+.chat-input {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Un poco más de espacio */
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08); /* Separador */
+}
+
+.input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.input-row input[type='text'] {
+  flex-grow: 1;
+  padding: 10px 16px; /* Más cómodo */
+  border-radius: 20px; /* Estilo "pill" */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2); /* Más oscuro */
+  color: #fff;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.input-row input[type='text']::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.input-row input[type='text']:focus {
+  outline: none;
+  border-color: #3770c2;
+  box-shadow: 0 0 8px rgba(55, 112, 194, 0.5); /* Glow al hacer foco */
+}
+
+/* --- Botones --- */
+.actions-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Base para botones de íconos */
+.file-btn,
+.emojis button {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.7);
+  border: none;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  font-size: 18px; /* Más grandes */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.file-btn {
+  padding: 8px 10px; /* Ajuste para el clip */
+}
+
+.emojis {
+  display: flex;
+  gap: 4px;
+}
+
+.file-btn:hover,
+.emojis button:hover {
+  background: #3770c2; /* Color de acento al pasar el mouse */
+  color: #fff;
+}
+
+.file-btn input {
+  display: none;
+}
+
+.send-btn {
+  background: linear-gradient(
+    90deg,
+    #3770c2,
+    #6f32b1
+  ); /* Combinamos los gradientes */
+  color: #fff;
+  border: none;
+  border-radius: 20px; /* Coherente con el input */
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 15px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(111, 50, 177, 0.3);
+}
+
+.send-btn:hover {
+  opacity: 0.9;
+  box-shadow: 0 4px 12px rgba(55, 112, 194, 0.4); /* Más glow */
+}
+
+.send-btn:active {
+  transform: scale(0.98);
+}
+
+/* --- Toggle y Cierre (Móvil) --- */
+.chat-toggle {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 14px; /* Más grande */
+  background: linear-gradient(90deg, #3770c2, #14244e);
+  border: 0;
+  border-radius: 50%;
+  font-size: 24px; /* Ícono más grande */
+  cursor: pointer;
+  z-index: 999;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(55, 112, 194, 0.4);
+  transition: transform 0.2s ease;
+}
+
+.chat-toggle:hover {
+  transform: scale(1.1);
+}
+
+.chat-close {
+  display: none;
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: none;
+  border: 0;
+  font-size: 24px;
+  color: #fff;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+  z-index: 10;
+}
+
+.chat-close:hover {
+  opacity: 1;
+}
+
+/* --- Media Query Móvil --- */
+@media (max-width: 900px) {
+  .chat-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    height: 97dvh; /* Mejor para móviles */
+    width: 90%; /* Un poco más ancho */
+    max-width: 270px;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out; /* Animación más suave */
+    border-left: 0;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(10, 14, 30, 0.95); /* Más opaco para legibilidad */
+    z-index: 998;
+    max-height: 100dvh; /* Anula el max-height de PC */
+  }
+  .chat-panel.open {
+    transform: translateX(0);
+    box-shadow: -10px 0 25px rgba(0, 0, 0, 0.3); /* Sombra fuerte al abrir */
+  }
+
+  .chat-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); 
+    z-index: 997; 
+    cursor: pointer; 
+  }
+
+  .chat-close {
+    display: block;
+  }
+  .chat-toggle {
+    display: flex; /* Asegura que el ícono esté centrado */
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* Ocultar las acciones rápidas de chat (no las de input) en móvil si existieran */
+.chat-actions {
+  display: none;
+}
+
+/* Ajuste final para el HTML que mostraste */
+.actions-row .emojis {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap; /* Por si añades más emojis */
+}

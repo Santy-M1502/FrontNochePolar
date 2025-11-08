@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -6,11 +6,12 @@ import { AuthService } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
 import { User } from '../../models/user.interface';
 import { SideNavComponent } from "../side-nav/side-nav";
+import { Chat } from "../chat/chat";
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule, SideNavComponent],
+  imports: [CommonModule, FormsModule, SideNavComponent, Chat],
   templateUrl: './profile.html',
   styleUrls: ['./profile.css']
 })
@@ -33,6 +34,12 @@ export class ProfileComponent implements OnInit {
   // NUEVO: mensajes para mostrar al usuario
   userMessage: string = '';
   messageType: 'error' | 'info' = 'info';
+
+  @ViewChild(Chat) chatComponent!: Chat;
+
+  triggerChatExample() {
+    this.chatComponent.startExampleChat();
+  }
 
   constructor(
     private authService: AuthService,

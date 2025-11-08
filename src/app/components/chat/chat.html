@@ -1,0 +1,64 @@
+<button 
+  type="button" 
+  class="chat-toggle" 
+  *ngIf="!chatOpen()" 
+  (click)="openCloseModal()">
+  💬
+</button>
+
+<div class="chat-panel" [class.open]="chatOpen()">
+  
+  <button type="button" class="chat-close" (click)="openCloseModal()">
+    &times;
+  </button>
+
+  <ng-container *ngIf="tieneChats(); else empty">
+    <div class="chat-box" #chatBox>
+      <div *ngFor="let msg of chats()" class="msg" [class.me]="msg.me">
+        {{ msg.text }}
+        <a *ngIf="msg.file" [href]="msg.file" target="_blank">(Ver adjunto)</a>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #empty>
+    <div class="empty-chat">
+      <p>Aún no hay mensajes. ¡Rompé el hielo!</p>
+      <button type="button" class="send-btn" (click)="startExampleChat()">
+        Ver chat de ejemplo
+      </button>
+    </div>
+  </ng-template>
+
+
+  <div class="chat-input">
+    <div class="input-row">
+      <input 
+        type="text" 
+        placeholder="Escribí un mensaje..." 
+        [(ngModel)]="newMessage" 
+        (keyup.enter)="sendMessage()"/>
+      
+      <label class="file-btn">
+        📎
+        <input type="file" (change)="attachFile($event)" hidden/>
+      </label>
+    </div>
+  
+    <div class="actions-row">
+      <div class="emojis">
+        <button type="button" (click)="addEmoji('🌙')">🌙</button>
+        <button type="button" (click)="addEmoji('🌕')">🌕</button>
+        <button type="button" (click)="addEmoji('🌑')">🌑</button>
+      </div>
+      <button class="send-btn" type="button" (click)="sendMessage()">Enviar</button>
+    </div>
+  </div>
+
+</div>
+
+<div 
+  class="chat-backdrop" 
+  *ngIf="chatOpen()" 
+  (click)="chatOpen.set(false)">
+</div>

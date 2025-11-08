@@ -26,23 +26,5 @@
     </div>
 
   </div>
-
-  <button class="chat-toggle" (click)="chatOpen = !chatOpen">💬</button>
-
-    <div class="chat-panel" [class.open]="chatOpen">
-        <button class="chat-close" (click)="chatOpen = false">×</button>
-
-        <div *ngIf="!tieneChats" class="empty-chat">
-            <p>No empezaste ningún chat.</p>
-            <small>Mandá tu primer mensaje.</small>
-        </div>
-
-        <div *ngIf="tieneChats" class="chat-box">
-            <div class="msg">Che, como va todo?</div>
-            <div class="msg me">Todo tranquilo acá.</div>
-            <div class="msg">A full con el proyecto?</div>
-            <div class="msg me">Sisi de una!</div>
-        </div>
-    </div>
-
+  <app-chat></app-chat>
 </div>

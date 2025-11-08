@@ -126,16 +126,18 @@ import { RouterLink } from '@angular/router';
         left: 0;
         height: 100vh;
         width: auto;
-        z-index: 999;
+        z-index: 500;
       }
       nav {
         transform: translateX(-120%);
+        z-index: 501;
       }
       nav.open {
         transform: translateX(0);
       }
       .hamburger {
         display: block;
+        z-index: 502;
       }
     }
 
