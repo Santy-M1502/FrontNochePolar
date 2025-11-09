@@ -26,7 +26,7 @@
   border:1px solid rgba(255,255,255,0.05);
 }
 .composer textarea{
-  width:100%;min-height:70px;
+  width:100%;min-height:70px;max-height: 100px;
   background:transparent;border:0;outline:none;
   color:inherit;resize:vertical;
 }
@@ -54,3 +54,21 @@
     margin-left: 0;
   }
 }
+
+.filters {
+  display: flex;
+  gap: 10px;
+  margin: 10px 0;
+  align-items: center;
+
+  select, input {
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+
+  .btn {
+    padding: 6px 12px;
+  }
+}
+

@@ -24,6 +24,10 @@ export class AuthService {
     }
   }
 
+  getUserId(): string {
+    return localStorage.getItem('userId') || ''
+  }
+
   login(credentials: LoginDto): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, credentials)
       .pipe(

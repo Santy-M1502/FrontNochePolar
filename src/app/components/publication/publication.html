@@ -1,0 +1,32 @@
+<div class="post-card">
+  <img class="post-avatar" [src]="publicacion.usuario?.profileImage || 'https://i.pravatar.cc/48?img=65'" alt="avatar">
+
+  <div class="post-body">
+    <div class="post-header">
+      <strong>{{ publicacion.usuario?.username || 'Desconocido' }}</strong>
+      <span class="post-meta">{{ publicacion.createdAt ? (publicacion.createdAt | date:'short') : '' }}</span>
+    </div>
+
+    <div class="post-title" *ngIf="publicacion.titulo"><strong>{{ publicacion.titulo }}</strong></div>
+    <div class="post-content">{{ publicacion.texto }}</div>
+    <img *ngIf="publicacion.imagenUrl" [src]="publicacion.imagenUrl" alt="Imagen publicación" class="post-image"/>
+
+    <div class="post-actions">
+        <button class="btn like-btn" *ngIf="!publicacion.liked" (click)="darLike()">
+        <span class="moon-icon">🌑</span>
+        <span *ngIf="likesCount() > 0">{{ likesCount() }}</span>
+        </button>
+
+        <button class="btn like-btn liked" *ngIf="publicacion.liked" (click)="quitarLike()">
+        <span class="moon-icon">🌙</span>
+        <span *ngIf="likesCount() > 0">{{ likesCount() }}</span>
+        </button>
+
+        <button class="btn comment-btn">💬</button>
+
+        <button class="btn danger" *ngIf="publicacion.usuarioId === usuarioActualId" (click)="onEliminar()">
+            🗑 Eliminar
+        </button>
+    </div>
+  </div>
+</div>

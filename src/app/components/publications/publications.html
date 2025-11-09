@@ -11,20 +11,25 @@
       </div>
     </div>
 
+    <!-- FILTROS -->
+    <div class="filters">
+      <select [(ngModel)]="filtro" (change)="aplicarFiltro()">
+        <option value="ultimas">Últimas</option>
+        <option value="antiguas">Más antiguas</option>
+        <option value="populares">Más populares</option>
+        <option value="conImagen">Con imagen</option>
+      </select>
+
+      <input type="text" [(ngModel)]="busqueda" placeholder="Buscar..." (keyup.enter)="buscar()"/>
+      <button class="btn" (click)="buscar()">Buscar</button>
+    </div>
+
     <!-- PUBLICACIONES -->
     <div class="timeline">
-      <div class="post-card" *ngFor="let p of posts">
-        <img class="post-avatar" [src]="p.avatar">
-        <div class="post-body">
-          <div class="post-header">
-            <strong>{{ p.user }}</strong>
-            <span class="post-meta">{{ p.time }}</span>
-          </div>
-          <div class="post-content">{{ p.text }}</div>
-        </div>
-      </div>
+      <app-publicacion *ngFor="let p of posts" [publicacion]="p"></app-publicacion>
     </div>
 
   </div>
+
   <app-chat></app-chat>
 </div>

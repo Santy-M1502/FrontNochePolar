@@ -130,14 +130,18 @@ import { RouterLink } from '@angular/router';
       }
       nav {
         transform: translateX(-120%);
-        z-index: 501;
+        pointer-events: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
       }
       nav.open {
         transform: translateX(0);
+        pointer-events: auto;
       }
       .hamburger {
         display: block;
-        z-index: 502;
       }
     }
 

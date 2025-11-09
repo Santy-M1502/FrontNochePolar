@@ -1,0 +1,111 @@
+.post-card {
+  display: flex;
+  gap: 12px;
+  background: rgba(255,255,255,0.04);
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.05);
+  flex-direction: row;
+}
+
+.post-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.post-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.post-meta {
+  color: rgba(255,255,255,0.6);
+  font-size: 12px;
+}
+
+.post-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.post-content {
+  font-size: 1rem;
+}
+
+.post-image {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-top: 8px;
+}
+
+.post-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.btn {
+  border: none;
+  background: transparent;
+  color: #e6e6e6;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.like-btn span {
+  font-size: 1.2rem;
+  transition: transform 0.2s, color 0.2s;
+}
+
+/* Media luna azul/oscura en lugar de amarilla */
+.like-btn span.liked {
+  color: #3770c2; /* azul oscuro */
+  transform: scale(1.2);
+}
+
+.like-btn .moon-icon {
+  font-size: 1.4rem;
+  display: inline-block;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.like-btn.liked .moon-icon {
+  color: #3770c2;
+  transform: rotate(-20deg) scale(1.2);
+}
+
+.like-btn:not(.liked) .moon-icon {
+  color: #e6e6e6;
+  transform: rotate(0deg) scale(1);
+}
+
+.like-btn span{
+  font-size: .5rem;
+}
+
+.comment-btn {
+  color: #9ad1ff; /* azul claro */
+}
+
+.btn.danger {
+  background: #8e1313;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}

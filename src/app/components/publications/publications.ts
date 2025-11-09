@@ -3,33 +3,62 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SideNavComponent } from "../side-nav/side-nav";
 import { Chat } from "../chat/chat";
+import { PublicacionComponent } from "../publication/publication";
+import { Publicacion } from '../../models/publication.interface';
+import { AuthService } from '../../services/auth.service';
+import { PublicacionesService } from '../../services/publication.service';
 
 @Component({
   selector: 'app-post-layout',
   standalone: true,
-  imports: [CommonModule, FormsModule, SideNavComponent, Chat],
+  imports: [CommonModule, FormsModule, SideNavComponent, Chat, PublicacionComponent],
   templateUrl: './publications.html',
   styleUrls: ['./publications.css']
 })
 export class Publications {
-
+posts: Publicacion[] = [];
   newPost: string = '';
+  filtro: string = 'ultimas';
+  busqueda: string = '';
 
-  posts = [
-    { user: "santi", avatar: "https://i.pravatar.cc/120?img=1", text: "holaaa esto es una publicación", time: "2m" },
-    { user: "maria", avatar: "https://i.pravatar.cc/120?img=2", text: "amo la interfaz nueva 💙", time: "1h" }
-  ];
+  constructor(private publicacionesService: PublicacionesService) {}
 
-  sendPost(){
-    if(!this.newPost.trim()) return;
+  ngOnInit() {
+    this.aplicarFiltro();
+  }
 
-    this.posts.unshift({
-      user: "tú",
-      avatar: "https://i.pravatar.cc/120?img=5",
-      text: this.newPost,
-      time: "Ahora"
+  sendPost() {
+    if (!this.newPost.trim()) return;
+
+    this.publicacionesService.crearPublicacion(
+      { texto: this.newPost },
+    ).subscribe((p) => {
+      this.posts.unshift(p);
+      this.newPost = '';
     });
+  }
 
-    this.newPost = '';
+  aplicarFiltro() {
+    switch (this.filtro) {
+      case 'ultimas':
+        this.publicacionesService.obtenerUltimas(20).subscribe(r => this.posts = r);
+        break;
+      case 'antiguas':
+        this.publicacionesService.obtenerAntiguas(20).subscribe(r => this.posts = r);
+        break;
+      case 'populares':
+        this.publicacionesService.obtenerPublicaciones(undefined, undefined, 'likes', 20)
+          .subscribe(r => this.posts = r);
+        break;
+      case 'conImagen':
+        this.publicacionesService.obtenerConImagen(20).subscribe(r => this.posts = r);
+        break;
+    }
+  }
+
+  buscar() {
+    if (!this.busqueda.trim()) return this.aplicarFiltro();
+
+    this.publicacionesService.buscar(this.busqueda, 20).subscribe(r => this.posts = r);
   }
 }
