@@ -1,34 +1,64 @@
 <div class="post-card">
-  <img class="post-avatar" [src]="publicacion.usuario?.profileImage || 'https://i.pravatar.cc/48?img=65'" alt="avatar">
+  <img
+    class="post-avatar"
+    [src]="publicacion.usuario?.profileImage || 'https://i.pravatar.cc/48?img=65'"
+    alt="avatar"
+  />
 
   <div class="post-body">
     <div class="post-header">
       <strong>{{ publicacion.usuario?.username || 'Desconocido' }}</strong>
-      <span class="post-meta">{{ publicacion.createdAt ? (publicacion.createdAt | date:'short') : '' }}</span>
+      <span class="post-meta">
+        {{ publicacion.createdAt ? (publicacion.createdAt | date: 'short') : '' }}
+      </span>
+
+      <div class="post-options" *ngIf="esMia()" (click)="toggleMenu($event)">
+        ⋮
+        <div class="options-menu" *ngIf="menuVisible">
+          <!-- Abrir modal en vez de confirm() -->
+          <button (click)="mostrarConfirm($event)">🗑 Eliminar</button>
+        </div>
+      </div>
     </div>
 
-    <div class="post-title" *ngIf="publicacion.titulo"><strong>{{ publicacion.titulo }}</strong></div>
+    <!-- Indicador visual -->
+    <div *ngIf="esMia()" class="post-badge">Tu publicación</div>
+
+    <div class="post-title" *ngIf="publicacion.titulo">
+      <strong>{{ publicacion.titulo }}</strong>
+    </div>
     <div class="post-content">{{ publicacion.texto }}</div>
-    <img *ngIf="publicacion.imagenUrl" [src]="publicacion.imagenUrl" alt="Imagen publicación" class="post-image"/>
+    <img
+      *ngIf="publicacion.imagenUrl"
+      [src]="publicacion.imagenUrl"
+      alt="Imagen publicación"
+      class="post-image"
+    />
 
     <div class="post-actions">
+      <button
+        class="btn like-btn"
+        id="like-{{ publicacion._id }}"
+        [class.liked]="publicacion.liked"
+        (click)="publicacion.liked ? quitarLike() : darLike()"
+      >
+        <span class="moon-icon">{{ publicacion.liked ? '🌙' : '🌑' }}</span>
+        <span *ngIf="likesCount() > 0">{{ likesCount() }}</span>
+      </button>
 
-        <button
-          class="btn like-btn"
-          id="like-{{ publicacion._id }}"
-          [class.liked]="publicacion.liked"
-          (click)="publicacion.liked ? quitarLike() : darLike()"
-        >
-          <span class="moon-icon">{{ publicacion.liked ? '🌙' : '🌑' }}</span>
-          <span *ngIf="likesCount() > 0">{{ likesCount() }}</span>
-        </button>
+      <button class="btn comment-btn">💬</button>
+    </div>
+  </div>
+</div>
 
-
-        <button class="btn comment-btn">💬</button>
-
-        <button class="btn danger" *ngIf="publicacion.usuarioId === usuarioActualId" (click)="onEliminar()">
-            🗑 Eliminar
-        </button>
+<!-- Modal confirm -->
+<div class="modal-overlay" *ngIf="confirmVisible" (click)="cancelarEliminar()">
+  <div class="confirm-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <h3 id="confirmTitle">Eliminar publicación</h3>
+    <p>¿Estás seguro que querés eliminar esta publicación? Esta acción la ocultará para todos.</p>
+    <div class="modal-actions">
+      <button class="btn" (click)="cancelarEliminar()">Cancelar</button>
+      <button class="btn danger" [disabled]="processing" (click)="confirmarEliminar()">Eliminar</button>
     </div>
   </div>
 </div>

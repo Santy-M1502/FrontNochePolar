@@ -158,6 +158,33 @@ textarea:-webkit-autofill:focus {
   gap: 14px;
 }
 
+.composer {
+  background-color: #111a33;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.composer-title {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 6px;
+}
+
+.composer-text {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 8px;
+  resize: none;
+  margin-bottom: 8px;
+}
+
 @media (max-width: 900px) {
   .body {
     flex-direction: column;

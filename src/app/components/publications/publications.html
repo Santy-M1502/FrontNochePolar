@@ -5,7 +5,19 @@
 
     <!-- PUBLICAR -->
     <div class="composer">
-      <textarea [(ngModel)]="newPost" placeholder="¿Qué estás pensando?"></textarea>
+      <input
+        type="text"
+        [(ngModel)]="newTitle"
+        placeholder="Título de la publicación"
+        class="composer-title"
+      />
+
+      <textarea
+        [(ngModel)]="newPost"
+        placeholder="¿Qué estás pensando?"
+        class="composer-text"
+      ></textarea>
+
       <div class="composer-row">
         <button class="btn primary" (click)="sendPost()">Publicar</button>
       </div>
@@ -20,15 +32,22 @@
         <option value="conImagen">Con imagen</option>
       </select>
 
-      <input type="text" [(ngModel)]="busqueda" placeholder="Buscar..." (keyup.enter)="buscar()"/>
+      <input
+        type="text"
+        [(ngModel)]="busqueda"
+        placeholder="Buscar..."
+        (keyup.enter)="buscar()"
+      />
       <button class="btn" (click)="buscar()">Buscar</button>
     </div>
 
+    <!-- LISTA DE PUBLICACIONES -->
     <div class="timeline">
       <app-publicacion
         *ngFor="let p of posts"
         [publicacion]="p"
-        [usuarioActualId]="usuarioActualId">
+        [usuarioActualId]="usuarioActualId"
+        (eliminar)="onPublicacionEliminada($event)">
       </app-publicacion>
     </div>
 

@@ -20,6 +20,7 @@ import { PublicacionesService } from '../../services/publication.service';
 export class Publications implements OnInit {
   posts: Publicacion[] = [];
   newPost: string = '';
+  newTitle: string = ''; // ✅ nuevo campo para el título
   filtro: string = 'ultimas';
   busqueda: string = '';
 
@@ -46,9 +47,18 @@ export class Publications implements OnInit {
   }
 
   sendPost() {
-    if (!this.newPost.trim()) return;
+    // ✅ validamos que haya título y texto
+    if (!this.newTitle.trim() || !this.newPost.trim()) {
+      alert('Por favor, completá el título y el texto antes de publicar.');
+      return;
+    }
 
-    this.publicacionesService.crearPublicacion({ texto: this.newPost })
+    const nuevaPublicacion = {
+      titulo: this.newTitle.trim(),
+      texto: this.newPost.trim(),
+    };
+
+    this.publicacionesService.crearPublicacion(nuevaPublicacion)
       .subscribe((p) => {
         const postConLike = {
           ...p,
@@ -56,6 +66,9 @@ export class Publications implements OnInit {
         };
 
         this.posts.unshift(postConLike);
+
+        // Limpiar campos
+        this.newTitle = '';
         this.newPost = '';
       });
   }
@@ -126,5 +139,9 @@ export class Publications implements OnInit {
     this.offset = 0;
     this.publicacionesService.buscar(this.busqueda, this.limit)
       .subscribe(r => this.posts = this.marcarLikes(r));
+  }
+
+  onPublicacionEliminada(id: string) {
+    this.posts = this.posts.filter(p => p._id !== id);
   }
 }

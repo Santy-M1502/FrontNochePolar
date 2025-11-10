@@ -24,9 +24,58 @@
 
 .post-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  font-size: 0.9rem;
+  justify-content: space-between;
+  position: relative;
+}
+
+.post-options {
+  position: relative;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  user-select: none;
+}
+
+.post-options:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.options-menu {
+  position: absolute;
+  top: 22px;
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  padding: 4px 0;
+  z-index: 10;
+}
+
+.options-menu button {
+  display: block;
+  width: 100%;
+  padding: 6px 12px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.options-menu button:hover {
+  background-color: #f3f3f3;
+}
+
+.post-badge {
+  background-color: #14244e;
+  color: #f3f3f3;
+  font-size: 0.75rem;
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 8px;
+  margin-bottom: 4px;
 }
 
 .post-meta {
@@ -143,4 +192,67 @@
 /* Animación al quitar like */
 .like-btn.unliked .moon-icon {
   animation: fadeOutMoon 0.4s ease forwards;
+}
+
+/* Modal overlay y diálogo */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.confirm-modal {
+  width: 92%;
+  max-width: 420px;
+  background: #040317;
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 18px;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+  color: #e6e6e6;
+}
+
+.confirm-modal h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.05rem;
+}
+
+.confirm-modal p {
+  margin: 0 0 16px 0;
+  color: rgba(230,230,230,0.85);
+  font-size: 0.95rem;
+}
+
+/* Actions */
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+/* Botones coherentes con la UI */
+/* .btn ya existe; extendemos primary/danger */
+.btn.primary {
+  background-color: #077e13; /* verde */
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+}
+
+.btn.danger {
+  background-color: #8e1313; /* rojo */
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+}
+
+.btn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

@@ -28,11 +28,23 @@ export class PublicacionComponent {
     likes: number;
   }>();
 
+  menuVisible = false;
   processing = false;
   animatingLike = false;
   animatingUnlike = false;
 
+  // estado modal
+  confirmVisible = false;
+
   constructor(private publicacionesService: PublicacionesService) {}
+
+  ngOnInit() {
+    document.addEventListener('click', this.cerrarMenu.bind(this));
+  }
+
+  ngOnDestroy() {
+    document.removeEventListener('click', this.cerrarMenu.bind(this));
+  }
 
   likesCount(): number {
     if (Array.isArray(this.publicacion.likes)) return this.publicacion.likes.length;
@@ -115,20 +127,57 @@ export class PublicacionComponent {
     });
   }
 
-  onEliminar() {
+  // ---- Modal confirm ----
+  mostrarConfirm(event: MouseEvent) {
+    event.stopPropagation();
+    this.menuVisible = false; // cerramos menu si venía del menú
+    this.confirmVisible = true;
+  }
+
+  cancelarEliminar() {
+    this.confirmVisible = false;
+  }
+
+  confirmarEliminar() {
     if (!this.publicacion._id || this.processing) return;
-    if (!confirm('Eliminar publicación?')) return;
 
     this.processing = true;
     this.publicacionesService.eliminarPublicacion(this.publicacion._id).subscribe({
       next: () => {
         this.processing = false;
+        this.confirmVisible = false;
         this.eliminar.emit(this.publicacion._id);
       },
       error: (err) => {
-        console.error('Error al eliminar publicación', err);
+        console.error('[confirmarEliminar] ❌ Error al eliminar publicación:', err);
         this.processing = false;
+        this.confirmVisible = false;
       },
     });
+  }
+  // -----------------------
+
+  esMia(): boolean {
+    if (!this.publicacion || !this.usuarioActualId) return false;
+
+    const pub = this.publicacion;
+    const uid =
+      typeof pub.usuarioId === 'string'
+        ? pub.usuarioId
+        : (pub.usuarioId as any)?._id ??
+          (pub.usuario as any)?._id ??
+          undefined;
+
+    return uid === this.usuarioActualId;
+  }
+
+
+  toggleMenu(event: MouseEvent) {
+    event.stopPropagation();
+    this.menuVisible = !this.menuVisible;
+  }
+
+  private cerrarMenu() {
+    if (this.menuVisible) this.menuVisible = false;
   }
 }

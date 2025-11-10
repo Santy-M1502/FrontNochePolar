@@ -39,7 +39,6 @@ export class PublicacionesService {
     return this.http.delete<Publicacion>(`${this.apiUrl}/publicaciones/${publicacionId}/like`);
   }
 
-  /** ✅ Ahora acepta offset */
   obtenerUltimas(limit: number = 5, offset: number = 0): Observable<Publicacion[]> {
     const params = new HttpParams()
       .set('limit', limit)
