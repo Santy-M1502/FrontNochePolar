@@ -1,4 +1,10 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Publicacion } from '../../models/publication.interface';
 import { PublicacionesService } from '../../services/publication.service';
@@ -9,24 +15,29 @@ import { PublicacionesService } from '../../services/publication.service';
   imports: [CommonModule],
   templateUrl: './publication.html',
   styleUrls: ['./publication.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PublicacionComponent {
   @Input() publicacion!: Publicacion;
   @Input() usuarioActualId!: string | null;
 
   @Output() eliminar = new EventEmitter<string>();
-  @Output() likeToggled = new EventEmitter<{ id: string; liked: boolean; likes: number }>();
+  @Output() likeToggled = new EventEmitter<{
+    id: string;
+    liked: boolean;
+    likes: number;
+  }>();
 
   processing = false;
+  animatingLike = false;
+  animatingUnlike = false;
 
   constructor(private publicacionesService: PublicacionesService) {}
 
   likesCount(): number {
-    // si likes es array de ids:
     if (Array.isArray(this.publicacion.likes)) return this.publicacion.likes.length;
-    // si guardás sólo número, usarlo:
-    if (typeof (this.publicacion as any).likesCount === 'number') return (this.publicacion as any).likesCount;
+    if (typeof (this.publicacion as any).likesCount === 'number')
+      return (this.publicacion as any).likesCount;
     return 0;
   }
 
@@ -34,25 +45,36 @@ export class PublicacionComponent {
     if (!this.publicacion._id || this.processing) return;
     this.processing = true;
 
-    // Optimistic update
+    // Estado local + animación visual
     this.publicacion.liked = true;
+    this.animatingUnlike = false;
+    this.animatingLike = true;
+    setTimeout(() => (this.animatingLike = false), 600); // duración animación CSS
+
+    // Actualización optimista
     if (!Array.isArray(this.publicacion.likes)) this.publicacion.likes = [];
     if (this.usuarioActualId) this.publicacion.likes.push(this.usuarioActualId);
 
     this.publicacionesService.darLike(this.publicacion._id).subscribe({
       next: () => {
         this.processing = false;
-        this.likeToggled.emit({ id: this.publicacion._id, liked: true, likes: this.likesCount() });
+        this.likeToggled.emit({
+          id: this.publicacion._id,
+          liked: true,
+          likes: this.likesCount(),
+        });
       },
       error: (err) => {
         console.error('Error al dar like', err);
-        // revert
         this.publicacion.liked = false;
         if (this.usuarioActualId) {
-          this.publicacion.likes = (this.publicacion.likes || []).filter((id: string) => id !== this.usuarioActualId);
+          this.publicacion.likes = (this.publicacion.likes || []).filter(
+            (id: string) => id !== this.usuarioActualId
+          );
         }
         this.processing = false;
-      }
+        this.animatingLike = false;
+      },
     });
   }
 
@@ -60,31 +82,41 @@ export class PublicacionComponent {
     if (!this.publicacion._id || this.processing) return;
     this.processing = true;
 
-    // Optimistic update
+    // Animación visual de unlike
+    this.animatingUnlike = true;
+    setTimeout(() => (this.animatingUnlike = false), 400);
+
+    // Actualización optimista
     this.publicacion.liked = false;
     if (this.usuarioActualId) {
-      this.publicacion.likes = (this.publicacion.likes || []).filter((id: string) => id !== this.usuarioActualId);
+      this.publicacion.likes = (this.publicacion.likes || []).filter(
+        (id: string) => id !== this.usuarioActualId
+      );
     }
 
     this.publicacionesService.quitarLike(this.publicacion._id).subscribe({
       next: () => {
         this.processing = false;
-        this.likeToggled.emit({ id: this.publicacion._id, liked: false, likes: this.likesCount() });
+        this.likeToggled.emit({
+          id: this.publicacion._id,
+          liked: false,
+          likes: this.likesCount(),
+        });
       },
       error: (err) => {
         console.error('Error al quitar like', err);
-        // revert: marcar como liked otra vez
         this.publicacion.liked = true;
-        this.publicacion.likes = this.publicacion.likes || []
-        if (this.usuarioActualId) this.publicacion.likes.push(this.usuarioActualId)
-          this.processing = false;
-      }
+        this.publicacion.likes = this.publicacion.likes || [];
+        if (this.usuarioActualId)
+          this.publicacion.likes.push(this.usuarioActualId);
+        this.processing = false;
+        this.animatingUnlike = false;
+      },
     });
   }
 
   onEliminar() {
     if (!this.publicacion._id || this.processing) return;
-    // opcional: confirmación
     if (!confirm('Eliminar publicación?')) return;
 
     this.processing = true;
@@ -96,7 +128,7 @@ export class PublicacionComponent {
       error: (err) => {
         console.error('Error al eliminar publicación', err);
         this.processing = false;
-      }
+      },
     });
   }
 }

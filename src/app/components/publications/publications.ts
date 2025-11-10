@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import { SideNavComponent } from "../side-nav/side-nav";
 import { Chat } from "../chat/chat";
 import { PublicacionComponent } from "../publication/publication";
+
 import { Publicacion } from '../../models/publication.interface';
 import { AuthService } from '../../services/auth.service';
 import { PublicacionesService } from '../../services/publication.service';
@@ -15,43 +17,105 @@ import { PublicacionesService } from '../../services/publication.service';
   templateUrl: './publications.html',
   styleUrls: ['./publications.css']
 })
-export class Publications {
-posts: Publicacion[] = [];
+export class Publications implements OnInit {
+  posts: Publicacion[] = [];
   newPost: string = '';
   filtro: string = 'ultimas';
   busqueda: string = '';
 
-  constructor(private publicacionesService: PublicacionesService) {}
+  usuarioActualId: string | null = null;
+
+  offset = 0;
+  limit = 5;
+
+  constructor(
+    private publicacionesService: PublicacionesService,
+    private auth: AuthService
+  ) {}
 
   ngOnInit() {
+    this.usuarioActualId = this.auth.getUserId();
     this.aplicarFiltro();
+  }
+
+  private marcarLikes(posts: Publicacion[]): Publicacion[] {
+    return posts.map(p => ({
+      ...p,
+      liked: this.usuarioActualId ? p.likes?.includes(this.usuarioActualId) : false
+    }));
   }
 
   sendPost() {
     if (!this.newPost.trim()) return;
 
-    this.publicacionesService.crearPublicacion(
-      { texto: this.newPost },
-    ).subscribe((p) => {
-      this.posts.unshift(p);
-      this.newPost = '';
-    });
+    this.publicacionesService.crearPublicacion({ texto: this.newPost })
+      .subscribe((p) => {
+        const postConLike = {
+          ...p,
+          liked: false
+        };
+
+        this.posts.unshift(postConLike);
+        this.newPost = '';
+      });
   }
 
   aplicarFiltro() {
+    this.offset = 0; // reinicio paginación
+
+    const handle = (r: Publicacion[]) => {
+      this.posts = this.marcarLikes(r);
+    };
+
     switch (this.filtro) {
       case 'ultimas':
-        this.publicacionesService.obtenerUltimas(20).subscribe(r => this.posts = r);
+        this.publicacionesService.obtenerUltimas(this.limit, this.offset)
+          .subscribe(handle);
         break;
+
       case 'antiguas':
-        this.publicacionesService.obtenerAntiguas(20).subscribe(r => this.posts = r);
+        this.publicacionesService.obtenerAntiguas(this.limit, this.offset)
+          .subscribe(handle);
         break;
+
       case 'populares':
-        this.publicacionesService.obtenerPublicaciones(undefined, undefined, 'likes', 20)
-          .subscribe(r => this.posts = r);
+        this.publicacionesService.obtenerPublicaciones(undefined, undefined, 'likes', this.limit, this.offset)
+          .subscribe(handle);
         break;
+
       case 'conImagen':
-        this.publicacionesService.obtenerConImagen(20).subscribe(r => this.posts = r);
+        this.publicacionesService.obtenerConImagen(this.limit, this.offset)
+          .subscribe(handle);
+        break;
+    }
+  }
+
+  cargarMas() {
+    this.offset += this.limit;
+
+    const handle = (r: Publicacion[]) => {
+      this.posts = [...this.posts, ...this.marcarLikes(r)];
+    };
+
+    switch (this.filtro) {
+      case 'ultimas':
+        this.publicacionesService.obtenerUltimas(this.limit, this.offset)
+          .subscribe(handle);
+        break;
+
+      case 'antiguas':
+        this.publicacionesService.obtenerAntiguas(this.limit, this.offset)
+          .subscribe(handle);
+        break;
+
+      case 'populares':
+        this.publicacionesService.obtenerPublicaciones(undefined, undefined, 'likes', this.limit, this.offset)
+          .subscribe(handle);
+        break;
+
+      case 'conImagen':
+        this.publicacionesService.obtenerConImagen(this.limit, this.offset)
+          .subscribe(handle);
         break;
     }
   }
@@ -59,6 +123,8 @@ posts: Publicacion[] = [];
   buscar() {
     if (!this.busqueda.trim()) return this.aplicarFiltro();
 
-    this.publicacionesService.buscar(this.busqueda, 20).subscribe(r => this.posts = r);
+    this.offset = 0;
+    this.publicacionesService.buscar(this.busqueda, this.limit)
+      .subscribe(r => this.posts = this.marcarLikes(r));
   }
 }

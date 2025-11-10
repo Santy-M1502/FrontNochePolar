@@ -24,10 +24,15 @@
       <button class="btn" (click)="buscar()">Buscar</button>
     </div>
 
-    <!-- PUBLICACIONES -->
     <div class="timeline">
-      <app-publicacion *ngFor="let p of posts" [publicacion]="p"></app-publicacion>
+      <app-publicacion
+        *ngFor="let p of posts"
+        [publicacion]="p"
+        [usuarioActualId]="usuarioActualId">
+      </app-publicacion>
     </div>
+
+    <button class="btn load-more" (click)="cargarMas()">Cargar más</button>
 
   </div>
 

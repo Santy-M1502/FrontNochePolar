@@ -24,8 +24,8 @@ export class AuthService {
     }
   }
 
-  getUserId(): string {
-    return localStorage.getItem('userId') || ''
+  getUserId(): string | null {
+    return this.currentUserSubject.value?._id || null;
   }
 
   login(credentials: LoginDto): Observable<AuthResponse> {

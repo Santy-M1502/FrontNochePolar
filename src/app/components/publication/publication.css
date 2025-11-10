@@ -68,44 +68,79 @@
   gap: 4px;
 }
 
-.like-btn span {
-  font-size: 1.2rem;
-  transition: transform 0.2s, color 0.2s;
+/* === ANIMACIONES === */
+
+/* Like (amarillo brillante, sube y vuelve al estado final estable) */
+@keyframes shinePulse {
+  0% {
+    filter: drop-shadow(0 0 0px rgba(255, 230, 100, 0));
+    transform: scale(1) translateY(0) rotate(0deg);
+  }
+  50% {
+    filter: drop-shadow(0 0 8px rgba(255, 230, 100, 0.8))
+            drop-shadow(0 0 16px rgba(255, 230, 100, 0.6));
+    transform: scale(1.25) translateY(-4px) rotate(-10deg);
+  }
+  100% {
+    filter: drop-shadow(0 0 0px rgba(255, 230, 100, 0));
+    transform: rotate(-20deg) scale(1.2) translateY(0);
+  }
 }
 
-/* Media luna azul/oscura en lugar de amarilla */
-.like-btn span.liked {
-  color: #3770c2; /* azul oscuro */
-  transform: scale(1.2);
+/* Unlike (azul que se encoge y termina estable como base) */
+@keyframes fadeOutMoon {
+  0% {
+    opacity: 1;
+    transform: rotate(-20deg) scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
 }
 
-.like-btn .moon-icon {
+/* === ESTILOS BOTÓN === */
+
+.like-btn {
+  border: none;
+  background: transparent;
+  color: #e6e6e6;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: transform 0.2s ease;
+}
+
+.like-btn:hover {
+  transform: scale(1.05);
+}
+
+.moon-icon {
   font-size: 1.4rem;
   display: inline-block;
-  transition: transform 0.3s ease, color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
-.like-btn.liked .moon-icon {
-  color: #3770c2;
-  transform: rotate(-20deg) scale(1.2);
-}
-
+/* Estado base sin like */
 .like-btn:not(.liked) .moon-icon {
-  color: #e6e6e6;
+  color: #9ad1ff;
   transform: rotate(0deg) scale(1);
 }
 
-.like-btn span{
-  font-size: .5rem;
+/* Estado base con like */
+.like-btn.liked .moon-icon {
+  color: #ffd84c;
+  transform: rotate(-20deg) scale(1.2);
 }
 
-.comment-btn {
-  color: #9ad1ff; /* azul claro */
+/* Animación al dar like */
+.like-btn.liked.animate-like .moon-icon {
+  animation: shinePulse 0.6s ease forwards;
 }
 
-.btn.danger {
-  background: #8e1313;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 0.85rem;
+/* Animación al quitar like */
+.like-btn.unliked .moon-icon {
+  animation: fadeOutMoon 0.4s ease forwards;
 }

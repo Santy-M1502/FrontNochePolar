@@ -1,74 +1,176 @@
-*{box-sizing:border-box}
-.body{
-  display:flex;
-  background: linear-gradient(#14244e,#000);
-  color:#e6e6e6;
-  font-family:Inter, system-ui, sans-serif;
-  min-height:100vh;
+* {
+  box-sizing: border-box;
 }
 
-/* CENTRO */
-.feed-area{
-  flex:1;
-  padding:20px 24px;
-  display:flex;
-  flex-direction:column;
-  gap:16px;
+.body {
+  display: flex;
+  background: linear-gradient(#111a33, #000);
+  color: #e6e6e6;
+  font-family: Inter, system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+.feed-area {
+  flex: 1;
+  padding: 20px clamp(12px, 2vw, 24px);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
   margin-top: 3rem;
-  overflow-y: auto;
   height: 100vh;
+  overflow-y: auto;
 }
 
-/* PUBLICAR */
-.composer{
-  background:rgba(5,12,28,0.45);
-  padding:12px;border-radius:12px;
-  border:1px solid rgba(255,255,255,0.05);
-}
-.composer textarea{
-  width:100%;min-height:70px;max-height: 100px;
-  background:transparent;border:0;outline:none;
-  color:inherit;resize:vertical;
-}
-.composer-row{text-align:right;margin-top:8px;}
-.btn.primary{
-  background:linear-gradient(90deg,#3770c2,#14244e);
-  border:0;padding:8px 14px;border-radius:8px;
-  color:#fff;font-weight:700;cursor:pointer;
+.composer {
+  background: rgba(255,255,255,0.06);
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(6px);
 }
 
-/* PUBLICACIONES */
-.timeline{display:flex;flex-direction:column;gap:12px;}
-.post-card{
-  display:flex;gap:12px;
-  background:rgba(255,255,255,0.04);
-  padding:12px;border-radius:10px;
-  border:1px solid rgba(255,255,255,0.05);
+.composer textarea {
+  width: 100%;
+  min-height: 80px;
+  border: 0;
+  outline: none;
+  resize: vertical;
+  background: transparent;
+  color: #f2f2f2;
+  font-size: 15px;
 }
-.post-avatar{width:48px;height:48px;border-radius:50%;object-fit:cover;}
-.post-header{display:flex;justify-content:space-between;}
-.post-meta{color:rgba(255,255,255,0.6);font-size:12px;}
 
-@media (max-width: 900px){
-  .body {
-    margin-left: 0;
-  }
+.composer-row {
+  text-align: right;
+  margin-top: 10px;
+}
+
+.btn {
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 8px 14px;
+  border: none;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.btn.primary {
+  background: linear-gradient(90deg, #4a7cea, #2b4a8a);
+  color: white;
+}
+
+.btn.primary:hover {
+  filter: brightness(1.15);
+}
+
+.btn.secondary {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+
+.btn.secondary:hover {
+  background: rgba(255,255,255,0.18);
+}
+
+.load-more {
+  margin-inline: auto;
+  margin-top: 10px;
+  background: rgba(255,255,255,0.92);
+  color: #111;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.load-more:hover {
+  background: rgba(255,255,255,0.75);
+}
+
+.load-more:active {
+  background: rgba(255,255,255,0.55);
+  transform: scale(0.97);
 }
 
 .filters {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
-  margin: 10px 0;
   align-items: center;
+}
 
-  select, input {
-    padding: 6px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-  }
+.filters select,
+.filters input,
+.composer textarea {
+  background-color: rgba(255,255,255,0.03) !important;
+  color: #e6e6e6 !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  padding: 7px 10px;
+  border-radius: 6px;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
 
-  .btn {
-    padding: 6px 12px;
+.filters input::placeholder,
+.composer textarea::placeholder {
+  color: rgba(230,230,230,0.45) !important;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px rgba(255,255,255,0.03) inset !important;
+  box-shadow: 0 0 0 1000px rgba(255,255,255,0.03) inset !important;
+  -webkit-text-fill-color: #e6e6e6 !important;
+}
+
+.filters select {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%23e6e6e6' d='M0 0l5 6 5-6z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 36px;
+}
+
+.filters select option {
+  background: #0b1222;
+  color: #e6e6e6;
+}
+
+.filters select::-ms-expand {
+  display: none;
+}
+
+.composer textarea {
+  padding: 8px;
+  font-size: 15px;
+}
+
+.filters, .composer {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+@media (max-width: 900px) {
+  .body {
+    flex-direction: column;
   }
 }
 
+@media (max-width: 600px) {
+  .composer textarea {
+    font-size: 14px;
+  }
+
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

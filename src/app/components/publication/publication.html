@@ -12,15 +12,17 @@
     <img *ngIf="publicacion.imagenUrl" [src]="publicacion.imagenUrl" alt="Imagen publicación" class="post-image"/>
 
     <div class="post-actions">
-        <button class="btn like-btn" *ngIf="!publicacion.liked" (click)="darLike()">
-        <span class="moon-icon">🌑</span>
-        <span *ngIf="likesCount() > 0">{{ likesCount() }}</span>
+
+        <button
+          class="btn like-btn"
+          id="like-{{ publicacion._id }}"
+          [class.liked]="publicacion.liked"
+          (click)="publicacion.liked ? quitarLike() : darLike()"
+        >
+          <span class="moon-icon">{{ publicacion.liked ? '🌙' : '🌑' }}</span>
+          <span *ngIf="likesCount() > 0">{{ likesCount() }}</span>
         </button>
 
-        <button class="btn like-btn liked" *ngIf="publicacion.liked" (click)="quitarLike()">
-        <span class="moon-icon">🌙</span>
-        <span *ngIf="likesCount() > 0">{{ likesCount() }}</span>
-        </button>
 
         <button class="btn comment-btn">💬</button>
 

@@ -1,4 +1,3 @@
-/* Fondo de la página */
 .login-root {
   min-height: 100vh;
   display: flex;
@@ -10,7 +9,6 @@
   flex-direction: column;
 }
 
-/* tarjeta central */
 .login-card {
   width: 400px;
   max-width: 92vw;
@@ -25,7 +23,6 @@
   align-items: center;
 }
 
-/* avatar con anillo y satélite */
 .avatar-wrap {
   display: flex;
   justify-content: center;
@@ -34,7 +31,7 @@
 
 .avatar-ring {
   position: relative;
-  width: 140px; /* avatar + anillo */
+  width: 140px;
   height: 140px;
   display: flex;
   align-items: center;
@@ -78,8 +75,8 @@
   box-shadow: 0 0 10px rgba(183,123,255,0.28);
   top: 50%;
   left: 50%;
-  transform-origin: -80px 0; /* más cerca del avatar */
-  animation: orbit 4s linear infinite; /* gira un poco más rápido */
+  transform-origin: -80px 0;
+  animation: orbit 4s linear infinite;
 }
 
 @keyframes orbit {
@@ -87,7 +84,6 @@
   to { transform: rotate(360deg) translateX(70px) rotate(-360deg); }
 }
 
-/* Formulario */
 .login-form {
   width: 100%;
   display: flex;
@@ -142,7 +138,6 @@
   border-bottom-color: #ff6b6b;
 }
 
-/* link olvidaste */
 .forgot {
   display: flex;
   justify-content: flex-end;
@@ -162,7 +157,6 @@
   text-decoration: underline;
 }
 
-/* acciones */
 .actions {
   display: flex;
   gap: 10px;
@@ -198,19 +192,16 @@
   text-shadow: 2px 2px 3px #000;
 }
 
-/* mensajes de error */
 .hint {
   font-size: 12px;
   color: #ff7b7b;
   margin-top: 4px;
 }
 
-/* Header */
 .mm-header { text-align: center; margin-bottom: 24px; }
 .mm-title { font-size: 22px; color: #fff; margin: 4px 0; }
 .mm-sub { font-size: 14px; color: rgba(230,230,230,0.9); }
 
-/* responsive */
 @media (max-width: 768px) {
   .login-card { width: 90vw; padding: 20px; }
   .avatar { width: 80px; height: 80px; }
