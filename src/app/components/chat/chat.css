@@ -8,9 +8,12 @@
   border-left: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(10px); /* Un poco más de blur */
   max-height: 80dvh;
-  position: relative;
+  position: sticky;
+  top: 0;
   background: rgba(10, 14, 30, 0.9); /* Un pelín más transparente */
   box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1); /* Sombra para despegarlo en PC */
+  height: 100%;
+
 }
 
 /* --- Estado Vacío --- */

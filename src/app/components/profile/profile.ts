@@ -19,6 +19,9 @@ export class ProfileComponent implements OnInit {
   user: any = null;
   usuarioActualId: string | null = null;
 
+  likedCount = 0;
+  savedCount = 0;
+
   posts: Publicacion[] = [];
   likedPosts: Publicacion[] = [];
   savedPosts: Publicacion[] = [];
@@ -41,6 +44,8 @@ export class ProfileComponent implements OnInit {
     this.usuarioActualId = this.auth.getUserId();
     this.loadUserData();
     this.loadUserPosts();
+    this.loadLikedCount();
+    this.loadSavedCount();
   }
 
   loadUserData() {
@@ -131,5 +136,21 @@ export class ProfileComponent implements OnInit {
         this.visibleSaved += incremento;
         break;
     }
+  }
+
+  loadLikedCount() {
+    if (!this.usuarioActualId) return;
+    this.interaccionesService.obtenerLikesDeUsuario(this.usuarioActualId).subscribe({
+      next: (res) => this.likedCount = res.length,
+      error: (err) => console.error('Error al contar me gusta:', err),
+    });
+  }
+
+  loadSavedCount() {
+    if (!this.usuarioActualId) return;
+    this.interaccionesService.obtenerGuardadas(this.usuarioActualId).subscribe({
+      next: (res) => this.savedCount = res.length,
+      error: (err) => console.error('Error al contar guardados:', err),
+    });
   }
 }

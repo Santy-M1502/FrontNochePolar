@@ -46,8 +46,12 @@
 
       <nav class="sidebar-menu">
         <a class="menu-item" (click)="selectSection('publicaciones')" [class.active]="activeSection==='publicaciones'">Publicaciones {{ posts.length }}</a>
-        <a class="menu-item" (click)="selectSection('me-gusta')" [class.active]="activeSection==='me-gusta'">Me gusta {{ likedPosts.length }}</a>
-        <a class="menu-item" (click)="selectSection('guardados')" [class.active]="activeSection==='guardados'">Guardados {{ savedPosts.length }}</a>
+        <a class="menu-item" (click)="selectSection('me-gusta')" [class.active]="activeSection==='me-gusta'">
+          Me gusta {{ likedCount }}
+        </a>
+        <a class="menu-item" (click)="selectSection('guardados')" [class.active]="activeSection==='guardados'">
+          Guardados {{ savedCount }}
+        </a>
       </nav>
     </aside>
 
