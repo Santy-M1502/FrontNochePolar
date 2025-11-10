@@ -81,7 +81,6 @@ export class PublicacionesService {
     return this.http.get<Publicacion[]>(`${this.apiUrl}/publicaciones`);
   }
 
-  /** ✅ Ahora acepta offset */
   obtenerConImagen(limit: number = 10, offset: number = 0): Observable<Publicacion[]> {
     const params = new HttpParams()
       .set('limit', limit)
@@ -99,7 +98,6 @@ export class PublicacionesService {
     return this.http.post<Publicacion>(`${this.apiUrl}/publicaciones/${publicacionId}/like`, {});
   }
 
-  /** ✅ Ahora acepta offset */
   obtenerAntiguas(limit: number = 5, offset: number = 0): Observable<Publicacion[]> {
     const params = new HttpParams()
       .set('limit', limit)
@@ -116,4 +114,32 @@ export class PublicacionesService {
 
     return this.http.get<Publicacion[]>(`${this.apiUrl}/publicaciones/buscar`, { params });
   }
+
+  obtenerPorUsuario(usuarioId: string, limit: number = 10, offset: number = 0): Observable<Publicacion[]> {
+    const params = new HttpParams()
+      .set('limit', limit)
+      .set('offset', offset);
+    return this.http.get<Publicacion[]>(`${this.apiUrl}/publicaciones/usuario/${usuarioId}`, { params });
+  }
+
+  obtenerUltimasPorUsuario(usuarioId: string, limit: number = 5): Observable<Publicacion[]> {
+    return this.http.get<Publicacion[]>(`${this.apiUrl}/publicaciones/usuario/${usuarioId}/ultimas`, {
+      params: new HttpParams().set('limit', limit)
+    });
+  }
+
+  obtenerAntiguasPorUsuario(usuarioId: string, limit: number = 5): Observable<Publicacion[]> {
+    return this.http.get<Publicacion[]>(`${this.apiUrl}/publicaciones/usuario/${usuarioId}/antiguas`, {
+      params: new HttpParams().set('limit', limit)
+    });
+  }
+
+  obtenerActivasPorUsuario(usuarioId: string): Observable<Publicacion[]> {
+    return this.http.get<Publicacion[]>(`${this.apiUrl}/publicaciones/usuario/${usuarioId}/activas`);
+  }
+
+  obtenerInactivasPorUsuario(usuarioId: string): Observable<Publicacion[]> {
+    return this.http.get<Publicacion[]>(`${this.apiUrl}/publicaciones/usuario/${usuarioId}/inactivas`);
+  }
+
 }

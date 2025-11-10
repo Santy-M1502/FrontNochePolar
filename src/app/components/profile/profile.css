@@ -97,6 +97,23 @@
   color: #721c24;
 }
 
+.show-more {
+  display: block;
+  margin: 1rem auto;
+  background-color: var(--primary-color, #007bff);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+
+.show-more:hover {
+  background-color: #0056b3;
+}
+
 @media (max-width:900px){
   .body{
     flex-direction:column;   

@@ -24,6 +24,21 @@ export class AuthService {
     }
   }
 
+  getUsuarioPorId(id: string) {
+    return this.http.get(`${this.apiUrl}/usuarios/${id}`);
+  }
+
+  getUserInfo(): Observable<User> {
+    const currentUser = this.currentUserSubject.value;
+    if (currentUser) {
+      return new BehaviorSubject<User>(currentUser).asObservable();
+    }
+
+    return this.http.get<User>(`${this.apiUrl}/auth/profile`).pipe(
+      tap(user => this.currentUserSubject.next(user))
+    );
+  }
+
   getUserId(): string | null {
     return this.currentUserSubject.value?._id || null;
   }

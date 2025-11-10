@@ -3,6 +3,7 @@
 
   <div class="profile-page">
 
+    <!-- SIDEBAR -->
     <aside class="profile-sidebar">
       <div class="cover-wrap">
         <img class="cover-img" [src]="coverImage" alt="Portada" />
@@ -39,119 +40,99 @@
       </div>
 
       <div class="sidebar-actions">
-        <button class="btn primary" (click)="triggerChatExample()">Editar perfil</button>
+        <button class="btn primary" (click)="editarPerfil()">Editar perfil</button>
         <button class="btn ghost" (click)="logout()">Cerrar sesión</button>
       </div>
 
-      <!-- (oculto en desktop porque usamos tabs debajo del header) -->
       <nav class="sidebar-menu">
-        <a class="menu-item" (click)="selectSection('publicaciones')" [class.active]="activeSection==='publicaciones'">Publicaciones {{this.posts.length}}</a>
-        <a class="menu-item" (click)="selectSection('me-gusta')" [class.active]="activeSection==='me-gusta'">Me gusta {{this.likedPosts.length}}</a>
-        <a class="menu-item" (click)="selectSection('guardados')" [class.active]="activeSection==='guardados'">Guardados {{this.savedPosts.length}}</a>
+        <a class="menu-item" (click)="selectSection('publicaciones')" [class.active]="activeSection==='publicaciones'">Publicaciones {{ posts.length }}</a>
+        <a class="menu-item" (click)="selectSection('me-gusta')" [class.active]="activeSection==='me-gusta'">Me gusta {{ likedPosts.length }}</a>
+        <a class="menu-item" (click)="selectSection('guardados')" [class.active]="activeSection==='guardados'">Guardados {{ savedPosts.length }}</a>
       </nav>
     </aside>
 
+    <!-- MAIN -->
     <main class="profile-main">
-      <div class="user-message" *ngIf="userMessage" [ngClass]="messageType">
-        {{ userMessage }}
+      <div class="tabs">
+        <button class="tab" [class.active]="activeSection==='publicaciones'" (click)="selectSection('publicaciones')">Publicaciones</button>
+        <button class="tab" [class.active]="activeSection==='me-gusta'" (click)="selectSection('me-gusta')">Me gusta</button>
+        <button class="tab" [class.active]="activeSection==='guardados'" (click)="selectSection('guardados')">Guardados</button>
       </div>
 
-      <div class="tabs" role="tablist" aria-label="Secciones">
-        <button class="tab" role="tab" aria-selected="{{activeSection==='publicaciones'}}"
-          (click)="selectSection('publicaciones')" [class.active]="activeSection==='publicaciones'">Publicaciones</button>
-        <button class="tab" role="tab" aria-selected="{{activeSection==='me-gusta'}}"
-          (click)="selectSection('me-gusta')" [class.active]="activeSection==='me-gusta'">Me gusta</button>
-        <button class="tab" role="tab" aria-selected="{{activeSection==='guardados'}}"
-          (click)="selectSection('guardados')" [class.active]="activeSection==='guardados'">Guardados</button>
-      </div>
-
+      <!-- SECCIONES -->
       <section class="timeline">
-        <!-- publicaciones -->
+
+        <!-- 🟢 PUBLICACIONES DEL USUARIO -->
         <ng-container *ngIf="activeSection === 'publicaciones'">
           <ng-container *ngIf="posts && posts.length; else noPosts">
-            <article class="post-card" *ngFor="let post of posts">
-              <div class="post-left">
-                <img class="post-avatar" [src]="post.author.profileImage || avatarAnon" alt="avatar" />
-              </div>
-              <div class="post-body">
-                <div class="post-header">
-                  <div class="post-user">
-                    <strong>{{ post.author.username }}</strong>
-                    <span class="post-meta">· {{ post.createdAt | date:'short' }}</span>
-                  </div>
-                  <button class="more">•••</button>
-                </div>
+            <app-publicacion
+              *ngFor="let post of posts | slice:0:visiblePosts"
+              [publicacion]="post"
+              [usuarioActualId]="usuarioActualId"
+              (eliminar)="onPublicacionEliminada($event)">
+            </app-publicacion>
 
-                <div class="post-content">{{ post.content }}</div>
-
-                <div class="post-media" *ngIf="post.image">
-                  <img [src]="post.image" alt="post image" />
-                </div>
-
-                <div class="post-actions">
-                  <button class="icon">❤ {{ post.likes || 0 }}</button>
-                  <button class="icon">💬 {{ post.comments?.length || 0 }}</button>
-                  <button class="icon">↻ {{ post.shares || 0 }}</button>
-                </div>
-              </div>
-            </article>
+            <!-- Botón mostrar más -->
+            <button 
+              *ngIf="visiblePosts < posts.length"
+              class="btn show-more"
+              (click)="mostrarMas('publicaciones')">
+              Mostrar más
+            </button>
           </ng-container>
         </ng-container>
 
-        <!-- me gusta -->
+        <!-- ❤️ ME GUSTA -->
         <ng-container *ngIf="activeSection === 'me-gusta'">
           <ng-container *ngIf="likedPosts && likedPosts.length; else noLikes">
-            <article class="post-card" *ngFor="let post of likedPosts">
-              <div class="post-left">
-                <img class="post-avatar" [src]="post.author.profileImage || avatarAnon" alt="avatar" />
-              </div>
-              <div class="post-body">
-                <div class="post-header">
-                  <div class="post-user">
-                    <strong>{{ post.author.username }}</strong>
-                    <span class="post-meta">· {{ post.createdAt | date:'short' }}</span>
-                  </div>
-                </div>
-                <div class="post-content">{{ post.content }}</div>
-              </div>
-            </article>
+            <app-publicacion
+              *ngFor="let post of likedPosts | slice:0:visibleLiked"
+              [publicacion]="post"
+              [usuarioActualId]="usuarioActualId">
+            </app-publicacion>
+
+            <button 
+              *ngIf="visibleLiked < likedPosts.length"
+              class="btn show-more"
+              (click)="mostrarMas('me-gusta')">
+              Mostrar más
+            </button>
           </ng-container>
         </ng-container>
 
-        <!-- guardados -->
+        <!-- 📌 GUARDADOS -->
         <ng-container *ngIf="activeSection === 'guardados'">
           <ng-container *ngIf="savedPosts && savedPosts.length; else noSaved">
-            <article class="post-card" *ngFor="let post of savedPosts">
-              <div class="post-left">
-                <img class="post-avatar" [src]="post.author.profileImage || avatarAnon" alt="avatar" />
-              </div>
-              <div class="post-body">
-                <div class="post-header">
-                  <div class="post-user">
-                    <strong>{{ post.author.username }}</strong>
-                    <span class="post-meta">· {{ post.createdAt | date:'short' }}</span>
-                  </div>
-                </div>
-                <div class="post-content">{{ post.content }}</div>
-              </div>
-            </article>
+            <app-publicacion
+              *ngFor="let post of savedPosts | slice:0:visibleSaved"
+              [publicacion]="post"
+              [usuarioActualId]="usuarioActualId">
+            </app-publicacion>
+
+            <button 
+              *ngIf="visibleSaved < savedPosts.length"
+              class="btn show-more"
+              (click)="mostrarMas('guardados')">
+              Mostrar más
+            </button>
           </ng-container>
         </ng-container>
 
+        <!-- EMPTY STATES -->
         <ng-template #noPosts>
           <div class="empty">No hay publicaciones aún.</div>
         </ng-template>
-
         <ng-template #noLikes>
-          <div class="empty">No te gusta ninguna publicación todavía.</div>
+          <div class="empty">Todavía no diste me gusta a ninguna publicación.</div>
+        </ng-template>
+        <ng-template #noSaved>
+          <div class="empty">No hay publicaciones guardadas.</div>
         </ng-template>
 
-        <ng-template #noSaved>
-          <div class="empty">No hay guardados.</div>
-        </ng-template>
       </section>
     </main>
 
   </div>
+
   <app-chat></app-chat>
 </div>

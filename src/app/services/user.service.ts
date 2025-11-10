@@ -50,7 +50,6 @@ export class UserService {
     const formData = new FormData();
     formData.append('avatar', file);
 
-    // Log del contenido del FormData (solo nombre, no binario)
     for (const [key, value] of formData.entries()) {
       console.log('🧾 FormData ->', key, value instanceof File ? value.name : value);
     }

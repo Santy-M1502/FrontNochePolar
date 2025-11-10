@@ -31,7 +31,7 @@ export class Chat implements AfterViewChecked {
   ngAfterViewChecked() {
     if (this.chatBox) {
       const box = this.chatBox.nativeElement;
-      box.scrollTop = 0; // column-reverse mantiene último mensaje visible
+      box.scrollTop = 0;
     }
   }
 

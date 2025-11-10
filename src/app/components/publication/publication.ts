@@ -33,7 +33,6 @@ export class PublicacionComponent {
   animatingLike = false;
   animatingUnlike = false;
 
-  // estado modal
   confirmVisible = false;
 
   constructor(private publicacionesService: PublicacionesService) {}
@@ -57,13 +56,11 @@ export class PublicacionComponent {
     if (!this.publicacion._id || this.processing) return;
     this.processing = true;
 
-    // Estado local + animación visual
     this.publicacion.liked = true;
     this.animatingUnlike = false;
     this.animatingLike = true;
-    setTimeout(() => (this.animatingLike = false), 600); // duración animación CSS
+    setTimeout(() => (this.animatingLike = false), 600);
 
-    // Actualización optimista
     if (!Array.isArray(this.publicacion.likes)) this.publicacion.likes = [];
     if (this.usuarioActualId) this.publicacion.likes.push(this.usuarioActualId);
 
@@ -94,11 +91,9 @@ export class PublicacionComponent {
     if (!this.publicacion._id || this.processing) return;
     this.processing = true;
 
-    // Animación visual de unlike
     this.animatingUnlike = true;
     setTimeout(() => (this.animatingUnlike = false), 400);
 
-    // Actualización optimista
     this.publicacion.liked = false;
     if (this.usuarioActualId) {
       this.publicacion.likes = (this.publicacion.likes || []).filter(
@@ -127,10 +122,9 @@ export class PublicacionComponent {
     });
   }
 
-  // ---- Modal confirm ----
   mostrarConfirm(event: MouseEvent) {
     event.stopPropagation();
-    this.menuVisible = false; // cerramos menu si venía del menú
+    this.menuVisible = false;
     this.confirmVisible = true;
   }
 
@@ -155,7 +149,6 @@ export class PublicacionComponent {
       },
     });
   }
-  // -----------------------
 
   esMia(): boolean {
     if (!this.publicacion || !this.usuarioActualId) return false;

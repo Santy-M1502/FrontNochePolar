@@ -20,7 +20,7 @@ import { PublicacionesService } from '../../services/publication.service';
 export class Publications implements OnInit {
   posts: Publicacion[] = [];
   newPost: string = '';
-  newTitle: string = ''; // ✅ nuevo campo para el título
+  newTitle: string = '';
   filtro: string = 'ultimas';
   busqueda: string = '';
 
@@ -47,7 +47,6 @@ export class Publications implements OnInit {
   }
 
   sendPost() {
-    // ✅ validamos que haya título y texto
     if (!this.newTitle.trim() || !this.newPost.trim()) {
       alert('Por favor, completá el título y el texto antes de publicar.');
       return;
@@ -67,14 +66,13 @@ export class Publications implements OnInit {
 
         this.posts.unshift(postConLike);
 
-        // Limpiar campos
         this.newTitle = '';
         this.newPost = '';
       });
   }
 
   aplicarFiltro() {
-    this.offset = 0; // reinicio paginación
+    this.offset = 0;
 
     const handle = (r: Publicacion[]) => {
       this.posts = this.marcarLikes(r);

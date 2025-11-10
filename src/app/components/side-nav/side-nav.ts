@@ -163,6 +163,5 @@ export class SideNavComponent {
 
   cerrarSesion() {
     console.log('Cerrar sesión...');
-    // aquí irá tu lógica
   }
 }

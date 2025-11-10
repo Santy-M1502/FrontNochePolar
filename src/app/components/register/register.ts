@@ -160,7 +160,6 @@ private tryRegisterThenUpload(payload: any) {
     next: (createdUser: any) => {
       const userId = createdUser?._id || createdUser?.id || createdUser?.user?._id;
       if (this.selectedFile && userId) {
-        // usamos endpoint sin auth si tu backend lo permite
         this.userService.uploadAvatarForNewUser(userId, this.selectedFile).subscribe({
           next: () => {
             this.isLoading = false;
