@@ -1,0 +1,216 @@
+/*
+ * --------------------------------
+ * 1. Estilos del Botón de Apertura
+ * --------------------------------
+ */
+.comment-btn {
+  /* Estilo base del botón */
+  padding: 10px 20px;
+  background-color: #3770c2; /* Color base */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.comment-btn:hover {
+  background-color: #1e457e;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+/*
+ * --------------------------------
+ * 2. Estilos del Overlay (Fondo oscuro)
+ * --------------------------------
+ */
+.modal-overlay {
+  /* Posicionamiento para cubrir toda la pantalla */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Fondo oscuro semi-transparente */
+  background-color: rgba(0, 0, 0, 0.7);
+  /* Centrar el modal principal con Flexbox */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Asegurar que esté por encima de todo */
+  z-index: 1000;
+  /* Animación de entrada suave */
+  animation: fadeIn 0.3s ease-out;
+}
+
+/*
+ * --------------------------------
+ * 3. Estilos del Contenedor Principal del Modal
+ * --------------------------------
+ */
+.comentarios-modal {
+  /* El gradiente de fondo requerido */
+  background: linear-gradient(90deg, #18427b, #070321);
+  color: white;
+  /* Dimensiones máximas y mínimas */
+  width: 90%;
+  max-width: 500px; /* Ancho máximo en desktop */
+  min-height: 200px;
+  max-height: 80vh; /* Altura máxima para permitir scroll */
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  position: relative; /* Para posicionar el botón de cerrar */
+  
+  /* Habilitar scroll propio si el contenido excede el max-height */
+  overflow-y: auto;
+  
+  /* Mejorar la tipografía */
+  font-family: 'Arial', sans-serif;
+}
+
+.comentarios-modal h3 {
+  margin-top: 0;
+  font-size: 1.8rem;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+/*
+ * --------------------------------
+ * 4. Estilos Internos
+ * --------------------------------
+ */
+
+/* Botón de Cerrar (la 'X') */
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Sección de Nuevo Comentario */
+.nuevo-comentario {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.nuevo-comentario input[type="text"] {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid #6f32b1;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco semi-transparente */
+  color: #1e457e;
+  font-size: 1rem;
+}
+
+.nuevo-comentario button {
+  padding: 10px 15px;
+  background-color: #32b189; /* Botón de 'Enviar' con color de acento */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.nuevo-comentario button:hover {
+  background-color: #278f6e;
+}
+
+/* Lista de Comentarios */
+.comentarios-modal ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.comentarios-modal li {
+  background-color: rgba(255, 255, 255, 0.1); /* Ligero fondo para cada comentario */
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  word-break: break-word; /* Para comentarios largos */
+}
+
+.comentarios-modal li strong {
+  font-weight: 700;
+  margin-right: 5px;
+}
+
+/* Botón de Like */
+.comentarios-modal li button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-left: 15px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Indicador de Carga */
+.comentarios-modal div[hidden] { /* Usado si usas la propiedad hidden o ngIf */
+    display: none;
+}
+
+.comentarios-modal > button {
+    /* Estilo para el botón de "Cargar más" */
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #1e457e;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.comentarios-modal > button:hover {
+    background-color: #173359;
+}
+
+/*
+ * --------------------------------
+ * 5. Animación
+ * --------------------------------
+ */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Aplicar la animación al modal mismo */
+.comentarios-modal {
+  animation: scaleUp 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}

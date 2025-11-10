@@ -8,11 +8,12 @@ import {
 import { CommonModule } from '@angular/common';
 import { Publicacion } from '../../models/publication.interface';
 import { PublicacionesService } from '../../services/publication.service';
+import { ComentariosComponent } from '../coments/coments';
 
 @Component({
   selector: 'app-publicacion',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ComentariosComponent],
   templateUrl: './publication.html',
   styleUrls: ['./publication.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,7 +33,7 @@ export class PublicacionComponent {
   processing = false;
   animatingLike = false;
   animatingUnlike = false;
-
+  comentariosModalVisible = false;
   confirmVisible = false;
 
   constructor(private publicacionesService: PublicacionesService) {}

@@ -46,7 +46,10 @@
         <span *ngIf="likesCount() > 0">{{ likesCount() }}</span>
       </button>
 
-      <button class="btn comment-btn">💬</button>
+      <app-comentarios
+        [publicacionId]="publicacion._id"
+        [usuarioActualId]="usuarioActualId"
+      ></app-comentarios>
     </div>
   </div>
 </div>
