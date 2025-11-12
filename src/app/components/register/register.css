@@ -218,6 +218,13 @@
   align-items: center;
 }
 
+.field-label {
+  font-size: 13px;
+  color: rgba(250,250,250,0.9);
+  text-shadow: 0 0 4px #000;
+  margin-left: 4px;
+}
+
 @media (max-width: 600px) {
   .mm-form {
     grid-template-columns: 1fr;

@@ -103,15 +103,24 @@
 
         <div class="form-section">
           <div class="field">
-            <input id="fechaNacimiento" type="date" formControlName="fechaNacimiento"
-                  [class.error]="controlInvalid('fechaNacimiento')" />
+            <label for="fechaNacimiento" class="field-label">Fecha de Nacimiento (debe ser mayor de 13 años)</label>
+            <input
+              id="fechaNacimiento"
+              type="date"
+              formControlName="fechaNacimiento"
+              [class.error]="controlInvalid('fechaNacimiento')"
+            />
 
             <div class="mm-hint" *ngIf="controlTouched('fechaNacimiento')">
-              <small *ngIf="registerForm.get('fechaNacimiento')?.errors?.['required']">La fecha es requerida</small>
+              <small *ngIf="registerForm.get('fechaNacimiento')?.errors?.['required']">
+                La fecha es requerida
+              </small>
+              <small *ngIf="registerForm.get('fechaNacimiento')?.errors?.['edadInvalida']">
+                Debes tener al menos 13 años
+              </small>
             </div>
           </div>
         </div>
-
 
         <div class="form-section">
           <div class="field">
