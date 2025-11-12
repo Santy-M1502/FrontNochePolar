@@ -4,13 +4,12 @@
   <div class="feed-area">
 
     <div class="composer">
-
       <input
         type="text"
         [(ngModel)]="newTitle"
         placeholder="Título de la publicación"
         class="composer-title"
-        (input)="errorTitulo = ''"
+        (input)="onTitleInput()"
       />
       <label *ngIf="errorTitulo" class="error-label">{{ errorTitulo }}</label>
 
@@ -18,7 +17,7 @@
         [(ngModel)]="newPost"
         placeholder="¿Qué estás pensando?"
         class="composer-text"
-        (input)="errorTexto = ''"
+        (input)="onTextInput()"
       ></textarea>
       <label *ngIf="errorTexto" class="error-label">{{ errorTexto }}</label>
 
@@ -28,6 +27,7 @@
         (change)="onFileSelected($event)"
         class="composer-file"
       />
+      <label *ngIf="fileError" class="error-label">{{ fileError }}</label>
 
       <div class="composer-row">
         <button class="btn primary" (click)="sendPost()">Publicar</button>

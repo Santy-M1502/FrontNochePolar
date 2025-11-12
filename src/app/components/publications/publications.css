@@ -42,6 +42,7 @@
   background: transparent;
   color: #f2f2f2;
   font-size: 15px;
+  max-height: 100px;
 }
 
 .composer-row {

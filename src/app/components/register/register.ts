@@ -39,13 +39,33 @@ export class RegisterComponent {
       nombre: ['', [Validators.required, Validators.minLength(3)]],
       apellido: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=.*[A-Z])(?=.*\d).{8,}$/)]],
+      password: ['', [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.pattern(/^(?=.*[A-Z])(?=.*\d).{8,}$/)
+      ]],
       confirmPassword: ['', [Validators.required]],
-      fechaNacimiento: ['', [Validators.required, Validators.pattern('^\\d{4}-\\d{2}-\\d{2}$')]],
+      fechaNacimiento: ['', [Validators.required, this.ageRangeValidator(10, 99)]],
       descripcion: ['', [Validators.maxLength(this.MAX_DESCRIPCION)]],
     }, { validators: this.passwordMatchValidator });
 
     this.descripcionCount = (this.registerForm.get('descripcion')?.value || '').length;
+  }
+
+  // 👉 Validación personalizada: Edad entre 10 y 99 años
+  ageRangeValidator(min: number, max: number) {
+    return (control: any) => {
+      const value = control.value;
+      if (!value) return null;
+      const birthDate = new Date(value);
+      const today = new Date();
+      const age =
+        today.getFullYear() - birthDate.getFullYear() -
+        (today.getMonth() < birthDate.getMonth() ||
+        (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())
+          ? 1 : 0);
+      return age < min || age > max ? { invalidAge: true } : null;
+    };
   }
 
   passwordMatchValidator(form: FormGroup) {
@@ -58,6 +78,7 @@ export class RegisterComponent {
     const c = this.registerForm.get(name);
     return c ? c.invalid && c.touched : false;
   }
+
   controlTouched(name: string) {
     const c = this.registerForm.get(name);
     return c ? c.touched : false;
@@ -102,89 +123,88 @@ export class RegisterComponent {
   }
 
   onSubmit(): void {
-  this.registerForm.markAllAsTouched();
-  this.errorMessage = '';
-  this.successMessage = '';
+    this.registerForm.markAllAsTouched();
+    this.errorMessage = '';
+    this.successMessage = '';
 
-  if (this.registerForm.invalid) {
-    this.errorMessage = 'Corrige los errores del formulario.';
-    return;
-  }
+    if (this.registerForm.invalid) {
+      this.errorMessage = 'Corrige los errores del formulario.';
+      return;
+    }
 
-  this.isLoading = true;
-  const form = this.registerForm.value;
-  const payload = {
-    username: form.username,
-    nombre: form.nombre,
-    apellido: form.apellido,
-    email: form.email,
-    password: form.password,
-    fecha: form.fechaNacimiento,
-    descripcion: form.descripcion,
-  };
+    this.isLoading = true;
+    const form = this.registerForm.value;
+    const payload = {
+      username: form.username,
+      nombre: form.nombre,
+      apellido: form.apellido,
+      email: form.email,
+      password: form.password,
+      fecha: form.fechaNacimiento,
+      descripcion: form.descripcion,
+    };
 
-  if (this.selectedFile) {
-    this.userService.registerWithAvatar(payload, this.selectedFile).subscribe({
-      next: (res) => {
+    if (this.selectedFile) {
+      this.userService.registerWithAvatar(payload, this.selectedFile).subscribe({
+        next: () => {
+          this.isLoading = false;
+          this.successMessage = 'Registrado correctamente. Redirigiendo...';
+          setTimeout(() => this.router.navigate(['/login']), 1200);
+        },
+        error: (err) => {
+          if (err?.status === 415 || err?.status === 400) {
+            this.tryRegisterThenUpload(payload);
+            return;
+          }
+          this.isLoading = false;
+          this.errorMessage = err?.error?.message || 'Error al registrar usuario.';
+        }
+      });
+      return;
+    }
+
+    this.userService.register(payload).subscribe({
+      next: () => {
         this.isLoading = false;
-        this.successMessage = 'Registrado correctamente. Redirigiendo...';
-        setTimeout(() => this.router.navigate(['/login']), 1200);
+        this.successMessage = 'Usuario registrado. Redirigiendo...';
+        setTimeout(() => this.router.navigate(['/login']), 1000);
       },
       error: (err) => {
-        if (err?.status === 415 || err?.status === 400) {
-          this.tryRegisterThenUpload(payload);
-          return;
-        }
         this.isLoading = false;
         this.errorMessage = err?.error?.message || 'Error al registrar usuario.';
       }
     });
-    return;
   }
 
-  this.userService.register(payload).subscribe({
-    next: (createdUser) => {
-      this.isLoading = false;
-      this.successMessage = 'Usuario registrado. Redirigiendo...';
-      setTimeout(() => this.router.navigate(['/login']), 1000);
-    },
-    error: (err) => {
-      this.isLoading = false;
-      this.errorMessage = err?.error?.message || 'Error al registrar usuario.';
-    }
-  });
-}
-
-private tryRegisterThenUpload(payload: any) {
-  this.userService.register(payload).subscribe({
-    next: (createdUser: any) => {
-      const userId = createdUser?._id || createdUser?.id || createdUser?.user?._id;
-      if (this.selectedFile && userId) {
-        this.userService.uploadAvatarForNewUser(userId, this.selectedFile).subscribe({
-          next: () => {
-            this.isLoading = false;
-            this.successMessage = 'Registrado y avatar subido correctamente.';
-            setTimeout(() => this.router.navigate(['/login']), 900);
-          },
-          error: (err) => {
-            console.error(err);
-            this.isLoading = false;
-            this.errorMessage = 'Usuario registrado, pero error al subir avatar.';
-            setTimeout(() => this.router.navigate(['/login']), 1200);
-          }
-        });
-      } else {
+  private tryRegisterThenUpload(payload: any) {
+    this.userService.register(payload).subscribe({
+      next: (createdUser: any) => {
+        const userId = createdUser?._id || createdUser?.id || createdUser?.user?._id;
+        if (this.selectedFile && userId) {
+          this.userService.uploadAvatarForNewUser(userId, this.selectedFile).subscribe({
+            next: () => {
+              this.isLoading = false;
+              this.successMessage = 'Registrado y avatar subido correctamente.';
+              setTimeout(() => this.router.navigate(['/login']), 900);
+            },
+            error: () => {
+              this.isLoading = false;
+              this.errorMessage = 'Usuario registrado, pero error al subir avatar.';
+              setTimeout(() => this.router.navigate(['/login']), 1200);
+            }
+          });
+        } else {
+          this.isLoading = false;
+          this.successMessage = 'Usuario registrado correctamente.';
+          setTimeout(() => this.router.navigate(['/login']), 900);
+        }
+      },
+      error: (err) => {
         this.isLoading = false;
-        this.successMessage = 'Usuario registrado correctamente.';
-        setTimeout(() => this.router.navigate(['/login']), 900);
+        this.errorMessage = err?.error?.message || 'Error al registrar usuario.';
       }
-    },
-    error: (err) => {
-      this.isLoading = false;
-      this.errorMessage = err?.error?.message || 'Error al registrar usuario.';
-    }
-  });
-}
+    });
+  }
 
   goToLogin(): void {
     this.router.navigate(['/login']);
