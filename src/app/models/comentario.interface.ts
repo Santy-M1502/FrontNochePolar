@@ -5,6 +5,7 @@ export interface Comentario {
     username: string;
     profileImage?: string;
   };
+  likes?: string[]; 
   texto: string;
   likesCount?: number;
   liked?: boolean;

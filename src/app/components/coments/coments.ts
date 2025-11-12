@@ -26,21 +26,61 @@ export class ComentariosComponent {
   modalVisible = signal(false);
   loading = signal(false);
 
+  likedCache = signal(new Map<string, boolean>());
+
   readonly MAX_LENGTH = 100;
 
   constructor(private comentariosService: ComentariosService) {}
 
+  private persistCache() {
+    try {
+      const obj: Record<string, boolean> = {};
+      this.likedCache().forEach((v, k) => (obj[k] = v));
+      localStorage.setItem(`likedComments_${this.publicacionId}`, JSON.stringify(obj));
+    } catch {}
+  }
+
+  private loadCacheFromStorage() {
+    try {
+      const raw = localStorage.getItem(`likedComments_${this.publicacionId}`);
+      if (!raw) return;
+      const obj = JSON.parse(raw) as Record<string, boolean>;
+      const m = new Map<string, boolean>();
+      Object.keys(obj).forEach(k => m.set(k, obj[k]));
+      this.likedCache.set(m);
+    } catch {}
+  }
+
   private marcarLikes(comentarios: Comentario[]): Comentario[] {
-    return comentarios.map(c => ({
-      ...c,
-      liked: !!c.liked,
-      likesCount: c.likesCount || 0
-    }));
+    if (this.likedCache().size === 0) this.loadCacheFromStorage();
+
+    return comentarios.map(c => {
+      const likesArray = (c as any).likes && Array.isArray((c as any).likes)
+        ? (c as any).likes as string[]
+        : null;
+
+      const likedFromArray = likesArray && this.usuarioActualId
+        ? likesArray.includes(this.usuarioActualId)
+        : null;
+
+      const likedFromCache = this.likedCache().get(c._id);
+
+      const finalLiked = likedFromArray ?? likedFromCache ?? !!c.liked;
+
+      const computedLikesCount = likesArray ? likesArray.length : (c.likesCount || 0);
+
+      return {
+        ...c,
+        liked: finalLiked,
+        likesCount: computedLikesCount
+      };
+    });
   }
 
   abrirModal() {
     this.modalVisible.set(true);
     this.offset.set(0);
+    this.loadCacheFromStorage();
     this.cargarComentarios(false);
   }
 
@@ -107,7 +147,12 @@ export class ComentariosComponent {
     comentario.likesCount = (comentario.likesCount || 0) + 1;
 
     this.comentariosService.darLike(comentario._id).subscribe({
-      next: () => {},
+      next: () => {
+        const m = new Map(this.likedCache());
+        m.set(comentario._id, true);
+        this.likedCache.set(m);
+        this.persistCache();
+      },
       error: err => {
         console.error(err);
         comentario.liked = false;
@@ -123,7 +168,12 @@ export class ComentariosComponent {
     comentario.likesCount = Math.max((comentario.likesCount || 1) - 1, 0);
 
     this.comentariosService.quitarLike(comentario._id).subscribe({
-      next: () => {},
+      next: () => {
+        const m = new Map(this.likedCache());
+        m.set(comentario._id, false);
+        this.likedCache.set(m);
+        this.persistCache();
+      },
       error: err => {
         console.error(err);
         comentario.liked = true;

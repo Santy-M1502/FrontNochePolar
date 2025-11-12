@@ -47,6 +47,10 @@ export class PublicacionComponent {
 
   ngOnInit() {
     document.addEventListener('click', this.cerrarMenu.bind(this));
+
+    if (this.publicacion && Array.isArray(this.publicacion.likes) && this.usuarioActualId) {
+      this.publicacion.liked = this.publicacion.likes.includes(this.usuarioActualId);
+    }
   }
 
   ngOnDestroy() {
@@ -95,7 +99,6 @@ export class PublicacionComponent {
     this.publicacionesService.darLike(this.publicacion._id).subscribe({
       next: () => {
         this.processing = false;
-        this.setSuccess('🌟 Te gustó esta publicación.');
         this.likeToggled.emit({
           id: this.publicacion._id,
           liked: true,
@@ -138,7 +141,6 @@ export class PublicacionComponent {
     this.publicacionesService.quitarLike(this.publicacion._id).subscribe({
       next: () => {
         this.processing = false;
-        this.setSuccess('💤 Ya no te gusta esta publicación.');
         this.likeToggled.emit({
           id: this.publicacion._id,
           liked: false,
