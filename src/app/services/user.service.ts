@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CreateUserDto, User } from '../models/user.interface';
+import { Friend } from '../models/user.interface';
 import { environment } from '../../enviroments/enviroment';
 import { AuthService } from './auth.service';
 
@@ -10,6 +11,13 @@ export class UserService {
   private apiUrl = environment.API_URL;
 
   constructor(private http: HttpClient, private authService: AuthService) {}
+
+  private getAuthHeaders() {
+    const token = this.authService.getToken();
+    return token
+      ? { headers: new HttpHeaders({ Authorization: `Bearer ${token}` }) }
+      : {};
+  }
 
   register(userData: CreateUserDto): Observable<User> {
     return this.http.post<User>(`${this.apiUrl}/usuarios/register`, userData);
@@ -23,44 +31,54 @@ export class UserService {
       }
     });
     formData.append('avatar', file);
-
     return this.http.post<User>(`${this.apiUrl}/usuarios/register`, formData);
+  }
+
+  uploadCover(file: File): Observable<User> {
+    const formData = new FormData();
+    formData.append('cover', file);
+    return this.http.post<User>(
+      `${this.apiUrl}/usuarios/upload-cover`,
+      formData,
+      this.getAuthHeaders()
+    );
   }
 
   uploadAvatarForNewUser(userId: string, file: File): Observable<User> {
     const formData = new FormData();
     formData.append('avatar', file);
-
-    const token = this.authService.getToken();
-    const headers = token
-      ? new HttpHeaders({ Authorization: `Bearer ${token}` })
-      : undefined;
-
     return this.http.post<User>(
       `${this.apiUrl}/usuarios/${userId}/avatar`,
       formData,
-      headers ? { headers } : {}
+      this.getAuthHeaders()
     );
   }
 
   uploadAvatar(file: File): Observable<User> {
-    const token = this.authService.getToken();
-    console.log('🔑 Token usado en uploadAvatar:', token ? '(token presente)' : '❌ No hay token');
-
     const formData = new FormData();
     formData.append('avatar', file);
-
-    for (const [key, value] of formData.entries()) {
-      console.log('🧾 FormData ->', key, value instanceof File ? value.name : value);
-    }
-
-    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    console.log('📡 POST a:', `${this.apiUrl}/usuarios/upload-avatar`);
-
     return this.http.post<User>(
       `${this.apiUrl}/usuarios/upload-avatar`,
       formData,
-      { headers }
+      this.getAuthHeaders()
     );
+  }
+
+  getUserById(userId: string): Observable<User> {
+    return this.http.get<User>(
+      `${this.apiUrl}/usuarios/${userId}`,
+      this.getAuthHeaders()
+    );
+  }
+
+  addFriend(amigoId: string) {
+    const headers = new HttpHeaders({ Authorization: `Bearer ${this.authService.getToken()}` });
+    return this.http.post(`${this.apiUrl}/usuarios/agregar-amigo`, { amigoId }, { headers });
+  }
+
+  getFriends(): Observable<any> {
+    const token = this.authService.getToken();
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    return this.http.get(`${this.apiUrl}/usuarios/amigos`, { headers });
   }
 }

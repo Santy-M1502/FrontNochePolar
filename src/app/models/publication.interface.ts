@@ -11,7 +11,7 @@ export interface Publicacion {
   titulo?: string;
   texto: string;
   usuarioId: string;
-  usuario?: { username: string; profileImage?: string };
+  usuario?: { _id: string ,username: string; profileImage?: string };
   likes?: string[];
   liked?: boolean;
   likesCount?: number;

@@ -9,18 +9,8 @@ export class PublicacionesService {
   private http = inject(HttpClient);
   private apiUrl = environment.API_URL;
 
-  crearPublicacion(
-    data: { titulo?: string; texto: string },
-    imagen?: File
-  ): Observable<Publicacion> {
-    const formData = new FormData();
-    Object.entries(data).forEach(([k, v]) => {
-      if (v !== undefined && v !== null) formData.append(k, v);
-    });
-
-    if (imagen) formData.append('imagen', imagen, imagen.name);
-
-    return this.http.post<Publicacion>(`${this.apiUrl}/publicaciones`, formData);
+  crearPublicacion(data: any) {
+    return this.http.post<Publicacion>(`${this.apiUrl}/publicaciones`, data);
   }
   
   actualizarPublicacion(id: string, body: UpdatePublicacionDto): Observable<Publicacion> {

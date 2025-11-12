@@ -7,6 +7,7 @@ import { Publicacion } from '../../models/publication.interface';
 import { PublicacionComponent } from '../publication/publication';
 import { Chat } from '../chat/chat';
 import { SideNavComponent } from '../side-nav/side-nav';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-profile',
@@ -37,31 +38,28 @@ export class ProfileComponent implements OnInit {
   constructor(
     private publicacionesService: PublicacionesService,
     private auth: AuthService,
-    private interaccionesService: InteraccionesService
+    private interaccionesService: InteraccionesService,
+    private userService: UserService
   ) {}
 
   ngOnInit() {
-    this.usuarioActualId = this.auth.getUserId();
-    this.loadUserData();
-    this.loadUserPosts();
-    this.loadLikedCount();
-    this.loadSavedCount();
-  }
+    this.auth.currentUser$.subscribe((u) => {
+      this.user = u;
+      this.usuarioActualId = u?._id || null;
 
-  loadUserData() {
-    this.auth.getUserInfo().subscribe({
-      next: (info) => {
-        if (info) {
-          this.user = info;
-        } else if (this.usuarioActualId) {
-          this.auth.getUsuarioPorId(this.usuarioActualId).subscribe({
-            next: (data) => (this.user = data),
-            error: (err) => console.error('Error al obtener usuario:', err),
-          });
-        }
-      },
-      error: (err) => console.error('Error al obtener info del usuario:', err)
+      if (this.usuarioActualId) {
+        this.loadUserPosts();
+        this.loadLikedCount();
+        this.loadSavedCount();
+      } else {
+        this.posts = [];
+        this.likedPosts = [];
+        this.savedPosts = [];
+        this.likedCount = 0;
+        this.savedCount = 0;
+      }
     });
+
   }
 
   private marcarLikes(posts: Publicacion[]): Publicacion[] {
@@ -103,16 +101,39 @@ export class ProfileComponent implements OnInit {
 
   onPublicacionEliminada(id: string) {
     this.posts = this.posts.filter((p) => p._id !== id);
+    this.loadLikedCount();
+    this.loadSavedCount();
   }
 
   onImageSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) console.log('Imagen de perfil seleccionada:', file.name);
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    this.userService.uploadAvatar(file).subscribe({
+      next: (res) => {
+        console.log('✅ Avatar actualizado:', res);
+        this.auth.setUser(res as any);
+      },
+      error: (err) => console.error('❌ Error al subir avatar:', err)
+    });
   }
 
   onCoverSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) console.log('Portada seleccionada:', file.name);
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    this.userService.uploadCover(file).subscribe({
+      next: (res) => {
+        console.log('✅ Portada actualizada:', res);
+        this.auth.setUser(res);
+      },
+      error: (err) => console.error('❌ Error al subir portada:', err)
+    });
+  }
+
+  refreshCounts() {
+    this.loadLikedCount();
+    this.loadSavedCount();
   }
 
   editarPerfil() {
@@ -152,5 +173,39 @@ export class ProfileComponent implements OnInit {
       next: (res) => this.savedCount = res.length,
       error: (err) => console.error('Error al contar guardados:', err),
     });
+  }
+
+  onLikeChange(payload: { postId: string; liked: boolean; likesCount: number }) {
+    if (!payload) {
+      this.loadLikedCount();
+      this.loadSavedCount();
+      return;
+    }
+
+    const { postId, liked, likesCount } = payload;
+
+    this.posts = this.posts.map(p =>
+      p._id === postId ? { ...p, liked, likesCount, likes: this.syncLikesArray(p.likes, this.usuarioActualId, liked) } : p
+    );
+
+    this.likedPosts = this.likedPosts.map(p =>
+      p._id === postId ? { ...p, liked, likesCount } : p
+    );
+
+    this.savedPosts = this.savedPosts.map(p =>
+      p._id === postId ? { ...p, liked, likesCount } : p
+    );
+
+    this.loadLikedCount();
+    this.loadSavedCount();
+  }
+
+  private syncLikesArray(currentLikes: string[] | undefined, userId: string | null, liked: boolean): string[] {
+    const likes = Array.isArray(currentLikes) ? [...currentLikes] : [];
+    if (!userId) return likes;
+    const idx = likes.indexOf(userId);
+    if (liked && idx === -1) likes.push(userId);
+    if (!liked && idx !== -1) likes.splice(idx, 1);
+    return likes;
   }
 }

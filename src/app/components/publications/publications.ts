@@ -23,8 +23,11 @@ export class Publications implements OnInit {
   newTitle: string = '';
   filtro: string = 'ultimas';
   busqueda: string = '';
-
+  selectedImage: File | null = null;
   usuarioActualId: string | null = null;
+
+  errorTitulo: string = '';
+  errorTexto: string = '';
 
   offset = 0;
   limit = 5;
@@ -46,28 +49,45 @@ export class Publications implements OnInit {
     }));
   }
 
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedImage = file;
+    }
+  }
+
   sendPost() {
-    if (!this.newTitle.trim() || !this.newPost.trim()) {
-      alert('Por favor, completá el título y el texto antes de publicar.');
-      return;
+    this.errorTitulo = '';
+    this.errorTexto = '';
+
+    if (this.newTitle.trim().length < 3) {
+      this.errorTitulo = 'El título debe tener al menos 3 caracteres.';
+    }
+    if (this.newPost.trim().length < 3) {
+      this.errorTexto = 'El texto debe tener al menos 3 caracteres.';
+    }
+    if (this.errorTitulo || this.errorTexto) return;
+
+    const formData = new FormData();
+    formData.append('titulo', this.newTitle.trim());
+    formData.append('texto', this.newPost.trim());
+
+    if (this.selectedImage) {
+      formData.append('imagen', this.selectedImage);
     }
 
-    const nuevaPublicacion = {
-      titulo: this.newTitle.trim(),
-      texto: this.newPost.trim(),
-    };
-
-    this.publicacionesService.crearPublicacion(nuevaPublicacion)
+    this.publicacionesService.crearPublicacion(formData)
       .subscribe((p) => {
-        const postConLike = {
-          ...p,
-          liked: false
-        };
-
+        const postConLike = { ...p, liked: false };
         this.posts.unshift(postConLike);
 
         this.newTitle = '';
         this.newPost = '';
+        this.selectedImage = null;
+        this.errorTitulo = '';
+        this.errorTexto = '';
+
+        this.aplicarFiltro();
       });
   }
 
@@ -83,17 +103,14 @@ export class Publications implements OnInit {
         this.publicacionesService.obtenerUltimas(this.limit, this.offset)
           .subscribe(handle);
         break;
-
       case 'antiguas':
         this.publicacionesService.obtenerAntiguas(this.limit, this.offset)
           .subscribe(handle);
         break;
-
       case 'populares':
         this.publicacionesService.obtenerPublicaciones(undefined, undefined, 'likes', this.limit, this.offset)
           .subscribe(handle);
         break;
-
       case 'conImagen':
         this.publicacionesService.obtenerConImagen(this.limit, this.offset)
           .subscribe(handle);
@@ -113,17 +130,14 @@ export class Publications implements OnInit {
         this.publicacionesService.obtenerUltimas(this.limit, this.offset)
           .subscribe(handle);
         break;
-
       case 'antiguas':
         this.publicacionesService.obtenerAntiguas(this.limit, this.offset)
           .subscribe(handle);
         break;
-
       case 'populares':
         this.publicacionesService.obtenerPublicaciones(undefined, undefined, 'likes', this.limit, this.offset)
           .subscribe(handle);
         break;
-
       case 'conImagen':
         this.publicacionesService.obtenerConImagen(this.limit, this.offset)
           .subscribe(handle);

@@ -3,27 +3,37 @@
 
   <div class="feed-area">
 
-    <!-- PUBLICAR -->
     <div class="composer">
+
       <input
         type="text"
         [(ngModel)]="newTitle"
         placeholder="Título de la publicación"
         class="composer-title"
+        (input)="errorTitulo = ''"
       />
+      <label *ngIf="errorTitulo" class="error-label">{{ errorTitulo }}</label>
 
       <textarea
         [(ngModel)]="newPost"
         placeholder="¿Qué estás pensando?"
         class="composer-text"
+        (input)="errorTexto = ''"
       ></textarea>
+      <label *ngIf="errorTexto" class="error-label">{{ errorTexto }}</label>
+
+      <input
+        type="file"
+        accept="image/*"
+        (change)="onFileSelected($event)"
+        class="composer-file"
+      />
 
       <div class="composer-row">
         <button class="btn primary" (click)="sendPost()">Publicar</button>
       </div>
     </div>
 
-    <!-- FILTROS -->
     <div class="filters">
       <select [(ngModel)]="filtro" (change)="aplicarFiltro()">
         <option value="ultimas">Últimas</option>
@@ -41,7 +51,6 @@
       <button class="btn" (click)="buscar()">Buscar</button>
     </div>
 
-    <!-- LISTA DE PUBLICACIONES -->
     <div class="timeline">
       <app-publicacion
         *ngFor="let p of posts"

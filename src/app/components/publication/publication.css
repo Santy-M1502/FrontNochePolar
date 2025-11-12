@@ -117,9 +117,6 @@
   gap: 4px;
 }
 
-/* === ANIMACIONES === */
-
-/* Like (amarillo brillante, sube y vuelve al estado final estable) */
 @keyframes shinePulse {
   0% {
     filter: drop-shadow(0 0 0px rgba(255, 230, 100, 0));
@@ -136,7 +133,6 @@
   }
 }
 
-/* Unlike (azul que se encoge y termina estable como base) */
 @keyframes fadeOutMoon {
   0% {
     opacity: 1;
@@ -147,8 +143,6 @@
     transform: rotate(0deg) scale(1);
   }
 }
-
-/* === ESTILOS BOTÓN === */
 
 .like-btn {
   border: none;
@@ -172,29 +166,24 @@
   transition: all 0.3s ease;
 }
 
-/* Estado base sin like */
 .like-btn:not(.liked) .moon-icon {
   color: #9ad1ff;
   transform: rotate(0deg) scale(1);
 }
 
-/* Estado base con like */
 .like-btn.liked .moon-icon {
   color: #ffd84c;
   transform: rotate(-20deg) scale(1.2);
 }
 
-/* Animación al dar like */
 .like-btn.liked.animate-like .moon-icon {
   animation: shinePulse 0.6s ease forwards;
 }
 
-/* Animación al quitar like */
 .like-btn.unliked .moon-icon {
   animation: fadeOutMoon 0.4s ease forwards;
 }
 
-/* Modal overlay y diálogo */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -227,17 +216,14 @@
   font-size: 0.95rem;
 }
 
-/* Actions */
 .modal-actions {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
 }
 
-/* Botones coherentes con la UI */
-/* .btn ya existe; extendemos primary/danger */
 .btn.primary {
-  background-color: #077e13; /* verde */
+  background-color: #077e13;
   color: #fff;
   padding: 8px 12px;
   border-radius: 8px;
@@ -245,7 +231,7 @@
 }
 
 .btn.danger {
-  background-color: #8e1313; /* rojo */
+  background-color: #8e1313;
   color: #fff;
   padding: 8px 12px;
   border-radius: 8px;
@@ -255,4 +241,52 @@
 .btn[disabled] {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.post-options {
+  cursor: pointer;
+  position: relative;
+  font-size: 20px;
+  user-select: none;
+}
+
+.options-menu {
+  position: absolute;
+  right: 0;
+  top: 20px;
+  background: #1c243a;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.3);
+  padding: 6px 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 20;
+}
+
+.options-menu button {
+  background: transparent;
+  border: none;
+  color: #fff;
+  padding: 8px 14px;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+}
+
+.options-menu button:hover {
+  background: #2c3b57;
+}
+
+.error-msg {
+  color: #e74c3c;
+  font-size: 0.9rem;
+  margin-top: 6px;
+  display: block;
+}
+
+.success-msg {
+  color: #2ecc71;
+  font-size: 0.9rem;
+  margin-top: 6px;
+  display: block;
 }

@@ -189,6 +189,32 @@ textarea:-webkit-autofill:focus {
   margin-bottom: 8px;
 }
 
+.error-msg {
+  color: #e74c3c;
+  font-size: 0.9rem;
+  margin-top: 8px;
+  display: block;
+  text-align: left;
+}
+
+.error-label {
+  color: #e74c3c;
+  font-size: 0.85rem;
+  margin-top: 4px;
+  margin-left: 4px;
+  display: block;
+}
+
+
+.success-msg {
+  color: #2ecc71;
+  font-size: 0.9rem;
+  margin-top: 8px;
+  display: block;
+  text-align: left;
+}
+
+
 @media (max-width: 900px) {
   .body {
     flex-direction: column;

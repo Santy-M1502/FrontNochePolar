@@ -26,7 +26,7 @@
 
       <div class="stats">
         <div class="stat">
-          <div class="num">{{ posts?.length || 0 }}</div>
+          <div class="num">{{ posts.length || 0 }}</div>
           <div class="label">Publicaciones</div>
         </div>
         <div class="stat">
@@ -90,9 +90,11 @@
         <ng-container *ngIf="activeSection === 'me-gusta'">
           <ng-container *ngIf="likedPosts && likedPosts.length; else noLikes">
             <app-publicacion
-              *ngFor="let post of likedPosts | slice:0:visibleLiked"
+              *ngFor="let post of posts | slice:0:visiblePosts"
               [publicacion]="post"
-              [usuarioActualId]="usuarioActualId">
+              [usuarioActualId]="usuarioActualId"
+              (eliminar)="onPublicacionEliminada($event)"
+              (likeChange)="refreshCounts()">
             </app-publicacion>
 
             <button 

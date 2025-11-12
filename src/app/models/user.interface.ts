@@ -10,6 +10,12 @@ export interface User {
   following?: number;
 }
 
+export interface Friend {
+  _id: string;
+  username: string;
+  profileImage?: string;
+}
+
 export interface CreateUserDto {
   username: string;
   password: string;
