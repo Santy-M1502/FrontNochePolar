@@ -1,4 +1,4 @@
-import { Component, Input, signal, effect } from '@angular/core';
+import { Component, Input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ComentariosService } from '../../services/comentarios.service';
@@ -22,8 +22,11 @@ export class ComentariosComponent {
   orden = signal<'recientes' | 'antiguos' | 'populares'>('recientes');
 
   nuevoComentario = signal('');
+  errorComentario = signal('');
   modalVisible = signal(false);
   loading = signal(false);
+
+  readonly MAX_LENGTH = 100;
 
   constructor(private comentariosService: ComentariosService) {}
 
@@ -49,36 +52,49 @@ export class ComentariosComponent {
     if (!this.publicacionId) return;
 
     this.loading.set(true);
-    this.comentariosService.obtenerPorPublicacion(this.publicacionId, this.limit(), this.offset(), this.orden())
-    .subscribe({
-      next: res => {
-        const comentariosConLike = this.marcarLikes(res.comentarios);
-        if (acumular) {
-          this.comentarios.update(prev => [...prev, ...comentariosConLike]);
-        } else {
-          this.comentarios.set(comentariosConLike);
+    this.comentariosService
+      .obtenerPorPublicacion(this.publicacionId, this.limit(), this.offset(), this.orden())
+      .subscribe({
+        next: res => {
+          const comentariosConLike = this.marcarLikes(res.comentarios);
+          if (acumular) {
+            this.comentarios.update(prev => [...prev, ...comentariosConLike]);
+          } else {
+            this.comentarios.set(comentariosConLike);
+          }
+          this.total.set(res.total);
+          this.loading.set(false);
+        },
+        error: err => {
+          console.error(err);
+          this.loading.set(false);
         }
-        this.total.set(res.total);
-        this.loading.set(false);
-      },
-      error: err => {
-        console.error(err);
-        this.loading.set(false);
-      }
-    });
+      });
   }
 
   agregarComentario() {
     const texto = this.nuevoComentario().trim();
-    if (!texto || !this.publicacionId) return;
+    this.errorComentario.set('');
+
+    if (!texto) {
+      this.errorComentario.set('El comentario no puede estar vacío.');
+      return;
+    }
+
+    if (texto.length > this.MAX_LENGTH) {
+      this.errorComentario.set(`El comentario no puede superar los ${this.MAX_LENGTH} caracteres.`);
+      return;
+    }
+
+    if (!this.publicacionId) return;
 
     this.comentariosService.comentarPublicacion(this.publicacionId, texto)
       .subscribe({
         next: nuevo => {
-          // Inicializamos liked en false
           const c = { ...nuevo, liked: false };
           this.comentarios.update(prev => [c, ...prev]);
           this.nuevoComentario.set('');
+          this.errorComentario.set('');
         },
         error: err => console.error(err)
       });

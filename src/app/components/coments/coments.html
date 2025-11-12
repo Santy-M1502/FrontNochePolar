@@ -9,9 +9,18 @@
       <input
         type="text"
         [ngModel]="nuevoComentario()"
-        (ngModelChange)="nuevoComentario.set($event)"
+        (ngModelChange)="nuevoComentario.set($event); errorComentario.set('')"
         placeholder="Escribir comentario..."
+        maxlength="100"
       />
+
+      <div class="comment-info">
+        <small class="contador">{{ nuevoComentario().length }}/100</small>
+        <label *ngIf="errorComentario()" class="error-label">
+          {{ errorComentario() }}
+        </label>
+      </div>
+
       <button (click)="agregarComentario()">Enviar</button>
     </div>
 
