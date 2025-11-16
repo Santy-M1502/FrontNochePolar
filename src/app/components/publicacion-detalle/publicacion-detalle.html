@@ -1,0 +1,29 @@
+<div class="body">
+    <app-side-nav></app-side-nav>
+
+<div class="detalle-container">
+
+  <!-- ESTADO: cargando o error -->
+  <ng-container *ngIf="cargando || error; else detalleOk">
+    <div class="estado-box">
+      <p *ngIf="cargando">Cargando...</p>
+      <p *ngIf="error">{{ error }}</p>
+    </div>
+  </ng-container>
+
+  <!-- PUBLICACION + COMENTARIOS -->
+  <ng-template #detalleOk>
+    <div class="detalle-wrapper">
+      
+      <app-publicacion
+        [publicacion]="publicacion"
+        [usuarioActualId]="publicacion?.usuarioId">
+      </app-publicacion>
+
+      <h3>Comentarios</h3>
+
+    </div>
+  </ng-template>
+</div>
+<app-chat></app-chat>
+</div>

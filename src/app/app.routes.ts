@@ -4,6 +4,7 @@ import { RegisterComponent } from './components/register/register';
 import { ProfileComponent } from './components/profile/profile';
 import { authGuard } from './guards/auth.guard';
 import { Publications } from './components/publications/publications';
+import { PublicacionDetalleComponent } from './components/publicacion-detalle/publicacion-detalle';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -18,6 +19,10 @@ export const routes: Routes = [
     path: 'publicaciones',
     component: Publications,
     canActivate: [authGuard]
+  },
+  {
+    path: 'publicacion/:id',
+    component: PublicacionDetalleComponent
   },
   { path: '**', redirectTo: '/login' }
 ];

@@ -10,6 +10,7 @@ import { Publicacion } from '../../models/publication.interface';
 import { PublicacionesService } from '../../services/publication.service';
 import { ComentariosComponent } from '../coments/coments';
 import { UserService } from '../../services/user.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-publicacion',
@@ -42,7 +43,8 @@ export class PublicacionComponent {
 
   constructor(
     private publicacionesService: PublicacionesService,
-    private userService: UserService
+    private userService: UserService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -55,6 +57,10 @@ export class PublicacionComponent {
 
   ngOnDestroy() {
     document.removeEventListener('click', this.cerrarMenu.bind(this));
+  }
+
+  verDetalle(id: string) {
+    this.router.navigate(['/publicacion', id]);
   }
 
   private setError(msg: string) {

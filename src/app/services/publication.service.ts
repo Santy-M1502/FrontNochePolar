@@ -29,13 +29,17 @@ export class PublicacionesService {
     return this.http.delete<Publicacion>(`${this.apiUrl}/publicaciones/${publicacionId}/like`);
   }
 
+  obtenerPublicacionPorId(id: string): Observable<Publicacion> {
+    return this.http.get<Publicacion>(`${this.apiUrl}/publicaciones/${id}`);
+  }
+
   obtenerUltimas(limit: number = 5, offset: number = 0): Observable<Publicacion[]> {
     const params = new HttpParams()
-      .set('limit', limit)
-      .set('offset', offset);
+        .set('limit', limit)
+        .set('offset', offset);
 
-    return this.http.get<Publicacion[]>(`${this.apiUrl}/publicaciones/ultimas`, { params });
-  }
+      return this.http.get<Publicacion[]>(`${this.apiUrl}/publicaciones/ultimas`, { params });
+    }
 
   obtenerActivas(limit: number = 10, offset: number = 0): Observable<Publicacion[]> {
     const params = new HttpParams().set('limit', limit).set('offset', offset);

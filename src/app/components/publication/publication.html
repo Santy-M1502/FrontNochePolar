@@ -1,4 +1,4 @@
-<div class="post-card">
+<div class="post-card" (click)="verDetalle(publicacion._id)">
   <img
     class="post-avatar"
     [src]="publicacion.usuario?.profileImage || 'https://i.pravatar.cc/48?img=65'"
@@ -12,10 +12,10 @@
         {{ publicacion.createdAt ? (publicacion.createdAt | date: 'short') : '' }}
       </span>
 
-      <div class="post-options" (click)="toggleMenu($event)">
+      <div class="post-options" (click)="toggleMenu($event); $event.stopPropagation()">
         ⋮
         <div class="options-menu" *ngIf="menuVisible">
-          <button *ngIf="esMia()" (click)="mostrarConfirm($event)">🗑 Eliminar</button>
+          <button (click)="mostrarConfirm($event); $event.stopPropagation()"></button>
           <button *ngIf="!esMia()" (click)="agregarAmigo()">➕ Agregar amigo</button>
         </div>
       </div>
@@ -40,7 +40,7 @@
         class="btn like-btn"
         id="like-{{ publicacion._id }}"
         [class.liked]="publicacion.liked"
-        (click)="publicacion.liked ? quitarLike() : darLike()"
+        (click)="publicacion.liked ? quitarLike() : darLike(); $event.stopPropagation()"
       >
         <span class="moon-icon">{{ publicacion.liked ? '🌙' : '🌑' }}</span>
         <span *ngIf="likesCount() > 0">{{ likesCount() }}</span>
@@ -49,6 +49,7 @@
       <app-comentarios
         [publicacionId]="publicacion._id"
         [usuarioActualId]="usuarioActualId"
+        (click)="$event.stopPropagation()"
       ></app-comentarios>
     </div>
 
