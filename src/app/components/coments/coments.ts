@@ -32,6 +32,12 @@ export class ComentariosComponent {
 
   constructor(private comentariosService: ComentariosService) {}
 
+  ngOnInit() {
+    this.comentariosService.comentarios$.subscribe(comentarios => {
+      this.comentarios.set(this.marcarLikes(comentarios));
+    });
+  }
+
   private persistCache() {
     try {
       const obj: Record<string, boolean> = {};
@@ -55,25 +61,13 @@ export class ComentariosComponent {
     if (this.likedCache().size === 0) this.loadCacheFromStorage();
 
     return comentarios.map(c => {
-      const likesArray = (c as any).likes && Array.isArray((c as any).likes)
-        ? (c as any).likes as string[]
-        : null;
-
-      const likedFromArray = likesArray && this.usuarioActualId
-        ? likesArray.includes(this.usuarioActualId)
-        : null;
-
+      const likesArray = Array.isArray((c as any).likes) ? (c as any).likes as string[] : null;
+      const likedFromArray = likesArray && this.usuarioActualId ? likesArray.includes(this.usuarioActualId) : null;
       const likedFromCache = this.likedCache().get(c._id);
-
       const finalLiked = likedFromArray ?? likedFromCache ?? !!c.liked;
-
       const computedLikesCount = likesArray ? likesArray.length : (c.likesCount || 0);
 
-      return {
-        ...c,
-        liked: finalLiked,
-        likesCount: computedLikesCount
-      };
+      return { ...c, liked: finalLiked, likesCount: computedLikesCount };
     });
   }
 
@@ -81,34 +75,36 @@ export class ComentariosComponent {
     this.modalVisible.set(true);
     this.offset.set(0);
     this.loadCacheFromStorage();
-    this.cargarComentarios(false);
+    this.cargarComentarios(true);
   }
 
   cerrarModal() {
     this.modalVisible.set(false);
   }
 
-  cargarComentarios(acumular = false) {
+  cargarComentarios(reiniciar = false) {
     if (!this.publicacionId) return;
 
     this.loading.set(true);
+
+    if (reiniciar) {
+      this.comentariosService.limpiarComentarios();
+      this.offset.set(0);
+    }
+
+    const token = localStorage.getItem('token') || '';
+
     this.comentariosService
-      .obtenerPorPublicacion(this.publicacionId, this.limit(), this.offset(), this.orden())
+      .obtenerPorPublicacion(
+        this.publicacionId,
+        this.limit(),
+        this.offset(),
+        this.orden(),
+        token
+      )
       .subscribe({
-        next: res => {
-          const comentariosConLike = this.marcarLikes(res.comentarios);
-          if (acumular) {
-            this.comentarios.update(prev => [...prev, ...comentariosConLike]);
-          } else {
-            this.comentarios.set(comentariosConLike);
-          }
-          this.total.set(res.total);
-          this.loading.set(false);
-        },
-        error: err => {
-          console.error(err);
-          this.loading.set(false);
-        }
+        next: () => this.loading.set(false),
+        error: () => this.loading.set(false)
       });
   }
 
@@ -128,33 +124,35 @@ export class ComentariosComponent {
 
     if (!this.publicacionId) return;
 
-    this.comentariosService.comentarPublicacion(this.publicacionId, texto)
+    const token = localStorage.getItem('token');
+    if (!token) {
+      this.errorComentario.set('No estás autenticado.');
+      return;
+    }
+
+    this.comentariosService.comentarPublicacion(this.publicacionId, texto, token)
       .subscribe({
-        next: nuevo => {
-          const c = { ...nuevo, liked: false };
-          this.comentarios.update(prev => [c, ...prev]);
-          this.nuevoComentario.set('');
-          this.errorComentario.set('');
-        },
+        next: () => this.nuevoComentario.set(''),
         error: err => console.error(err)
       });
   }
 
   darLike(comentario: Comentario) {
     if (!comentario._id || comentario.liked) return;
+    const token = localStorage.getItem('token');
+    if (!token) return;
 
     comentario.liked = true;
     comentario.likesCount = (comentario.likesCount || 0) + 1;
 
-    this.comentariosService.darLike(comentario._id).subscribe({
+    this.comentariosService.darLike(comentario._id, token).subscribe({
       next: () => {
         const m = new Map(this.likedCache());
         m.set(comentario._id, true);
         this.likedCache.set(m);
         this.persistCache();
       },
-      error: err => {
-        console.error(err);
+      error: () => {
         comentario.liked = false;
         comentario.likesCount = Math.max((comentario.likesCount || 1) - 1, 0);
       }
@@ -163,19 +161,20 @@ export class ComentariosComponent {
 
   quitarLike(comentario: Comentario) {
     if (!comentario._id || !comentario.liked) return;
+    const token = localStorage.getItem('token');
+    if (!token) return;
 
     comentario.liked = false;
     comentario.likesCount = Math.max((comentario.likesCount || 1) - 1, 0);
 
-    this.comentariosService.quitarLike(comentario._id).subscribe({
+    this.comentariosService.quitarLike(comentario._id, token).subscribe({
       next: () => {
         const m = new Map(this.likedCache());
         m.set(comentario._id, false);
         this.likedCache.set(m);
         this.persistCache();
       },
-      error: err => {
-        console.error(err);
+      error: () => {
         comentario.liked = true;
         comentario.likesCount = (comentario.likesCount || 0) + 1;
       }
@@ -184,6 +183,6 @@ export class ComentariosComponent {
 
   cargarMas() {
     this.offset.update(v => v + this.limit());
-    this.cargarComentarios(true);
+    this.cargarComentarios(false);
   }
 }

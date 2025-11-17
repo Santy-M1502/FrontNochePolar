@@ -15,7 +15,7 @@
       <div class="post-options" (click)="toggleMenu($event); $event.stopPropagation()">
         ⋮
         <div class="options-menu" *ngIf="menuVisible">
-          <button (click)="mostrarConfirm($event); $event.stopPropagation()"></button>
+          <button (click)="mostrarConfirm($event); $event.stopPropagation()">🗑️ Eliminar publicacion</button>
           <button *ngIf="!esMia()" (click)="agregarAmigo()">➕ Agregar amigo</button>
         </div>
       </div>

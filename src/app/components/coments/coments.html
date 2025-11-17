@@ -1,4 +1,4 @@
-<button class="btn comment-btn" (click)="abrirModal()">💬 Comentarios</button>
+<button class="btn comment-btn" (click)="abrirModal()">💬 Comentar</button>
 
 <div class="modal-overlay" *ngIf="modalVisible()" (click)="cerrarModal()">
   <div class="comentarios-modal" (click)="$event.stopPropagation()">
@@ -25,21 +25,6 @@
     </div>
 
     <div *ngIf="loading()">Cargando...</div>
-
-    <ul>
-      <li *ngFor="let c of comentarios()">
-        <div class="comment-content">
-          <strong>{{ c.usuario.username }}</strong>
-          <p>{{ c.texto }}</p>
-        </div>
-
-        <div class="comment-actions">
-          <button (click)="c.liked ? quitarLike(c) : darLike(c)">
-            {{ c.liked ? '💙' : '🤍' }} {{ c.likesCount }}
-          </button>
-        </div>
-      </li>
-    </ul>
 
     <button *ngIf="offset() + limit() < total()" (click)="cargarMas()">
       Cargar más

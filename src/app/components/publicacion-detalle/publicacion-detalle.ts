@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PublicacionesService } from '../../services/publication.service';
-import { ComentariosService } from '../../services/comentarios.service';
 import { SideNavComponent } from "../side-nav/side-nav";
 import { PublicacionComponent } from "../publication/publication";
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Comentario } from '../../models/comentario.interface';
 import { Chat } from "../chat/chat";
+import { Comentario } from '../../models/comentario.interface';
 
 @Component({
   selector: 'app-publicacion-detalle',
@@ -18,14 +17,12 @@ import { Chat } from "../chat/chat";
 export class PublicacionDetalleComponent implements OnInit {
   publicacion: any;
 
-  // Estado pantalla
   cargando = true;
   error: string | null = null;
 
-  // Comentarios
-  comentarios: any[] = [];
+  comentarios: Comentario[] = [];
   totalComentarios = 0;
-  limit = 5;
+  limit = 3;
   offset = 0;
   orden: 'recientes' | 'antiguos' | 'populares' = 'recientes';
   cargandoComentarios = false;
@@ -34,52 +31,70 @@ export class PublicacionDetalleComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private publicacionesSrv: PublicacionesService,
-    private comentariosSrv: ComentariosService
+    private publicacionesSrv: PublicacionesService
   ) {}
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
-    if (id) this.cargarPublicacion(id);
+    if (id) {
+      this.cargarPublicacion(id);
+    }
   }
 
   cargarPublicacion(id: string) {
+    this.cargando = true;
     this.publicacionesSrv.obtenerPublicacionPorId(id).subscribe({
       next: (pub) => {
         this.publicacion = pub;
         this.cargando = false;
-        this.cargarComentarios(); // Primera carga
+
+        this.comentarios = (pub.comentarios || []).map((c: Comentario) => ({
+          ...c,
+          liked: false,
+          likesCount: c.likesCount || 0,
+          usuario: {
+            ...c.usuario,
+            profileImage: c.usuario.profileImage || 'https://i.pravatar.cc/48?img=65'
+          }
+        })) || [];
+        this.totalComentarios = this.comentarios.length;
       },
-      error: (err) => {
+      error: () => {
         this.error = 'No se encontró la publicación.';
         this.cargando = false;
       },
     });
   }
 
-  cargarComentarios() {
-    if (!this.publicacion?._id) return;
-    this.cargandoComentarios = true;
-
-    this.comentariosSrv
-      .obtenerPorPublicacion(this.publicacion._id, this.limit, this.offset, this.orden)
-      .subscribe({
-        next: (res) => {
-          this.comentarios = [...this.comentarios, ...res.comentarios];
-          this.totalComentarios = res.total;
-          this.cargandoComentarios = false;
-        },
-        error: () => {
-          this.cargandoComentarios = false;
-        },
-      });
-  }
-
   cargarMas() {
+    if (this.comentarios.length >= this.totalComentarios) return;
     this.cargandoMas = true;
     this.offset += this.limit;
-    this.cargarComentarios();
-    setTimeout(() => (this.cargandoMas = false), 500);
+
+    // Simular carga de más comentarios si ya vienen todos desde el back
+    setTimeout(() => {
+      this.cargandoMas = false;
+    }, 500);
+  }
+
+  darLike(comentario: Comentario) {
+    if (!comentario) return;
+
+    comentario.liked = true;
+    comentario.likesCount = (comentario.likesCount || 0) + 1;
+
+    // Aquí podrías llamar al servicio si tu back soporta likes en comentarios
+    // this.comentariosSrv.darLike(comentario._id).subscribe({ ... })
+  }
+
+  quitarLike(comentario: Comentario) {
+    if (!comentario) return;
+
+    comentario.liked = false;
+    comentario.likesCount = (comentario.likesCount || 1) - 1;
+
+    // Aquí podrías llamar al servicio si tu back soporta quitar like
+    // this.comentariosSrv.quitarLike(comentario._id).subscribe({ ... })
   }
 
   comentar() {
@@ -87,11 +102,17 @@ export class PublicacionDetalleComponent implements OnInit {
     const texto = this.nuevoComentario;
     this.nuevoComentario = '';
 
-    this.comentariosSrv.comentarPublicacion(this.publicacion._id, texto).subscribe({
-      next: (nuevo) => {
-        this.comentarios.unshift(nuevo); // Se agrega arriba
-      },
-      error: () => {},
-    });
+    // Agrega comentario localmente
+    const nuevo: Comentario = {
+      _id: Date.now().toString(),
+      usuario: { _id: 'anon', username: 'Anónimo', profileImage: 'https://i.pravatar.cc/48?img=65' },
+      texto,
+      likesCount: 0,
+      liked: false,
+      createdAt: new Date().toISOString(),
+      respuestas: []
+    };
+    this.comentarios.unshift(nuevo);
+    this.totalComentarios++;
   }
 }

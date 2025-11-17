@@ -1,29 +1,67 @@
 <div class="body">
-    <app-side-nav></app-side-nav>
+  <app-side-nav></app-side-nav>
 
-<div class="detalle-container">
+  <div class="detalle-container">
 
-  <!-- ESTADO: cargando o error -->
-  <ng-container *ngIf="cargando || error; else detalleOk">
-    <div class="estado-box">
-      <p *ngIf="cargando">Cargando...</p>
-      <p *ngIf="error">{{ error }}</p>
-    </div>
-  </ng-container>
+    <ng-container *ngIf="cargando || error; else detalleOk">
+      <div class="estado-box">
+        <p *ngIf="cargando">Cargando...</p>
+        <p *ngIf="error">{{ error }}</p>
+      </div>
+    </ng-container>
 
-  <!-- PUBLICACION + COMENTARIOS -->
-  <ng-template #detalleOk>
-    <div class="detalle-wrapper">
-      
-      <app-publicacion
-        [publicacion]="publicacion"
-        [usuarioActualId]="publicacion?.usuarioId">
-      </app-publicacion>
+    <ng-template #detalleOk>
+      <div class="detalle-wrapper">
 
-      <h3>Comentarios</h3>
+        <app-publicacion
+          [publicacion]="publicacion"
+          [usuarioActualId]="publicacion?.usuarioId">
+        </app-publicacion>
 
-    </div>
-  </ng-template>
-</div>
-<app-chat></app-chat>
+        <h3>Comentarios</h3>
+
+        <div class="comentarios-lista">
+          <div *ngFor="let comentario of comentarios" class="comentario-card">
+            <div class="comentario-header">
+              <img [src]="comentario.usuario.profileImage ?? 'https://i.pravatar.cc/48?img=65'"
+              alt="avatar"
+              class="avatar">
+              <ng-template #defaultAvatar>
+                <img src="https://i.pravatar.cc/48?img=65" alt="avatar" class="avatar placeholder">
+              </ng-template>
+
+              <div class="usuario-info">
+                <strong>{{ comentario.usuario.username }}</strong>
+                <span class="fecha">{{ comentario.createdAt | date:'short' }}</span>
+              </div>
+            </div>
+
+            <p class="comentario-texto">{{ comentario.texto }}</p>
+
+            <div class="comentario-footer">
+              <button
+                class="btn like-btn"
+                [class.liked]="comentario.liked"
+                (click)="comentario.liked ? quitarLike(comentario) : darLike(comentario)">
+                <span class="moon-icon">{{ comentario.liked ? '🌙' : '🌑' }}</span>
+                <span *ngIf="(comentario.likesCount ?? 0) > 0">{{ comentario.likesCount }}</span>
+              </button>
+            </div>
+          </div>
+
+          <button
+            *ngIf="comentarios.length < totalComentarios && !cargandoComentarios"
+            (click)="cargarMas()"
+            class="btn-cargar-mas">
+            Cargar más
+          </button>
+
+          <p *ngIf="cargandoComentarios">Cargando...</p>
+        </div>
+
+      </div>
+    </ng-template>
+  </div>
+
+  <app-chat></app-chat>
 </div>

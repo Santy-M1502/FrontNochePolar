@@ -1,3 +1,4 @@
+import { Comentario } from './comentario.interface';
 import { User } from './user.interface';
 
 interface PublicacionAuthor {
@@ -18,6 +19,7 @@ export interface Publicacion {
   imagenUrl?: string | null;
   createdAt?: string;
   updatedAt?: string;
+  comentarios?: Comentario[];
 }
 
 export interface PublicacionQuery {
