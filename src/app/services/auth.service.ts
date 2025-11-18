@@ -16,11 +16,6 @@ export class AuthService {
   currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private http: HttpClient) {
-    const token = this.getToken();
-    if (token) {
-      // si hay token, intento cargar perfil desde backend
-      this.loadUserProfile();
-    }
   }
 
   // setea y emite el usuario (llamar cuando actualizas user desde cualquier sitio)

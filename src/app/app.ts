@@ -16,12 +16,9 @@ export class App {
   const token = this.authService.getToken();
   if (token) {
     const user = this.authService.loadUserProfileFromStorage();
-    if (user) {
-      // usuario cargado, ya se considera logueado
-      // opcional: podés validar token con backend aquí si querés
-    } else {
-      // token existe pero usuario no está en localStorage → limpiar token
-      localStorage.removeItem('token');
+    if (!user) {
+      // token existe pero usuario no estaba en localStorage → cargamos desde backend
+      this.authService.loadUserProfile();
     }
   }
 }
