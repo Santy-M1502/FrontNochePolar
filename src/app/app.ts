@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { AuthService } from './services/auth.service';
 
 @Component({
@@ -10,16 +10,23 @@ import { AuthService } from './services/auth.service';
 })
 export class App {
 
-  constructor(private authService: AuthService){}
+  constructor(private authService: AuthService, private router: Router){}
 
   ngOnInit() {
-  const token = this.authService.getToken();
-  if (token) {
-    const user = this.authService.loadUserProfileFromStorage();
-    if (!user) {
-      // token existe pero usuario no estaba en localStorage → cargamos desde backend
-      this.authService.loadUserProfile();
-    }
+    const token = this.authService.getToken();
+
+    setTimeout(() => {
+      if (token) {
+        const user = this.authService.loadUserProfileFromStorage();
+        if (user) {
+          this.router.navigate(['/publicaciones']);
+        } else {
+          this.authService.loadUserProfile();
+          this.router.navigate(['/publicaciones']);
+        }
+      } else {
+        this.router.navigate(['/login']);
+      }
+    }, 500);
   }
-}
 }
