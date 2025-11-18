@@ -12,11 +12,12 @@ import { ComentariosComponent } from '../coments/coments';
 import { UserService } from '../../services/user.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-publicacion',
   standalone: true,
-  imports: [CommonModule, ComentariosComponent],
+  imports: [CommonModule, ComentariosComponent, FormsModule, CommonModule],
   templateUrl: './publication.html',
   styleUrls: ['./publication.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,7 +39,9 @@ export class PublicacionComponent {
   animatingUnlike = false;
   comentariosModalVisible = false;
   confirmVisible = false;
-
+  editarPublicacionSeleccionada: Publicacion | null = null;
+  publicacionEditadaTitulo: string = '';
+  publicacionEditadoTexto: string = '';
   errorMsg: string | null = null;
   successMsg: string | null = null;
 
@@ -240,5 +243,27 @@ export class PublicacionComponent {
 
   private cerrarMenu() {
     if (this.menuVisible) this.menuVisible = false;
+  }
+
+  abrirModalEditarPublicacion(pub: Publicacion) {
+  this.editarPublicacionSeleccionada = pub;
+  this.publicacionEditadaTitulo = pub.titulo || '';
+  this.publicacionEditadoTexto = pub.texto || '';
+}
+
+  guardarEdicionPublicacion() {
+    if (!this.editarPublicacionSeleccionada) return;
+
+    // Asignar cambios localmente
+    this.editarPublicacionSeleccionada.titulo = this.publicacionEditadaTitulo;
+    this.editarPublicacionSeleccionada.texto = this.publicacionEditadoTexto;
+    this.editarPublicacionSeleccionada.editado = true;
+
+    this.editarPublicacionSeleccionada = null;
+  }
+
+  // Cancelar edición
+  cancelarEdicionPublicacion() {
+    this.editarPublicacionSeleccionada = null;
   }
 }

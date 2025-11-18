@@ -20,6 +20,7 @@ export interface Publicacion {
   createdAt?: string;
   updatedAt?: string;
   comentarios?: Comentario[];
+  editado?: boolean
 }
 
 export interface PublicacionQuery {

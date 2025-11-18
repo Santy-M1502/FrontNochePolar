@@ -7,16 +7,18 @@
 
   <div class="post-body">
     <div class="post-header">
-      <strong>{{ publicacion.usuario?.username || 'Desconocido' }}</strong>
-      <span class="post-meta">
-        {{ publicacion.createdAt ? (publicacion.createdAt | date: 'short') : '' }}
-      </span>
+      <div class="usuario-nombre-fecha">
+        <strong>{{ publicacion.usuario?.username || 'Desconocido' }}</strong>
+        <span class="post-meta">{{ publicacion.createdAt | date: 'short' }}</span>
+        <span *ngIf="publicacion.editado" class="editado">(editado)</span>
+      </div>
 
-      <div class="post-options" (click)="toggleMenu($event); $event.stopPropagation()">
+      <!-- Mini menú 3 puntitos -->
+      <div class="post-options" *ngIf="esMia()" (click)="toggleMenu($event)">
         ⋮
         <div class="options-menu" *ngIf="menuVisible">
-          <button (click)="mostrarConfirm($event); $event.stopPropagation()">🗑️ Eliminar publicacion</button>
-          <button *ngIf="!esMia()" (click)="agregarAmigo()">➕ Agregar amigo</button>
+          <button (click)="abrirModalEditarPublicacion(publicacion); $event.stopPropagation()">✏️ Editar publicación</button>
+          <button (click)="mostrarConfirm($event); $event.stopPropagation()">🗑️ Eliminar publicación</button>
         </div>
       </div>
     </div>
@@ -28,17 +30,11 @@
     </div>
     <div class="post-content">{{ publicacion.texto }}</div>
 
-    <img
-      *ngIf="publicacion.imagenUrl"
-      [src]="publicacion.imagenUrl"
-      alt="Imagen publicación"
-      class="post-image"
-    />
+    <img *ngIf="publicacion.imagenUrl" [src]="publicacion.imagenUrl" alt="Imagen publicación" class="post-image" />
 
     <div class="post-actions">
       <button
         class="btn like-btn"
-        id="like-{{ publicacion._id }}"
         [class.liked]="publicacion.liked"
         (click)="publicacion.liked ? quitarLike() : darLike(); $event.stopPropagation()"
       >
@@ -58,13 +54,15 @@
   </div>
 </div>
 
-<div class="modal-overlay" *ngIf="confirmVisible" (click)="cancelarEliminar()">
-  <div class="confirm-modal" (click)="$event.stopPropagation()">
-    <h3>Eliminar publicación</h3>
-    <p>¿Estás seguro que querés eliminar esta publicación? Esta acción la ocultará para todos.</p>
-    <div class="modal-actions">
-      <button class="btn" (click)="cancelarEliminar()">Cancelar</button>
-      <button class="btn danger" [disabled]="processing" (click)="confirmarEliminar()">Eliminar</button>
+<!-- Modal edición publicación -->
+<div class="modal-overlay" *ngIf="editarPublicacionSeleccionada">
+  <div class="edit-modal">
+    <h3>Editar publicación</h3>
+    <input type="text" [(ngModel)]="publicacionEditadaTitulo" placeholder="Título" class="input-titulo"/>
+    <textarea [(ngModel)]="publicacionEditadoTexto" rows="4" placeholder="Texto de la publicación"></textarea>
+    <div class="botones-modal">
+      <button class="btn btn-guardar" (click)="guardarEdicionPublicacion()">Guardar</button>
+      <button class="btn btn-cancelar" (click)="cancelarEdicionPublicacion()">Cancelar</button>
     </div>
   </div>
 </div>
