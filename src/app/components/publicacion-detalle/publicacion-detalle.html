@@ -15,7 +15,7 @@
 
         <app-publicacion
           [publicacion]="publicacion"
-          [usuarioActualId]="publicacion?.usuarioId">
+          [usuarioActualId]="authService.getCurrentUser()?._id ?? null">
         </app-publicacion>
 
         <h3>Comentarios</h3>

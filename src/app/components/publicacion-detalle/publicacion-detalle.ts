@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Chat } from "../chat/chat";
 import { Comentario } from '../../models/comentario.interface';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-publicacion-detalle',
@@ -31,7 +32,8 @@ export class PublicacionDetalleComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private publicacionesSrv: PublicacionesService
+    private publicacionesSrv: PublicacionesService,
+    public authService: AuthService
   ) {}
 
   ngOnInit() {

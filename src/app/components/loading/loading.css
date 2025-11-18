@@ -1,0 +1,13 @@
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: white;
+  z-index: 9999;
+}
+.loading-screen img {
+  width: 120px;
+  height: auto;
+}

@@ -11,6 +11,7 @@ import { PublicacionesService } from '../../services/publication.service';
 import { ComentariosComponent } from '../coments/coments';
 import { UserService } from '../../services/user.service';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-publicacion',
@@ -44,7 +45,8 @@ export class PublicacionComponent {
   constructor(
     private publicacionesService: PublicacionesService,
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
