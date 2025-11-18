@@ -292,3 +292,14 @@
 .btn-cargar-mas:hover {
   background: #555;
 }
+
+.sin-comentarios {
+  text-align: center;
+  font-size: 0.95rem;
+  color: #ffd700;
+  padding: 16px 0;
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  margin-top: 8px;
+}
