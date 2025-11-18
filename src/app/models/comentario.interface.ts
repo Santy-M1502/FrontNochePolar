@@ -11,4 +11,5 @@ export interface Comentario {
   liked?: boolean;
   createdAt?: string;
   respuestas?: Comentario[];
+  editado?: boolean;
 }

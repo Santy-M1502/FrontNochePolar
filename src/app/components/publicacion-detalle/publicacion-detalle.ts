@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 import { Chat } from "../chat/chat";
 import { Comentario } from '../../models/comentario.interface';
 import { AuthService } from '../../services/auth.service';
+import { ComentariosService } from '../../services/comentarios.service';
 
 @Component({
   selector: 'app-publicacion-detalle',
@@ -17,7 +18,6 @@ import { AuthService } from '../../services/auth.service';
 })
 export class PublicacionDetalleComponent implements OnInit {
   publicacion: any;
-
   cargando = true;
   error: string | null = null;
 
@@ -30,17 +30,20 @@ export class PublicacionDetalleComponent implements OnInit {
   cargandoMas = false;
   nuevoComentario = '';
 
+  editarComentarioSeleccionado: Comentario | null = null;
+  comentarioEditadoTexto = '';
+  maxPalabras = 200;
+
   constructor(
     private route: ActivatedRoute,
     private publicacionesSrv: PublicacionesService,
-    public authService: AuthService
+    public authService: AuthService,
+    private comentariosSrv: ComentariosService
   ) {}
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.cargarPublicacion(id);
-    }
+    if (id) this.cargarPublicacion(id);
   }
 
   cargarPublicacion(id: string) {
@@ -50,10 +53,12 @@ export class PublicacionDetalleComponent implements OnInit {
         this.publicacion = pub;
         this.cargando = false;
 
+        const uid = this.authService.getCurrentUser()?._id ?? '';
         this.comentarios = (pub.comentarios || []).map((c: Comentario) => ({
           ...c,
-          liked: false,
+          liked: c.likes?.includes(uid) ?? false,
           likesCount: c.likesCount || 0,
+          editado: c.editado || false,
           usuario: {
             ...c.usuario,
             profileImage: c.usuario.profileImage || 'https://i.pravatar.cc/48?img=65'
@@ -72,31 +77,52 @@ export class PublicacionDetalleComponent implements OnInit {
     if (this.comentarios.length >= this.totalComentarios) return;
     this.cargandoMas = true;
     this.offset += this.limit;
+    setTimeout(() => this.cargandoMas = false, 500);
+  }
 
-    // Simular carga de más comentarios si ya vienen todos desde el back
-    setTimeout(() => {
-      this.cargandoMas = false;
-    }, 500);
+  esMioComentario(comentario: Comentario): boolean {
+    const uid = this.authService.getCurrentUser()?._id;
+    return !!comentario && !!uid && comentario.usuario?._id === uid;
   }
 
   darLike(comentario: Comentario) {
-    if (!comentario) return;
+    const uid = this.authService.getCurrentUser()?._id;
+    const token = this.authService.getToken();
+    if (!comentario || !uid || !token) return;
 
     comentario.liked = true;
     comentario.likesCount = (comentario.likesCount || 0) + 1;
+    comentario.likes = comentario.likes || [];
+    comentario.likes.push(uid);
 
-    // Aquí podrías llamar al servicio si tu back soporta likes en comentarios
-    // this.comentariosSrv.darLike(comentario._id).subscribe({ ... })
+    this.comentariosSrv.darLike(comentario._id, token).subscribe({
+      next: () => {},
+      error: () => {
+        comentario.liked = false;
+        comentario.likesCount = Math.max((comentario.likesCount || 1) - 1, 0);
+        comentario.likes = comentario.likes?.filter(id => id !== uid);
+      }
+    });
   }
 
   quitarLike(comentario: Comentario) {
-    if (!comentario) return;
+    const uid = this.authService.getCurrentUser()?._id;
+    const token = this.authService.getToken();
+    if (!comentario || !uid || !token) return;
 
     comentario.liked = false;
-    comentario.likesCount = (comentario.likesCount || 1) - 1;
+    comentario.likesCount = Math.max((comentario.likesCount || 1) - 1, 0);
+    comentario.likes = comentario.likes?.filter(id => id !== uid);
 
-    // Aquí podrías llamar al servicio si tu back soporta quitar like
-    // this.comentariosSrv.quitarLike(comentario._id).subscribe({ ... })
+    this.comentariosSrv.quitarLike(comentario._id, token).subscribe({
+      next: () => {},
+      error: () => {
+        comentario.liked = true;
+        comentario.likesCount = (comentario.likesCount || 0) + 1;
+        comentario.likes = comentario.likes || [];
+        comentario.likes.push(uid);
+      }
+    });
   }
 
   comentar() {
@@ -104,7 +130,6 @@ export class PublicacionDetalleComponent implements OnInit {
     const texto = this.nuevoComentario;
     this.nuevoComentario = '';
 
-    // Agrega comentario localmente
     const nuevo: Comentario = {
       _id: Date.now().toString(),
       usuario: { _id: 'anon', username: 'Anónimo', profileImage: 'https://i.pravatar.cc/48?img=65' },
@@ -112,9 +137,37 @@ export class PublicacionDetalleComponent implements OnInit {
       likesCount: 0,
       liked: false,
       createdAt: new Date().toISOString(),
-      respuestas: []
+      respuestas: [],
+      editado: false,
+      likes: []
     };
     this.comentarios.unshift(nuevo);
     this.totalComentarios++;
+  }
+
+  abrirModalEditar(comentario: Comentario) {
+    if (!this.esMioComentario(comentario)) return;
+    this.editarComentarioSeleccionado = comentario;
+    this.comentarioEditadoTexto = comentario.texto;
+  }
+
+  guardarEdicion() {
+    if (!this.editarComentarioSeleccionado) return;
+    const palabras = this.comentarioEditadoTexto.trim().split(/\s+/);
+    if (palabras.length > this.maxPalabras) palabras.length = this.maxPalabras;
+    this.editarComentarioSeleccionado.texto = palabras.join(' ');
+    this.editarComentarioSeleccionado.editado = true;
+    this.editarComentarioSeleccionado = null;
+    this.comentarioEditadoTexto = '';
+  }
+
+  get palabrasComentarioEditado(): number {
+    if (!this.comentarioEditadoTexto) return 0;
+    return this.comentarioEditadoTexto.trim().split(/\s+/).length;
+  }
+
+  cancelarEdicion() {
+    this.editarComentarioSeleccionado = null;
+    this.comentarioEditadoTexto = '';
   }
 }

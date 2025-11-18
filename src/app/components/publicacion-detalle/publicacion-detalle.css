@@ -14,7 +14,6 @@
   flex: 1;
 }
 
-/* Caja principal donde va la publicación y comentarios */
 .detalle-wrapper {
   max-width: 720px;
   margin: 0 auto;
@@ -23,7 +22,6 @@
   gap: 22px;
 }
 
-/* Publicación en grande */
 .detalle-wrapper app-publicacion,
 .detalle-wrapper app-comentarios {
   background: rgba(255,255,255,0.06);
@@ -34,14 +32,12 @@
   display: block;
 }
 
-/* Título comentarios */
 .detalle-wrapper h3 {
   margin: 10px 0 0 6px;
   font-size: 1.25rem;
   font-weight: 600;
 }
 
-/* Estado de error o cargando */
 .estado-box {
   margin: 140px auto;
   max-width: 350px;
@@ -54,11 +50,10 @@
   border: 1px solid rgba(255,255,255,0.12);
 }
 
-/* MOBILE: oculta margen del menú */
 @media (max-width: 900px) {
   .detalle-container {
     margin-left: 0;
-    padding-top: 90px; /* porque el menú pasa a top */
+    padding-top: 90px;
   }
 }
 
@@ -75,6 +70,7 @@
   padding: 12px 16px;
   border: 1px solid rgba(255,255,255,0.08);
   transition: background 0.2s;
+  position: relative;
 }
 
 .comentario-card:hover {
@@ -86,6 +82,7 @@
   align-items: center;
   gap: 10px;
   margin-bottom: 6px;
+  justify-content: space-between;
 }
 
 .avatar {
@@ -102,6 +99,13 @@
 .usuario-info {
   display: flex;
   flex-direction: column;
+  flex: 1;
+}
+
+.usuario-nombre-fecha {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .usuario-info strong {
@@ -113,6 +117,11 @@
   color: rgba(255,255,255,0.5);
 }
 
+.editado {
+  font-size: 0.7rem;
+  color: #ffd700;
+}
+
 .comentario-texto {
   font-size: 0.9rem;
   line-height: 1.3;
@@ -122,10 +131,8 @@
 .comentario-footer {
   font-size: 0.8rem;
   color: rgba(255,255,255,0.6);
-}
-
-.comentario-footer .likes {
-  cursor: pointer;
+  display: flex;
+  gap: 12px;
 }
 
 .btn.like-btn {
@@ -145,4 +152,143 @@
 
 .moon-icon {
   font-size: 1.1rem;
+}
+
+/* Mini menú de 3 puntitos */
+.menu-dots {
+  position: relative;
+}
+
+.dots-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.6);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 22px;
+  right: 0;
+  background: rgba(20,20,20,0.95);
+  border-radius: 8px;
+  padding: 6px 0;
+  min-width: 100px;
+  z-index: 10;
+}
+
+.menu-dots:hover .dropdown-menu {
+  display: block;
+}
+
+.dropdown-menu button {
+  background: none;
+  border: none;
+  color: #e6e6e6;
+  width: 100%;
+  text-align: left;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.dropdown-menu button:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+/* Modal edición */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.edit-modal {
+  background: rgba(20,20,20,0.95);
+  backdrop-filter: blur(8px);
+  padding: 20px;
+  border-radius: 14px;
+  width: 90%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.edit-modal h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.edit-modal textarea {
+  background: rgba(255,255,255,0.05);
+  color: #e6e6e6;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  padding: 8px;
+  font-family: Inter, system-ui, sans-serif;
+  resize: vertical;
+}
+
+.contador-palabras {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.6);
+  text-align: right;
+}
+
+.botones-modal {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.btn {
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  border: none;
+  transition: background 0.2s;
+}
+
+.btn-guardar {
+  background: #3b7c12;
+  color: #fff;
+}
+
+.btn-guardar:hover {
+  background: #2e5c0d;
+}
+
+.btn-cancelar {
+  background: rgba(255,255,255,0.1);
+  color: #e6e6e6;
+}
+
+.btn-cancelar:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.btn-cargar-mas {
+  background: #444;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  margin: 6px auto;
+  display: block;
+}
+
+.btn-cargar-mas:hover {
+  background: #555;
 }
