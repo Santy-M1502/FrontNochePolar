@@ -65,8 +65,8 @@ export class AuthService {
         tap(response => {
           if (response && response.access_token) {
             localStorage.setItem('token', response.access_token);
-            // luego de guardar token, cargo perfil
-            this.loadUserProfile();
+            // ahora pedimos el perfil del usuario con ese token
+            this.loadUserProfile(); 
           }
         })
       );
@@ -84,10 +84,15 @@ export class AuthService {
   }
 
   // carga perfil y lo emite; si falla, hace logout
-  private loadUserProfile(): void {
-    this.getProfile().subscribe({
-      next: (user) => this.setUser(user),
-      error: () => this.logout()
+  loadUserProfile() {
+    const token = this.getToken();
+    if (!token) return;
+
+    return this.http.get<User>(`${this.apiUrl}/auth/profile`, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).subscribe(user => {
+      this.setUser(user);
+      localStorage.setItem('user', JSON.stringify(user));
     });
   }
 
@@ -105,5 +110,15 @@ export class AuthService {
     if (!current) return;
     const updated = { ...current, ...partial };
     this.setUser(updated);
+  }
+
+  loadUserProfileFromStorage() {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      this.setUser(user);
+      return user;
+    }
+    return null;
   }
 }
