@@ -1,1 +1,11 @@
 <router-outlet></router-outlet>
+<div class="session-modal" *ngIf="showSessionModal">
+  <div class="session-modal-content">
+    <h3>⏰ Quedan 5 minutos de sesión</h3>
+    <p>¿Deseas extender tu sesión?</p>
+    <div class="session-modal-buttons">
+      <button class="btn-extend" (click)="onExtend()">Extender sesión</button>
+      <button class="btn-logout" (click)="onLogout()">Cerrar sesión</button>
+    </div>
+  </div>
+</div>

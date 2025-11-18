@@ -1,12 +1,17 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-side-nav',
   standalone: true,
   imports: [CommonModule, RouterLink],
   template: `
+  <div class="session-timer" *ngIf="sessionTimeLeft > 0">
+    ⏱️ Sesión: {{ sessionTimeLeftFormatted }}
+  </div>
+
     <button class="hamburger" (click)="toggleMenu()">☰</button>
 
     <nav [class.open]="menuOpen">
@@ -156,6 +161,18 @@ import { RouterLink } from '@angular/router';
 })
 export class SideNavComponent {
   menuOpen = false;
+  sessionTimeLeft = 0; // en segundos
+  private interval: any;
+
+  ngOnInit() {
+    if (this.authService.getToken() && localStorage.getItem('sessionExpiresAt')) {
+      this.startSessionCountdown();
+    }
+  }
+
+  constructor(private authService: AuthService) {
+    this.startSessionCountdown();
+  }
 
   toggleMenu() {
     this.menuOpen = !this.menuOpen;
@@ -163,5 +180,31 @@ export class SideNavComponent {
 
   cerrarSesion() {
     console.log('Cerrar sesión...');
+    this.authService.logout();
+  }
+  
+
+  startSessionCountdown() {
+    const token = this.authService.getToken();
+    if (!token) return;
+
+    this.interval = setInterval(() => {
+      // leemos la expiración cada vez
+      const expiresAtStr = localStorage.getItem('sessionExpiresAt');
+      if (!expiresAtStr) return;
+
+      const expiresAt = Number(expiresAtStr);
+      const diff = Math.max(Math.floor((expiresAt - Date.now()) / 1000), 0);
+      this.sessionTimeLeft = diff;
+
+      // opcional: si llega a 0, detener contador
+      if (diff <= 0) clearInterval(this.interval);
+    }, 1000);
+  }
+
+  get sessionTimeLeftFormatted(): string {
+    const minutes = Math.floor(this.sessionTimeLeft / 60);
+    const seconds = this.sessionTimeLeft % 60;
+    return `${minutes}:${seconds.toString().padStart(2,'0')}`;
   }
 }
