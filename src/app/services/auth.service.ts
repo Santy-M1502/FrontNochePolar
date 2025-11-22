@@ -9,6 +9,8 @@ import { environment } from '../../enviroments/enviroment';
   providedIn: 'root'
 })
 export class AuthService {
+  private warningTimer: any = null;
+  private expiryTimer: any = null;
   private apiUrl = environment.API_URL;
   private sessionTimer: any;
   private sessionWarningShown = false;
@@ -17,9 +19,12 @@ export class AuthService {
   private sessionWarningSubject = new BehaviorSubject<boolean>(false);
   sessionWarning$ = this.sessionWarningSubject.asObservable();
   constructor(private http: HttpClient) {
+    const expiresAt = localStorage.getItem('sessionExpiresAt');
+    if (expiresAt) {
+      this.scheduleTimersFromExpires(+expiresAt);
+    }
   }
 
-  // setea y emite el usuario (llamar cuando actualizas user desde cualquier sitio)
   setUser(user: User | null): void {
     this.currentUserSubject.next(user);
     if (user) {
@@ -29,12 +34,10 @@ export class AuthService {
     }
   }
 
-  // devuelve valor actual
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
   }
 
-  // devuelve observable del user; si ya está cargado, retorno of(user)
   getUserInfo(): Observable<User> {
     const current = this.currentUserSubject.value;
     if (current) return of(current);
@@ -44,24 +47,20 @@ export class AuthService {
     );
   }
 
-  // id del usuario actual o null
   getUserId(): string | null {
     return this.currentUserSubject.value?._id || null;
   }
 
-  // endpoint para traer usuario por id (lo tenías antes)
   getUsuarioPorId(id: string): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}/usuarios/${id}`);
   }
 
-  // login: guarda token y carga perfil
   login(credentials: LoginDto): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, credentials)
       .pipe(
         tap(response => {
           if (response && response.access_token) {
             localStorage.setItem('token', response.access_token);
-            // ahora pedimos el perfil del usuario con ese token
             this.loadUserProfile(); 
             this.startSessionTimer();
           }
@@ -75,12 +74,10 @@ export class AuthService {
     this.setUser(null);
   }
 
-  // obtiene perfil desde backend
   getProfile(): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}/auth/profile`);
   }
 
-  // carga perfil y lo emite; si falla, hace logout
   loadUserProfile() {
     const token = this.getToken();
     if (!token) return;
@@ -101,7 +98,6 @@ export class AuthService {
     return !!this.getToken();
   }
 
-  // helper para actualizar solo campos del usuario (opcional)
   updateCurrentUser(partial: Partial<User>) {
     const current = this.getCurrentUser();
     if (!current) return;
@@ -119,56 +115,42 @@ export class AuthService {
     return null;
   }
 
-  startSessionTimer() {
-    if (this.sessionTimer) clearTimeout(this.sessionTimer);
+  startSessionTimer(sessionDurationMs = 10 * 60 * 1000, warningBeforeMs = 5 * 60 * 1000) {
+    this.clearTimers();
     this.sessionWarningShown = false;
 
     const now = Date.now();
-    const expiresAt = now + 10 * 60 * 1000; // 10 minutos
-
-    // guardamos en localStorage para que el contador en vivo lo lea
+    const expiresAt = now + sessionDurationMs;
     localStorage.setItem('sessionExpiresAt', expiresAt.toString());
 
-    console.log('⏱️ Iniciando timer de sesión de 10 minutos');
+    console.log('⏱️ Iniciando timer de sesión:', sessionDurationMs, 'ms. Aviso a', warningBeforeMs, 'ms antes.');
 
-    this.sessionTimer = setTimeout(() => {
-      console.log('⏳ 10 minutos pasaron, mostrando advertencia de sesión');
-      this.showSessionWarning();
-    }, 10 * 60 * 1000);
+    this.scheduleTimersFromExpires(expiresAt, warningBeforeMs);
   }
 
   private showSessionWarning() {
     if (this.sessionWarningShown) return;
     this.sessionWarningShown = true;
 
-    console.log('⚠️ Quedan 5 minutos de sesión, preguntando si extender');
-    
-    const extend = confirm('⏰ Quedan 5 minutos de sesión. ¿Deseas extenderla?');
-
-    if (extend) {
-      console.log('✅ Usuario eligió extender la sesión');
-      this.refreshToken();
-    } else {
-      console.log('❌ Usuario no extendió la sesión');
-    }
+    console.log('⚠️ Quedan 5 minutos de sesión, mostrando modal');
+    this.sessionWarningSubject.next(true);
   }
 
   refreshToken(): Observable<string> {
     const token = this.getToken();
     if (!token) {
       console.log('[AuthService] No hay token para refrescar');
-      return of(''); // retorno vacío si no hay token
+      return of('');
     }
 
     console.log('[AuthService] Intentando refrescar token:', token);
-
     return this.http.post<{ access_token: string }>(
       `${this.apiUrl}/auth/refrescar`,
-      { token } // <-- enviar token en el body, como espera tu backend
+      { token }
     ).pipe(
       tap({
         next: (res) => {
-          if (res.access_token) {
+          if (res?.access_token) {
             localStorage.setItem('token', res.access_token);
             console.log('[AuthService] Token refrescado exitosamente:', res.access_token);
           } else {
@@ -177,10 +159,10 @@ export class AuthService {
         },
         error: (err) => {
           console.error('[AuthService] Error al refrescar token:', err);
-          this.logout(); // si falla, cerrar sesión
+          this.logout();
         }
       }),
-      map(res => res.access_token) // para que el observable devuelva el nuevo token
+      map(res => res?.access_token || '')
     );
   }
 
@@ -188,17 +170,68 @@ export class AuthService {
     console.log('✅ extendSession called');
     this.refreshToken().subscribe({
       next: (newToken) => {
-        // refreshToken ya reinicia startSessionTimer() en el tap
         console.log('[AuthService] extendSession result token:', newToken);
+        if (newToken) {
+          // reprograma duración completa otra vez (10 minutos por defecto)
+          const newExpires = Date.now() + 10 * 60 * 1000;
+          localStorage.setItem('sessionExpiresAt', newExpires.toString());
+          this.scheduleTimersFromExpires(newExpires);
+        }
+        // cerrar modal
+        this.sessionWarningSubject.next(false);
+        this.sessionWarningShown = false;
       },
-      error: (err) => console.error(err)
+      error: (err) => {
+        console.error(err);
+        // en caso de error, cerrar modal y logout si es necesario
+        this.sessionWarningSubject.next(false);
+      }
     });
-    this.sessionWarningSubject.next(false);
   }
 
   endSession() {
     console.log('❌ endSession called -> logout');
-    this.logout();
+    this.clearTimers();
+    localStorage.removeItem('sessionExpiresAt');
     this.sessionWarningSubject.next(false);
+    this.logout();
   }
+
+  private scheduleTimersFromExpires(expiresAt: number, warningBeforeMs = 5 * 60 * 1000) {
+    this.clearTimers();
+    const now = Date.now();
+
+    const timeUntilWarning = (expiresAt - warningBeforeMs) - now;
+    const timeUntilExpiry = expiresAt - now;
+
+    if (timeUntilWarning <= 0) {
+      // Si ya pasó el punto de advertencia, mostrar inmediatamente
+      this.showSessionWarning();
+    } else {
+      this.warningTimer = setTimeout(() => this.showSessionWarning(), timeUntilWarning);
+    }
+
+    if (timeUntilExpiry <= 0) {
+      // Si ya expiró, forzar logout
+      console.log('⏳ Sesión ya expiró. Logout.');
+      this.logout();
+    } else {
+      this.expiryTimer = setTimeout(() => {
+        console.log('⏳ Sesión expirada (timeout)');
+        this.logout();
+      }, timeUntilExpiry);
+    }
+  }
+
+  private clearTimers() {
+    if (this.warningTimer) {
+      clearTimeout(this.warningTimer);
+      this.warningTimer = null;
+    }
+    if (this.expiryTimer) {
+      clearTimeout(this.expiryTimer);
+      this.expiryTimer = null;
+    }
+  }
+  
 }

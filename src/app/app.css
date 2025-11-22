@@ -14,7 +14,8 @@
 
 /* Contenido del modal */
 .session-modal-content {
-  background-color: #fff;
+  background-color: #111a33;
+  color: white;
   padding: 20px 30px;
   border-radius: 8px;
   text-align: center;
@@ -39,7 +40,7 @@
 }
 
 .btn-extend {
-  background-color: #4caf50;
+  background-color: #4a7cea;
   color: white;
 }
 
