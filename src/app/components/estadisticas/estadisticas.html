@@ -6,12 +6,8 @@
 
     <!-- Acciones rápidas (solo admin) -->
     <div class="quick-actions" *appHasRole="'admin'">
-      <button type="button" (appDebounceClick)="refreshChart('posts')" [appLoading]="isLoading">
-        Refrescar todos
-      </button>
-      <button type="button" (click)="exportChartData('posts')">
-        Exportar datos
-      </button>
+      <button type="button" (click)="cargarPosts()" [appLoading]="isLoading">Refrescar todos</button>
+      <button type="button" (click)="exportChartData('posts')">Exportar datos</button>
     </div>
   </header>
 
@@ -23,9 +19,9 @@
       <header class="card-header">
         <h2>Publicaciones por usuario</h2>
         <div class="card-controls">
-          <select [value]="selectedRange['posts']" (change)="onRangeChange('posts', $event)">
-            <option *ngFor="let r of timeRanges" [value]="r.id">{{ r.label }}</option>
-          </select>
+          <input type="date" [(ngModel)]="desdePosts" placeholder="Desde">
+          <input type="date" [(ngModel)]="hastaPosts" placeholder="Hasta">
+          <button type="button" (click)="cargarPosts()">Cargar</button>
           <button type="button" (click)="toggleChartType('posts')">
             Tipo: {{ chartTypes['posts'] | capitalize }}
           </button>
@@ -33,7 +29,6 @@
       </header>
 
       <div class="card-body">
-        <!-- Gráfico funcional con ng2-charts -->
         <canvas baseChart
                 [data]="postsChartData"
                 [labels]="postsChartLabels"
@@ -54,9 +49,9 @@
       <header class="card-header">
         <h2>Comentarios (por tiempo)</h2>
         <div class="card-controls">
-            <select [value]="selectedRange['comments']" (change)="onRangeChange('comments', $event)">
-                <option *ngFor="let r of timeRanges" [value]="r.id">{{ r.label }}</option>
-            </select>
+          <input type="date" [(ngModel)]="desdeComments" placeholder="Desde">
+          <input type="date" [(ngModel)]="hastaComments" placeholder="Hasta">
+          <button type="button" (click)="cargarComentarios()">Cargar</button>
           <button type="button" (click)="toggleChartType('comments')">
             Tipo: {{ chartTypes['comments'] | capitalize }}
           </button>
@@ -82,9 +77,9 @@
       <header class="card-header">
         <h2>Comentarios por publicación</h2>
         <div class="card-controls">
-            <select [value]="selectedRange['commentsPerPost']" (change)="onRangeChange('commentsPerPost', $event)">
-                <option *ngFor="let r of timeRanges" [value]="r.id">{{ r.label }}</option>
-            </select>
+          <input type="date" [(ngModel)]="desdeCommentsPerPost" placeholder="Desde">
+          <input type="date" [(ngModel)]="hastaCommentsPerPost" placeholder="Hasta">
+          <button type="button" (click)="cargarComentariosPorPost()">Cargar</button>
           <button type="button" (click)="toggleChartType('commentsPerPost')">
             Tipo: {{ chartTypes['commentsPerPost'] | capitalize }}
           </button>
@@ -104,7 +99,7 @@
             <button type="button" (click)="openPostDetail(p.id)" class="link-like">
               {{ p.postTitle }}
             </button>
-            <span class="count">({{ p.count | humanNumber }})</span>
+            <span class="count">({{ p.count }})</span>
           </li>
         </ol>
       </div>
@@ -115,11 +110,5 @@
   <!-- Footer -->
   <footer class="dashboard-footer">
     <small>Última actualización: {{ now | relativeTime }}</small>
-
-    <div *appHasRole="'admin'">
-      <button type="button" (appDebounceClick)="refreshChart('comments')" [appLoading]="isLoading">
-        Refrescar comentarios
-      </button>
-    </div>
   </footer>
 </main>

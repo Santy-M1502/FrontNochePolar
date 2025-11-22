@@ -1,24 +1,26 @@
 import { Component } from '@angular/core';
 import { ChartData, ChartOptions, ChartType } from 'chart.js';
+import { EstadisticasService, PublicacionesPorUsuario, ComentariosEnLapsoIntervalo, ComentariosPorPublicacion } from '../../services/estadisticas.service';
 import { BaseChartDirective } from 'ng2-charts';
 
-// Pipes
 import { CapitalizePipe } from "../../pipes/capitalize.pipe";
 import { HumanNumberPipe } from "../../pipes/human-number.pipe";
 import { RelativeTimePipe } from "../../pipes/relative-time.pipe";
 
-// Directivas
 import { HasRoleDirective } from "../../directives/has-role.directive";
 import { LoadingDirective } from "../../directives/loading.directive";
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Chart, registerables } from 'chart.js';
+import { PublicacionesService } from '../../services/publication.service';
 Chart.register(...registerables);
+
+import { forkJoin } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 interface User { name: string; role: string; }
 interface PostStat { user: string; count: number; }
 interface CommentStat { date?: string; postTitle?: string; count: number; id?: number; }
-interface TimeRange { id: string; label: string; }
 
 @Component({
   selector: 'app-dashboard',
@@ -39,19 +41,14 @@ interface TimeRange { id: string; label: string; }
 export class Estadisticas {
 
   user: User = { name: 'Admin Nombre', role: 'admin' };
-
-  timeRanges: TimeRange[] = [
-    { id: '7d', label: 'Últimos 7 días' },
-    { id: '30d', label: 'Últimos 30 días' },
-    { id: '90d', label: 'Últimos 90 días' },
-    { id: 'custom', label: 'Personalizado' }
-  ];
-
-  selectedRange: { [key: string]: string } = {
-    posts: '30d',
-    comments: '30d',
-    commentsPerPost: '30d'
-  };
+  now = new Date()
+  // Inputs de fechas
+  desdePosts = '';
+  hastaPosts = '';
+  desdeComments = '';
+  hastaComments = '';
+  desdeCommentsPerPost = '';
+  hastaCommentsPerPost = '';
 
   chartTypes: { [key: string]: ChartType } = {
     posts: 'bar',
@@ -59,64 +56,156 @@ export class Estadisticas {
     commentsPerPost: 'pie'
   };
 
-  postsByUser: PostStat[] = [
-    { user: 'Ana', count: 12 },
-    { user: 'Juan', count: 8 },
-    { user: 'Pedro', count: 20 },
-  ];
-
-  commentsByTime: CommentStat[] = [
-    { date: '2025-11-01', count: 10 },
-    { date: '2025-11-02', count: 15 },
-    { date: '2025-11-03', count: 7 },
-  ];
-
-  commentsPerPost: CommentStat[] = [
-    { id: 1, postTitle: 'Primer post', count: 5 },
-    { id: 2, postTitle: 'Segundo post', count: 12 },
-    { id: 3, postTitle: 'Tercer post', count: 3 },
-  ];
+  postsByUser: PostStat[] = [];
+  commentsByTime: CommentStat[] = [];
+  commentsPerPost: CommentStat[] = [];
 
   isLoading = false;
-  now = new Date();
 
-  postsChartLabels = this.postsByUser.map(p => p.user);
-  postsChartData: ChartData<'bar'> = {
-    labels: this.postsChartLabels,
-    datasets: [{ data: this.postsByUser.map(p => p.count), label: 'Publicaciones' }]
-  };
+  postsChartLabels: string[] = [];
+  postsChartData: ChartData<'bar'> = { labels: [], datasets: [] };
 
-  commentsChartLabels = this.commentsByTime.map(c => c.date || '');
-  commentsChartData: ChartData<'line'> = {
-    labels: this.commentsChartLabels,
-    datasets: [{ data: this.commentsByTime.map(c => c.count), label: 'Comentarios' }]
-  };
+  commentsChartLabels: string[] = [];
+  commentsChartData: ChartData<'line'> = { labels: [], datasets: [] };
 
-  commentsPerPostChartLabels = this.commentsPerPost.map(c => c.postTitle || '');
-  commentsPerPostChartData: ChartData<'pie'> = {
-    labels: this.commentsPerPostChartLabels,
-    datasets: [{ data: this.commentsPerPost.map(c => c.count), label: 'Comentarios por publicación' }]
-  };
+  commentsPerPostChartLabels: string[] = [];
+  commentsPerPostChartData: ChartData<'pie'> = { labels: [], datasets: [] };
 
   chartOptions: ChartOptions = { responsive: true, plugins: { legend: { display: true } } };
 
-  onRangeChange(chartKey: 'posts'|'comments'|'commentsPerPost', event: Event) {
-    const target = event.target as HTMLSelectElement | null;
-    if(target) {
-      this.selectedRange[chartKey] = target.value;
-      console.log(`Rango de ${chartKey} cambiado a ${target.value}`);
+  constructor(private estadisticasService: EstadisticasService, private publicationService: PublicacionesService) {}
+
+  private validarFechas(desde: string, hasta: string): boolean {
+    if (!desde || !hasta) {
+      alert('Por favor, completa ambas fechas.');
+      return false;
     }
+
+    const fechaDesde = new Date(desde);
+    const fechaHasta = new Date(hasta);
+
+    if (fechaDesde > fechaHasta) {
+      alert('La fecha "desde" no puede ser mayor que la fecha "hasta".');
+      return false;
+    }
+
+    return true;
   }
+
+  // ===================== POSTS =====================
+  cargarPosts() {
+    if (!this.validarFechas(this.desdePosts, this.hastaPosts)) return;
+
+    this.isLoading = true;
+    this.estadisticasService.publicacionesPorUsuario(this.desdePosts, this.hastaPosts)
+      .subscribe({
+        next: (data: PublicacionesPorUsuario[]) => {
+          if (!data.length) {
+            alert('No hay publicaciones en el rango seleccionado.');
+            this.postsByUser = [];
+            this.postsChartLabels = [];
+            this.postsChartData = { labels: [], datasets: [] };
+          } else {
+            this.postsByUser = data.map(u => ({ user: u.username, count: u.cantidad }));
+            this.postsChartLabels = this.postsByUser.map(p => p.user);
+            this.postsChartData = {
+              labels: this.postsChartLabels,
+              datasets: [{ data: this.postsByUser.map(p => p.count), label: 'Publicaciones' }]
+            };
+          }
+          this.isLoading = false;
+        },
+        error: () => this.isLoading = false
+      });
+  }
+
+  // ===================== COMENTARIOS =====================
+  cargarComentarios() {
+    if (!this.validarFechas(this.desdeComments, this.hastaComments)) return;
+
+    this.isLoading = true;
+    this.estadisticasService.comentariosEnLapso(this.desdeComments, this.hastaComments)
+      .subscribe({
+        next: (data: { desde: string; hasta: string; count: number }[]) => {
+          if (!data || data.length === 0 || data.every(d => d.count === 0)) {
+            alert('No hay comentarios en el rango seleccionado.');
+            this.commentsByTime = [];
+            this.commentsChartLabels = [];
+            this.commentsChartData = { labels: [], datasets: [] };
+          } else {
+            // Guardamos los datos para usar en la plantilla
+            this.commentsByTime = data.map(d => ({ 
+              date: `${new Date(d.desde).toLocaleDateString()} - ${new Date(d.hasta).toLocaleDateString()}`, 
+              count: d.count 
+            }));
+
+            // Labels para el gráfico
+            this.commentsChartLabels = this.commentsByTime.map(c => c.date || '');
+            this.commentsChartData = {
+              labels: this.commentsChartLabels,
+              datasets: [{ 
+                data: this.commentsByTime.map(c => c.count), 
+                label: 'Comentarios' 
+              }]
+            };
+          }
+          this.isLoading = false;
+        },
+        error: () => this.isLoading = false
+      });
+  }
+
+  // ===================== COMENTARIOS POR POST =====================
+  cargarComentariosPorPost() {
+  if (!this.validarFechas(this.desdeCommentsPerPost, this.hastaCommentsPerPost)) return;
+
+  this.isLoading = true;
+
+  this.estadisticasService.comentariosPorPublicacion(this.desdeCommentsPerPost, this.hastaCommentsPerPost)
+    .pipe(
+      switchMap((data: ComentariosPorPublicacion[]) => {
+        if (!data.length) {
+          this.commentsPerPost = [];
+          this.commentsPerPostChartLabels = [];
+          this.commentsPerPostChartData = { labels: [], datasets: [] };
+          return [];
+        }
+
+        // Crear un array de observables para traer los títulos de las publicaciones
+        const observables = data.map(c => 
+          this.publicationService.obtenerPublicacionPorId(c.publicacionId)
+        );
+
+        // forkJoin espera todos los observables y devuelve un array con los resultados
+        return forkJoin(observables).pipe(
+          switchMap(publicaciones => {
+            // Mapear los datos al formato que espera el front
+            this.commentsPerPost = publicaciones.map((pub, i) => ({
+              id: parseInt(pub._id),
+              postTitle: pub.titulo,
+              count: data[i].cantidad
+            }));
+            
+            this.commentsPerPostChartLabels = this.commentsPerPost.map(c => c.postTitle || '');
+            this.commentsPerPostChartData = {
+              labels: this.commentsPerPostChartLabels,
+              datasets: [{ data: this.commentsPerPost.map(c => c.count), label: 'Comentarios por publicación' }]
+            };
+            return [];
+          })
+        );
+      })
+    )
+    .subscribe({
+      next: () => this.isLoading = false,
+      error: () => this.isLoading = false
+    });
+}
 
   toggleChartType(chartKey: 'posts'|'comments'|'commentsPerPost') {
     const types: ChartType[] = ['bar', 'line', 'pie'];
     const currentIndex = types.indexOf(this.chartTypes[chartKey]);
     this.chartTypes[chartKey] = types[(currentIndex + 1) % types.length];
-  }
-
-  refreshChart(chartKey: string) {
-    this.isLoading = true;
-    setTimeout(() => this.isLoading = false, 1000);
   }
 
   exportChartData(chartKey: string) {
@@ -126,5 +215,4 @@ export class Estadisticas {
   openPostDetail(postId?: number) {
     console.log(`Abriendo detalle de post ${postId}`);
   }
-  
 }
