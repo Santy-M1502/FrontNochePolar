@@ -27,6 +27,7 @@
     "@angular/core": "^20.1.0",
     "@angular/forms": "^20.1.0",
     "@angular/platform-browser": "^20.1.0",
+    "@angular/pwa": "^20.3.8",
     "@angular/router": "^20.1.0",
     "@angular/service-worker": "^20.1.0",
     "@nestjs/platform-socket.io": "^11.1.8",

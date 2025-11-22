@@ -31,7 +31,6 @@ interface CommentStat { date?: string; postTitle?: string; count: number; id?: n
   imports: [
     BaseChartDirective,
     HasRoleDirective,
-    LoadingDirective,
     CapitalizePipe,
     HumanNumberPipe,
     RelativeTimePipe,

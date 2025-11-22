@@ -21,12 +21,6 @@ import { LoadingDirective } from './directives/loading.directive';
     RouterOutlet,
     CommonModule,
     FormsModule,
-    CapitalizePipe,
-    HumanNumberPipe,
-    RelativeTimePipe,
-    HasRoleDirective,
-    DebounceClickDirective,
-    LoadingDirective
   ],
   templateUrl: './app.html',
   styleUrls: ['./app.css']
