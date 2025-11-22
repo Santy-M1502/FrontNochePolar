@@ -4,16 +4,37 @@ import { AuthService } from './services/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
+// Pipes propias
+import { CapitalizePipe } from './pipes/capitalize.pipe';
+import { HumanNumberPipe } from './pipes/human-number.pipe';
+import { RelativeTimePipe } from './pipes/relative-time.pipe';
+
+// Directivas propias
+import { HasRoleDirective } from './directives/has-role.directive';
+import { DebounceClickDirective } from './directives/debounce-click.directive';
+import { LoadingDirective } from './directives/loading.directive';
+
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, CommonModule, FormsModule],
+  standalone: true,
+  imports: [
+    RouterOutlet,
+    CommonModule,
+    FormsModule,
+    CapitalizePipe,
+    HumanNumberPipe,
+    RelativeTimePipe,
+    HasRoleDirective,
+    DebounceClickDirective,
+    LoadingDirective
+  ],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrls: ['./app.css']
 })
 export class App {
   showSessionModal = false;
 
-  constructor(private authService: AuthService, private router: Router){
+  constructor(private authService: AuthService, private router: Router) {
     this.authService.sessionWarning$.subscribe(show => {
       this.showSessionModal = show;
     });
@@ -44,5 +65,4 @@ export class App {
   onLogout() {
     this.authService.endSession();
   }
-  
 }

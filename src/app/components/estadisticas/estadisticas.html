@@ -1,1 +1,125 @@
-<p>estadisticas works!</p>
+<main class="dashboard-root" role="main">
+  <!-- Header -->
+  <header class="dashboard-header">
+    <h1 class="title">Bienvenido {{ user.name | capitalize }}</h1>
+    <p class="subtitle" *ngIf="user.role">Rol: {{ user.role | capitalize }}</p>
+
+    <!-- Acciones rápidas (solo admin) -->
+    <div class="quick-actions" *appHasRole="'admin'">
+      <button type="button" (appDebounceClick)="refreshChart('posts')" [appLoading]="isLoading">
+        Refrescar todos
+      </button>
+      <button type="button" (click)="exportChartData('posts')">
+        Exportar datos
+      </button>
+    </div>
+  </header>
+
+  <!-- Grid principal -->
+  <section class="dashboard-grid" aria-label="Panel de estadísticas">
+
+    <!-- Card 1: Publicaciones por usuario -->
+    <article class="card" id="card-posts">
+      <header class="card-header">
+        <h2>Publicaciones por usuario</h2>
+        <div class="card-controls">
+          <select [value]="selectedRange['posts']" (change)="onRangeChange('posts', $event)">
+            <option *ngFor="let r of timeRanges" [value]="r.id">{{ r.label }}</option>
+          </select>
+          <button type="button" (click)="toggleChartType('posts')">
+            Tipo: {{ chartTypes['posts'] | capitalize }}
+          </button>
+        </div>
+      </header>
+
+      <div class="card-body">
+        <!-- Gráfico funcional con ng2-charts -->
+        <canvas baseChart
+                [data]="postsChartData"
+                [labels]="postsChartLabels"
+                [type]="chartTypes['posts']"
+                [options]="chartOptions">
+        </canvas>
+
+        <ul class="summary-list">
+          <li *ngFor="let p of postsByUser | slice:0:5">
+            {{ p.user | capitalize }} — {{ p.count | humanNumber }}
+          </li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- Card 2: Comentarios en el tiempo -->
+    <article class="card" id="card-comments-time">
+      <header class="card-header">
+        <h2>Comentarios (por tiempo)</h2>
+        <div class="card-controls">
+            <select [value]="selectedRange['comments']" (change)="onRangeChange('comments', $event)">
+                <option *ngFor="let r of timeRanges" [value]="r.id">{{ r.label }}</option>
+            </select>
+          <button type="button" (click)="toggleChartType('comments')">
+            Tipo: {{ chartTypes['comments'] | capitalize }}
+          </button>
+        </div>
+      </header>
+
+      <div class="card-body">
+        <canvas baseChart
+                [data]="commentsChartData"
+                [labels]="commentsChartLabels"
+                [type]="chartTypes['comments']"
+                [options]="chartOptions">
+        </canvas>
+
+        <div class="small-note">
+          Último punto: <strong>{{ commentsByTime?.[commentsByTime.length - 1]?.date || '' | relativeTime }}</strong>
+        </div>
+      </div>
+    </article>
+
+    <!-- Card 3: Comentarios por publicación -->
+    <article class="card" id="card-comments-per-post">
+      <header class="card-header">
+        <h2>Comentarios por publicación</h2>
+        <div class="card-controls">
+            <select [value]="selectedRange['commentsPerPost']" (change)="onRangeChange('commentsPerPost', $event)">
+                <option *ngFor="let r of timeRanges" [value]="r.id">{{ r.label }}</option>
+            </select>
+          <button type="button" (click)="toggleChartType('commentsPerPost')">
+            Tipo: {{ chartTypes['commentsPerPost'] | capitalize }}
+          </button>
+        </div>
+      </header>
+
+      <div class="card-body">
+        <canvas baseChart
+                [data]="commentsPerPostChartData"
+                [labels]="commentsPerPostChartLabels"
+                [type]="chartTypes['commentsPerPost']"
+                [options]="chartOptions">
+        </canvas>
+
+        <ol class="post-list">
+          <li *ngFor="let p of commentsPerPost | slice:0:6">
+            <button type="button" (click)="openPostDetail(p.id)" class="link-like">
+              {{ p.postTitle }}
+            </button>
+            <span class="count">({{ p.count | humanNumber }})</span>
+          </li>
+        </ol>
+      </div>
+    </article>
+
+  </section>
+
+  <!-- Footer -->
+  <footer class="dashboard-footer">
+    <small>Última actualización: {{ now | relativeTime }}</small>
+
+    <div *appHasRole="'admin'">
+      <button type="button" (appDebounceClick)="refreshChart('comments')" [appLoading]="isLoading">
+        Refrescar comentarios
+      </button>
+    </div>
+  </footer>
+</main>

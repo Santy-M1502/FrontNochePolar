@@ -7,6 +7,7 @@ import { Publications } from './components/publications/publications';
 import { PublicacionDetalleComponent } from './components/publicacion-detalle/publicacion-detalle';
 import { LoadingComponent } from './components/loading/loading';
 import { AdminHome } from './components/admin-home/admin-home';
+import { Estadisticas } from './components/estadisticas/estadisticas';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/loading', pathMatch: 'full' },
@@ -29,7 +30,7 @@ export const routes: Routes = [
   },
   {
     path: 'admin/inicio',
-    component: AdminHome
+    component: Estadisticas
   },
   { path: '**', redirectTo: '/login' }
 ];
