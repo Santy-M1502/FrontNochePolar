@@ -1,13 +1,18 @@
+<div class="flex">
+  <app-side-nav></app-side-nav>
 <main class="dashboard-root" role="main">
   <!-- Header -->
   <header class="dashboard-header">
-    <h1 class="title">Bienvenido {{ user.name | capitalize }}</h1>
-    <p class="subtitle" *ngIf="user.role">Rol: {{ user.role | capitalize }}</p>
+    <h1 class="title">Bienvenido {{ (user?.username || '') | capitalize }}</h1>
+    <p class="subtitle" *ngIf="user?.perfil">Rol: {{ (user?.perfil || '') | capitalize }}</p>
 
     <!-- Acciones rápidas (solo admin) -->
     <div class="quick-actions" *appHasRole="'admin'">
-      <button type="button" (click)="cargarPosts()" [appLoading]="isLoading">Refrescar todos</button>
-      <button type="button" (click)="exportChartData('posts')">Exportar datos</button>
+      <div class="quick-date-buttons">
+        <button type="button" (click)="rellenarUltimosDias(30)">Últimos 30 días</button>
+        <button type="button" (click)="rellenarUltimosDias(60)">Últimos 60 días</button>
+        <button type="button" (click)="rellenarUltimosDias(90)">Últimos 90 días</button>
+      </div>
     </div>
   </header>
 
@@ -112,3 +117,5 @@
     <small>Última actualización: {{ now | relativeTime }}</small>
   </footer>
 </main>
+<app-chat></app-chat>
+</div>

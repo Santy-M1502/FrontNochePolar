@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { ChartData, ChartOptions, ChartType } from 'chart.js';
 import { EstadisticasService, PublicacionesPorUsuario, ComentariosEnLapsoIntervalo, ComentariosPorPublicacion } from '../../services/estadisticas.service';
 import { BaseChartDirective } from 'ng2-charts';
@@ -17,8 +17,11 @@ Chart.register(...registerables);
 
 import { forkJoin } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { AuthService } from '../../services/auth.service';
 
-interface User { name: string; role: string; }
+import { User as AuthUser } from '../../models/user.interface';
+import { SideNavComponent } from "../side-nav/side-nav";
+import { Chat } from "../chat/chat";
 interface PostStat { user: string; count: number; }
 interface CommentStat { date?: string; postTitle?: string; count: number; id?: number; }
 
@@ -33,14 +36,18 @@ interface CommentStat { date?: string; postTitle?: string; count: number; id?: n
     HumanNumberPipe,
     RelativeTimePipe,
     CommonModule,
-    FormsModule
-  ],
+    FormsModule,
+    SideNavComponent,
+    Chat
+],
   templateUrl: './estadisticas.html',
   styleUrls: ['./estadisticas.css']
 })
 export class Estadisticas {
 
-  user: User = { name: 'Admin Nombre', role: 'admin' };
+  constructor(private estadisticasService: EstadisticasService, private publicationService: PublicacionesService, private cdr: ChangeDetectorRef, private authService: AuthService) {}
+
+  user: AuthUser | null = null;
   now = new Date()
   // Inputs de fechas
   desdePosts = '';
@@ -73,7 +80,9 @@ export class Estadisticas {
 
   chartOptions: ChartOptions = { responsive: true, plugins: { legend: { display: true } } };
 
-  constructor(private estadisticasService: EstadisticasService, private publicationService: PublicacionesService) {}
+  ngOnInit() {
+    this.user = this.authService.getCurrentUser();
+  }
 
   private validarFechas(desde: string, hasta: string): boolean {
     if (!desde || !hasta) {
@@ -214,5 +223,22 @@ export class Estadisticas {
 
   openPostDetail(postId?: number) {
     console.log(`Abriendo detalle de post ${postId}`);
+  }
+
+  rellenarUltimosDias(dias: number) {
+    const hoy = new Date();
+    const desde = new Date();
+    desde.setDate(hoy.getDate() - dias);
+
+    const formatDate = (date: Date) => date.toISOString().split('T')[0];
+
+    this.desdePosts = formatDate(desde);
+    this.hastaPosts = formatDate(hoy);
+
+    this.desdeComments = formatDate(desde);
+    this.hastaComments = formatDate(hoy);
+
+    this.desdeCommentsPerPost = formatDate(desde);
+    this.hastaCommentsPerPost = formatDate(hoy);
   }
 }
