@@ -20,6 +20,9 @@ import { AuthService } from '../../services/auth.service';
         <li><a routerLink="/perfil" routerLinkActive="active">Perfil</a></li>
         <li><a routerLink="/mensajes" routerLinkActive="active">Mensajes</a></li>
         <li><a routerLink="/config" routerLinkActive="active">Configuración</a></li>
+        <li *ngIf="esAdmin">
+          <a routerLink="/admin/inicio">Home Admin</a>
+        </li>
 
         <div class="separator"></div>
 
@@ -156,16 +159,21 @@ import { AuthService } from '../../services/auth.service';
   `]
 })
 export class SideNavComponent {
+  user: any = null;
   menuOpen = false;
-  sessionTimeLeft = 0; // en segundos
+  sessionTimeLeft = 0;
   private interval: any;
+  esAdmin = false;
 
   ngOnInit() {
     if (this.authService.getToken() && localStorage.getItem('sessionExpiresAt')) {
+    this.user = this.authService.loadUserProfileFromStorage();
+    this.esAdmin = this.user?.perfil === 'admin';
     }
   }
 
   constructor(private authService: AuthService) {
+    this.user = this.authService.loadUserProfileFromStorage();
   }
 
   toggleMenu() {

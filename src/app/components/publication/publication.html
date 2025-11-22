@@ -66,3 +66,15 @@
     </div>
   </div>
 </div>
+
+<!-- Modal confirmación eliminación -->
+<div class="modal-overlay" *ngIf="confirmVisible">
+  <div class="confirm-modal" (click)="$event.stopPropagation()">
+    <h3>Confirmar eliminación</h3>
+    <p>¿Estás seguro que deseas eliminar esta publicación? Esta acción no se puede deshacer.</p>
+    <div class="botones-modal">
+      <button class="btn btn-danger" (click)="confirmarEliminar()">Sí, eliminar</button>
+      <button class="btn" (click)="cancelarEliminar()">Cancelar</button>
+    </div>
+  </div>
+</div>

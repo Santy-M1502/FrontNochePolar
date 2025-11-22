@@ -13,14 +13,11 @@ export class AuthGuard implements CanActivate {
     const token = this.authService.getToken();
 
     if (token) {
-      // si hay token cargamos el perfil desde localStorage
       const user = this.authService.loadUserProfileFromStorage();
-      if (user) return true; // logueado, deja pasar
-      // si no está en localStorage, cargamos desde backend
-      this.authService.loadUserProfile(); // opcional: podemos esperar su resultado antes de redirigir
+      if (user) return true;
+      this.authService.loadUserProfile();
       return true;
     } else {
-      // no hay token → redirige a login
       this.router.navigate(['/login']);
       return false;
     }

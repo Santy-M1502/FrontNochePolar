@@ -6,6 +6,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { Publications } from './components/publications/publications';
 import { PublicacionDetalleComponent } from './components/publicacion-detalle/publicacion-detalle';
 import { LoadingComponent } from './components/loading/loading';
+import { AdminHome } from './components/admin-home/admin-home';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/loading', pathMatch: 'full' },
@@ -25,6 +26,10 @@ export const routes: Routes = [
   {
     path: 'publicacion/:id',
     component: PublicacionDetalleComponent
+  },
+  {
+    path: 'admin/inicio',
+    component: AdminHome
   },
   { path: '**', redirectTo: '/login' }
 ];

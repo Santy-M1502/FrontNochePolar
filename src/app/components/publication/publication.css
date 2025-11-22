@@ -150,6 +150,23 @@
   z-index: 9999;
 }
 
+.confirm-modal{
+  background: #111a33;
+  backdrop-filter: blur(8px);
+  padding: 20px;
+  border-radius: 14px;
+  width: 90%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-confirmar{
+  background-color: #e74c3c;
+  border-radius: 10px;
+}
+
 .edit-modal {
   background: rgba(20,20,20,0.95);
   backdrop-filter: blur(8px);

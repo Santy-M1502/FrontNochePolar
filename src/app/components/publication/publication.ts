@@ -227,13 +227,23 @@ export class PublicacionComponent {
   }
 
   esMia(): boolean {
-    if (!this.publicacion || !this.usuarioActualId) return false;
+    if (!this.publicacion) return false;
+
+    // Obtener usuario actual desde el AuthService (o desde storage si no está cargado)
+    const currentUser = this.authService.getCurrentUser() || this.authService.loadUserProfileFromStorage();
+    const esAdmin = currentUser?.perfil === 'admin';
+
+    // Determinar UID del propietario de la publicación
     const uid =
       typeof this.publicacion.usuarioId === 'string'
         ? this.publicacion.usuarioId
         : (this.publicacion.usuarioId as any)?._id ??
           (this.publicacion.usuario as any)?._id;
-    return uid === this.usuarioActualId;
+
+    // Permitir si es admin o si coincide con el propietario
+    if (esAdmin) return true;
+    if (this.usuarioActualId && uid === this.usuarioActualId) return true;
+    return false;
   }
 
   toggleMenu(event: MouseEvent) {
