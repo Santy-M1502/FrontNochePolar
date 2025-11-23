@@ -48,7 +48,6 @@ export class Estadisticas {
 
   user: AuthUser | null = null;
   now = new Date()
-  // Inputs de fechas
   desdePosts = '';
   hastaPosts = '';
   desdeComments = '';

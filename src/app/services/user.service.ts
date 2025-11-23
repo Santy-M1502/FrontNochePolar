@@ -19,7 +19,7 @@ export class UserService {
       : {};
   }
 
-  register(userData: CreateUserDto): Observable<User> {
+  register(userData: User): Observable<User> {
     return this.http.post<User>(`${this.apiUrl}/usuarios/register`, userData);
   }
 

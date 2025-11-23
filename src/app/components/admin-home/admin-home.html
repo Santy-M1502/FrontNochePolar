@@ -1,1 +1,76 @@
-<p>admin-home works!</p>
+<div class="body">
+  <app-side-nav></app-side-nav>
+
+  <div class="admin-container">
+    <h1 class="title">Bienvenido, {{ adminName }}</h1>
+
+    <div class="button-row">
+      <button class="btn" (click)="openAddUserModal()">Agregar usuario</button>
+      <button class="btn secondary" (click)="goToStats()">Ver estadísticas</button>
+    </div>
+  </div>
+  <app-chat></app-chat>
+</div>
+  
+<!-- MODAL -->
+<div *ngIf="showAddUserModal" class="modal-backdrop-fixed">
+  <div class="modal-content-fixed">
+
+    <h2>Agregar usuario</h2>
+
+    <form [formGroup]="registerForm" (ngSubmit)="submitRegister()">
+
+      <div class="input-group">
+        <label>Nombre</label>
+        <input formControlName="nombre" type="text" placeholder="Nombre" />
+      </div>
+
+      <div class="input-group">
+        <label>Apellido</label>
+        <input formControlName="apellido" type="text" placeholder="Apellido" />
+      </div>
+
+      <div class="input-group">
+        <label>Username</label>
+        <input formControlName="username" type="text" placeholder="Username" />
+      </div>
+
+      <div class="input-group">
+        <label>Email</label>
+        <input formControlName="email" type="email" placeholder="Email" />
+      </div>
+
+      <div class="input-group">
+        <label>Contraseña</label>
+        <input formControlName="password" type="password" placeholder="Contraseña" />
+      </div>
+
+      <div class="input-group">
+        <label>Repetir contraseña</label>
+        <input formControlName="passwordRepeat" type="password" placeholder="Repetir contraseña" />
+      </div>
+
+      <div class="input-group">
+        <label>Fecha de nacimiento</label>
+        <input type="date" formControlName="fechaNacimiento" />
+      </div>
+
+      <!-- Selector único (admin / usuario) -->
+      <div class="radio-group">
+        <input type="radio" id="opcion1" formControlName="perfil" value="admin">
+        <label for="opcion1">Admin</label><br>
+
+        <input type="radio" id="opcion2" formControlName="perfil" value="usuario">
+        <label for="opcion2">Usuario</label><br>
+      </div>
+
+      <div class="button-row">
+        <button type="submit" class="btn primary">Crear usuario</button>
+        <button type="button" class="btn secondary" (click)="closeAddUserModal()">Cancelar</button>
+      </div>
+
+    </form>
+
+  </div>
+</div>
+

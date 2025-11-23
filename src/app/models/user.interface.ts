@@ -3,7 +3,11 @@ export interface User {
   id?: string;
   sub?: string;
   username: string;
-  perfil:string;
+  nombre: string;
+  apellido: string;
+  email:string;
+  password:string;
+  perfil?:string;
   profileImage?: string;
   cloudinaryPublicId?: string;
   descripcion?: string;

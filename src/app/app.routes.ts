@@ -6,8 +6,9 @@ import { AuthGuard } from './guards/auth.guard';
 import { Publications } from './components/publications/publications';
 import { PublicacionDetalleComponent } from './components/publicacion-detalle/publicacion-detalle';
 import { LoadingComponent } from './components/loading/loading';
-import { AdminHome } from './components/admin-home/admin-home';
 import { Estadisticas } from './components/estadisticas/estadisticas';
+import { AdminGuard } from './guards/admin.guard';
+import { AdminHomeComponent } from './components/admin-home/admin-home';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/loading', pathMatch: 'full' },
@@ -30,7 +31,11 @@ export const routes: Routes = [
   },
   {
     path: 'admin/inicio',
-    component: Estadisticas
+    component: AdminHomeComponent,
+  },
+  {
+    path: 'admin/estadisticas',
+    component: Estadisticas,
   },
   { path: '**', redirectTo: '/login' }
 ];
