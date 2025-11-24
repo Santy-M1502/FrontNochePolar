@@ -142,6 +142,7 @@ export class RegisterComponent {
       password: form.password,
       fecha: form.fechaNacimiento,
       descripcion: form.descripcion,
+      activo: true
     };
 
     if (this.selectedFile) {

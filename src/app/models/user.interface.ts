@@ -13,6 +13,7 @@ export interface User {
   descripcion?: string;
   followers?: number;
   following?: number;
+  activo:boolean;
 }
 
 export interface Friend {

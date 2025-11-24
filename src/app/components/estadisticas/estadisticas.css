@@ -4,16 +4,16 @@
   background: linear-gradient(#111a33, #000);
   color: #e6e6e6;
   font-family: Inter, system-ui, sans-serif;
-  gap: 0; /* opcional */
+  gap: 0;
 }
 
 .flex > app-side-nav {
-  width: 250px; /* ancho fijo de tu sidebar */
-  flex-shrink: 0; /* que no se encoja */
+  width: 250px;
+  flex-shrink: 0;
 }
 
 .flex > main.dashboard-root {
-  flex: 1;        /* ocupa todo el espacio restante */
+  flex: 1;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -30,7 +30,6 @@
   overflow-y: auto;
 }
 
-/* dashboard.component.css */
 .dashboard-root {
   font-family: 'Segoe UI', sans-serif;
   background-color: #0d1117;
@@ -55,7 +54,7 @@
 }
 
 button {
-  background-color: #1f2937; /* azul oscuro / gris */
+  background-color: #1f2937;
   color: #fff;
   border: none;
   padding: 0.4rem 0.8rem;
@@ -65,7 +64,7 @@ button {
 }
 
 button:hover {
-  background-color: #3b82f6; /* azul más claro al hover */
+  background-color: #3b82f6;
 }
 
 .dashboard-grid {
@@ -75,7 +74,7 @@ button:hover {
 }
 
 .card {
-  background-color: #161b22; /* azul oscuro / gris */
+  background-color: #161b22;
   border-radius: 0.5rem;
   padding: 1rem;
   display: flex;
@@ -144,7 +143,6 @@ canvas {
   text-align: left;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .card-controls {
     flex-direction: column;

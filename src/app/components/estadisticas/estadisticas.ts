@@ -99,7 +99,6 @@ export class Estadisticas {
     return true;
   }
 
-  // ===================== POSTS =====================
   cargarPosts() {
     if (!this.validarFechas(this.desdePosts, this.hastaPosts)) return;
 
@@ -126,7 +125,6 @@ export class Estadisticas {
       });
   }
 
-  // ===================== COMENTARIOS =====================
   cargarComentarios() {
     if (!this.validarFechas(this.desdeComments, this.hastaComments)) return;
 
@@ -140,13 +138,11 @@ export class Estadisticas {
             this.commentsChartLabels = [];
             this.commentsChartData = { labels: [], datasets: [] };
           } else {
-            // Guardamos los datos para usar en la plantilla
             this.commentsByTime = data.map(d => ({ 
               date: `${new Date(d.desde).toLocaleDateString()} - ${new Date(d.hasta).toLocaleDateString()}`, 
               count: d.count 
             }));
 
-            // Labels para el gráfico
             this.commentsChartLabels = this.commentsByTime.map(c => c.date || '');
             this.commentsChartData = {
               labels: this.commentsChartLabels,
@@ -162,7 +158,6 @@ export class Estadisticas {
       });
   }
 
-  // ===================== COMENTARIOS POR POST =====================
   cargarComentariosPorPost() {
   if (!this.validarFechas(this.desdeCommentsPerPost, this.hastaCommentsPerPost)) return;
 
@@ -178,15 +173,12 @@ export class Estadisticas {
           return [];
         }
 
-        // Crear un array de observables para traer los títulos de las publicaciones
         const observables = data.map(c => 
           this.publicationService.obtenerPublicacionPorId(c.publicacionId)
         );
 
-        // forkJoin espera todos los observables y devuelve un array con los resultados
         return forkJoin(observables).pipe(
           switchMap(publicaciones => {
-            // Mapear los datos al formato que espera el front
             this.commentsPerPost = publicaciones.map((pub, i) => ({
               id: parseInt(pub._id),
               postTitle: pub.titulo,

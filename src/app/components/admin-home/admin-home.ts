@@ -1,16 +1,17 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
 import { SideNavComponent } from "../side-nav/side-nav";
 import { Chat } from "../chat/chat";
+import { EstadoColorDirective } from "../../directives/estado-color.directive";
 
 @Component({
   selector: 'app-admin-home',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, SideNavComponent, Chat],
+  imports: [CommonModule, ReactiveFormsModule, SideNavComponent, Chat, FormsModule, EstadoColorDirective],
   templateUrl: './admin-home.html',
   styleUrls: ['./admin-home.css'],
 })
@@ -18,6 +19,9 @@ export class AdminHomeComponent {
   adminName = '';
   showAddUserModal = false;
   registerForm!: FormGroup;
+
+  searchText: string = "";
+  filteredUsers:any[] = []
 
   constructor(
     private fb: FormBuilder,
@@ -78,7 +82,6 @@ export class AdminHomeComponent {
 
     const { nombre, apellido, username, email, password, fechaNacimiento, perfil } = this.registerForm.value;
 
-    // Asegurar formato ISO 8601 para el campo fecha que el backend requiere
     const fechaISO = fechaNacimiento
       ? new Date(fechaNacimiento).toISOString()
       : new Date().toISOString();
@@ -90,7 +93,8 @@ export class AdminHomeComponent {
       apellido,
       email,
       fecha: fechaISO,
-      perfil: perfil || 'usuario'
+      perfil: perfil || 'usuario',
+      activo: true
     };
 
     this.userService.register(payload).subscribe({
@@ -103,5 +107,26 @@ export class AdminHomeComponent {
         this.registerForm.setErrors({ registroError: true });
       }
     });
+  }
+
+  onSearchChange() {
+    this.userService.searchUsers(this.searchText).subscribe(users => {
+      console.log("Usuarios encontrados:", users);
+      this.filteredUsers = users;
+    });
+  }
+
+  toggleUserState(user: any) {
+    if (user.activo) {
+      this.userService.deshabilitarUsuario(user._id).subscribe(() => {
+        user.activo = false;
+        console.log(`Usuario ${user.username} deshabilitado`);
+      });
+    } else {
+      this.userService.habilitarUsuario(user._id).subscribe(() => {
+        user.activo = true;
+        console.log(`Usuario ${user.username} habilitado`);
+      });
+    }
   }
 }

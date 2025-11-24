@@ -63,7 +63,6 @@
   justify-content: space-between;
 }
 
-/* Fondo oscuro y blur al abrir modal */
 .modal-backdrop-fixed {
   position: fixed;
   inset: 0;
@@ -75,7 +74,6 @@
   z-index: 2000;
 }
 
-/* Caja del modal */
 .modal-content-fixed {
   background: #0f1a35;
   padding: 30px;
@@ -98,7 +96,6 @@ h2 {
   margin-bottom: 20px;
 }
 
-/* Inputs */
 .input-group {
   display: flex;
   flex-direction: column;
@@ -125,7 +122,6 @@ h2 {
   border-color: #4d7cff;
 }
 
-/* Radios */
 .radio-group {
   display: flex;
   justify-content: space-between;
@@ -145,7 +141,6 @@ h2 {
   accent-color: #4d7cff;
 }
 
-/* Botones */
 .button-row {
   display: flex;
   justify-content: space-between;
@@ -178,4 +173,57 @@ h2 {
 
 .btn.secondary:hover {
   background: #1e2946;
+}
+
+.user-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  background: linear-gradient(135deg, #1d3b72, #0f1a35);
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin-top: 20px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+
+.user-header{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 45px;
+}
+
+.profile-img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-info h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.desc {
+  margin-top: 5px;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.changeState{
+  width: 80%;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+
+.changeState:hover{
+  background-color: #0f1a35;
+  color: #fff;
 }

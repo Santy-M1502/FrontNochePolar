@@ -7,12 +7,39 @@
     <div class="button-row">
       <button class="btn" (click)="openAddUserModal()">Agregar usuario</button>
       <button class="btn secondary" (click)="goToStats()">Ver estadísticas</button>
+      <input class="btn" type="text" placeholder="Buscar Usuario..." [(ngModel)]="searchText" (input)="onSearchChange()"/>
     </div>
+
+    <div *ngFor="let user of filteredUsers" class="user-result">
+
+      <div class="user-header">
+        <img [src]="user.profileImage || 'https://i.pravatar.cc/80'" alt="Profile" class="profile-img"/>
+
+        <div class="user-mail">
+          <h3>{{ user.nombre }} {{ user.apellido }} (@{{ user.username }})</h3>
+          <p><strong>Email:</strong> {{ user.email }}</p>
+        </div>
+      </div>
+
+      <div class="user-info">
+        <p><strong>Perfil:</strong> {{ user.perfil }}</p>
+
+        <p class="desc">
+          <strong>Descripción:</strong>
+          {{ user.descripcion || 'Sin descripción' }}
+        </p>
+      </div>
+
+      <button class="changeState"(click)="toggleUserState(user)"[estadoColor]="user.activo">
+  {{ user.activo ? 'Deshabilitar' : 'Habilitar' }}
+</button>
+
+    </div>
+
   </div>
   <app-chat></app-chat>
 </div>
   
-<!-- MODAL -->
 <div *ngIf="showAddUserModal" class="modal-backdrop-fixed">
   <div class="modal-content-fixed">
 
@@ -55,7 +82,6 @@
         <input type="date" formControlName="fechaNacimiento" />
       </div>
 
-      <!-- Selector único (admin / usuario) -->
       <div class="radio-group">
         <input type="radio" id="opcion1" formControlName="perfil" value="admin">
         <label for="opcion1">Admin</label><br>

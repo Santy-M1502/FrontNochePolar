@@ -81,4 +81,26 @@ export class UserService {
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
     return this.http.get(`${this.apiUrl}/usuarios/amigos`, { headers });
   }
+
+  searchUsers(query: string): Observable<User[]> {
+    return this.http.get<User[]>(
+      `${this.apiUrl}/usuarios/buscar?q=${query}`,
+      this.getAuthHeaders()
+    );
+  }
+
+  deshabilitarUsuario(id: string): Observable<any> {
+    return this.http.delete(
+      `${this.apiUrl}/usuarios/${id}`,
+      this.getAuthHeaders()
+    );
+  }
+
+  habilitarUsuario(id: string): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/usuarios/${id}/restaurar`,
+      {},
+      this.getAuthHeaders()
+    );
+  }
 }

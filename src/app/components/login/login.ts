@@ -34,29 +34,37 @@ export class LoginComponent {
   }
 
   onSubmit(): void {
-      if (!this.loginForm.valid) return;
-      this.isLoading = true;
-      this.errorMessage = '';
+    if (!this.loginForm.valid) return;
 
-      this.authService.login(this.loginForm.value).subscribe({
-    next: (res) => {
-      this.authService.getProfile().subscribe({
-        next: (user) => {
-          this.authService.updateCurrentUser(user);
-          this.isLoading = false;
-          this.router.navigate(['/perfil']);
-        },
-        error: () => {
-          this.isLoading = false;
-          this.errorMessage = 'No se pudo cargar el perfil.';
-        }
-      });
-    },
-    error: () => {
-      this.isLoading = false;
-      this.errorMessage = 'Credenciales inválidas. Por favor, inténtalo de nuevo.';
-    }
-  });
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.authService.login(this.loginForm.value).subscribe({
+      next: () => {
+        this.authService.getProfile().subscribe({
+          next: (user) => {
+            console.log(user)
+            if (!user.activo) {
+              this.isLoading = false;
+              this.errorMessage = 'Tu cuenta está deshabilitada. Contacta al administrador.';
+              return;
+            }
+
+            this.authService.updateCurrentUser(user);
+            this.isLoading = false;
+            this.router.navigate(['/perfil']);
+          },
+          error: () => {
+            this.isLoading = false;
+            this.errorMessage = 'No se pudo cargar el perfil.';
+          }
+        });
+      },
+      error: () => {
+        this.isLoading = false;
+        this.errorMessage = 'Credenciales inválidas. Por favor, inténtalo de nuevo.';
+      }
+    });
   }
 
   goToRegister(): void {
