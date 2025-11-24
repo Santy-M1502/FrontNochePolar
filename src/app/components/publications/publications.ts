@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { SideNavComponent } from "../side-nav/side-nav";
 import { Chat } from "../chat/chat";
 import { PublicacionComponent } from "../publication/publication";
+import { ScrollToTopComponent } from "../scroll-to-top/scroll-to-top";
 import { Publicacion } from '../../models/publication.interface';
 import { AuthService } from '../../services/auth.service';
 import { PublicacionesService } from '../../services/publication.service';
@@ -11,7 +12,7 @@ import { PublicacionesService } from '../../services/publication.service';
 @Component({
   selector: 'app-post-layout',
   standalone: true,
-  imports: [CommonModule, FormsModule, SideNavComponent, Chat, PublicacionComponent],
+  imports: [CommonModule, FormsModule, SideNavComponent, Chat, PublicacionComponent, ScrollToTopComponent],
   templateUrl: './publications.html',
   styleUrls: ['./publications.css']
 })

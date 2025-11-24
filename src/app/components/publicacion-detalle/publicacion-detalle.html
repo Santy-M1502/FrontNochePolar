@@ -56,7 +56,7 @@
             🌙✨ No hay comentarios aún. Sé el primero en comentar!
           </div>
 
-          <button *ngIf="comentarios.length < totalComentarios && !cargandoComentarios"
+          <button *ngIf="hasMore && !cargandoComentarios"
                   (click)="cargarMas()"
                   class="btn-cargar-mas">
             Cargar más
@@ -83,3 +83,5 @@
 
   <app-chat></app-chat>
 </div>
+
+<app-scroll-to-top></app-scroll-to-top>

@@ -6,6 +6,7 @@ import { PublicacionComponent } from "../publication/publication";
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Chat } from "../chat/chat";
+import { ScrollToTopComponent } from '../scroll-to-top/scroll-to-top';
 import { Comentario } from '../../models/comentario.interface';
 import { AuthService } from '../../services/auth.service';
 import { ComentariosService } from '../../services/comentarios.service';
@@ -14,7 +15,7 @@ import { ComentariosService } from '../../services/comentarios.service';
   selector: 'app-publicacion-detalle',
   templateUrl: './publicacion-detalle.html',
   styleUrls: ['./publicacion-detalle.css'],
-  imports: [SideNavComponent, PublicacionComponent, FormsModule, CommonModule, Chat],
+  imports: [SideNavComponent, PublicacionComponent, FormsModule, CommonModule, Chat, ScrollToTopComponent],
 })
 export class PublicacionDetalleComponent implements OnInit {
   publicacion: any;
@@ -28,6 +29,7 @@ export class PublicacionDetalleComponent implements OnInit {
   orden: 'recientes' | 'antiguos' | 'populares' = 'recientes';
   cargandoComentarios = false;
   cargandoMas = false;
+  hasMore = false;
   nuevoComentario = '';
 
   editarComentarioSeleccionado: Comentario | null = null;
@@ -52,19 +54,11 @@ export class PublicacionDetalleComponent implements OnInit {
       next: (pub) => {
         this.publicacion = pub;
         this.cargando = false;
-
-        const uid = this.authService.getCurrentUser()?._id ?? '';
-        this.comentarios = (pub.comentarios || []).map((c: Comentario) => ({
-          ...c,
-          liked: c.likes?.includes(uid) ?? false,
-          likesCount: c.likesCount || 0,
-          editado: c.editado || false,
-          usuario: {
-            ...c.usuario,
-            profileImage: c.usuario.profileImage || 'https://i.pravatar.cc/48?img=65'
-          }
-        })) || [];
-        this.totalComentarios = this.comentarios.length;
+        // cargar comentarios paginados desde el servicio
+        this.comentariosSrv.limpiarComentarios();
+        this.offset = 0;
+        this.comentarios = [];
+        this.loadComentarios();
       },
       error: () => {
         this.error = 'No se encontró la publicación.';
@@ -73,11 +67,33 @@ export class PublicacionDetalleComponent implements OnInit {
     });
   }
 
+  private loadComentarios() {
+    if (!this.publicacion || !this.publicacion._id) return;
+    this.cargandoComentarios = true;
+    const token = this.authService.getToken() || '';
+    this.comentariosSrv.obtenerPorPublicacion(this.publicacion._id, this.limit, this.offset, this.orden, token)
+      .subscribe({
+        next: (coms) => {
+          if (this.offset === 0) this.comentarios = coms;
+          else this.comentarios = [...this.comentarios, ...coms];
+          // si la cantidad recibida es igual al limit, puede haber más
+          this.hasMore = coms.length === this.limit;
+          this.cargandoComentarios = false;
+          this.cargandoMas = false;
+        },
+        error: (err) => {
+          console.error('[loadComentarios] Error', err);
+          this.cargandoComentarios = false;
+          this.cargandoMas = false;
+        }
+      });
+  }
+
   cargarMas() {
-    if (this.comentarios.length >= this.totalComentarios) return;
+    if (!this.hasMore || this.cargandoComentarios) return;
     this.cargandoMas = true;
     this.offset += this.limit;
-    setTimeout(() => this.cargandoMas = false, 500);
+    this.loadComentarios();
   }
 
   esMioComentario(comentario: Comentario): boolean {
