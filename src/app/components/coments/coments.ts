@@ -1,4 +1,5 @@
 import { Component, Input, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ComentariosService } from '../../services/comentarios.service';
@@ -30,7 +31,7 @@ export class ComentariosComponent {
 
   readonly MAX_LENGTH = 100;
 
-  constructor(private comentariosService: ComentariosService) {}
+  constructor(private comentariosService: ComentariosService, private router: Router) {}
 
   ngOnInit() {
     this.comentariosService.comentarios$.subscribe(comentarios => {
@@ -132,7 +133,16 @@ export class ComentariosComponent {
 
     this.comentariosService.comentarPublicacion(this.publicacionId, texto, token)
       .subscribe({
-        next: () => this.nuevoComentario.set(''),
+        next: () => {
+          this.nuevoComentario.set('');
+          // navegar al detalle de la publicación para ver el comentario en contexto
+          try {
+            this.modalVisible.set(false);
+            this.router.navigate(['/publicacion', this.publicacionId]);
+          } catch (e) {
+            // si no se puede navegar, simplemente cerrar el modal y seguir
+          }
+        },
         error: err => console.error(err)
       });
   }

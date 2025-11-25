@@ -23,6 +23,18 @@
   overflow-y: auto;
 }
 
+/* ensure images and long inline text in feed don't break layout */
+.feed-area img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.timeline, .composer, .composer * {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 /* -----------------------------
    COMPOSER (Crear publicación)
 ----------------------------- */
@@ -150,6 +162,11 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+
+/* allow posts inside timeline to shrink and avoid overflow */
+.timeline .post-card {
+  min-width: 0;
 }
 
 /* -----------------------------

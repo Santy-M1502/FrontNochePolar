@@ -5,3 +5,31 @@ body {
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
 }
+
+/* Global protections against overflow from long words or large images */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden; /* prevent horizontal scroll from long content */
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* sensible default for long inline text (urls, long words) */
+.break-anywhere, .break-anywhere * {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Truncate to approx 20 characters and show full text on hover via title */
+.truncate-20 {
+  display: inline-block;
+  max-width: 20ch; /* roughly 20 characters */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}

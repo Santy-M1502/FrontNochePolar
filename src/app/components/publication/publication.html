@@ -8,7 +8,7 @@
   <div class="post-body">
     <div class="post-header">
       <div class="usuario-nombre-fecha">
-        <strong>{{ publicacion.usuario?.username || 'Desconocido' }}</strong>
+        <strong class="truncate-20" [title]="publicacion.usuario?.username || 'Desconocido'">{{ publicacion.usuario?.username || 'Desconocido' }}</strong>
         <span class="post-meta">{{ publicacion.createdAt | date: 'short' }}</span>
         <span *ngIf="publicacion.editado" class="editado">(editado)</span>
       </div>
@@ -26,9 +26,11 @@
     <div *ngIf="esMia()" class="post-badge">Tu publicación</div>
 
     <div class="post-title" *ngIf="publicacion.titulo">
-      <strong>{{ publicacion.titulo }}</strong>
+      <strong class="truncate-20" [title]="publicacion.titulo">{{ publicacion.titulo }}</strong>
     </div>
-    <div class="post-content">{{ publicacion.texto }}</div>
+    <div class="post-content">
+      <span class="truncate-20" [title]="publicacion.texto">{{ publicacion.texto }}</span>
+    </div>
 
     <img *ngIf="publicacion.imagenUrl" [src]="publicacion.imagenUrl" alt="Imagen publicación" class="post-image" />
 
@@ -58,8 +60,8 @@
 <div class="modal-overlay" *ngIf="editarPublicacionSeleccionada">
   <div class="edit-modal">
     <h3>Editar publicación</h3>
-    <input type="text" [(ngModel)]="publicacionEditadaTitulo" placeholder="Título" class="input-titulo"/>
-    <textarea [(ngModel)]="publicacionEditadoTexto" rows="4" placeholder="Texto de la publicación"></textarea>
+    <input type="text" [(ngModel)]="publicacionEditadaTitulo" placeholder="Título" class="input-titulo" maxlength="20" />
+    <textarea [(ngModel)]="publicacionEditadoTexto" rows="4" placeholder="Texto de la publicación" maxlength="20"></textarea>
     <div class="botones-modal">
       <button class="btn btn-guardar" (click)="guardarEdicionPublicacion()">Guardar</button>
       <button class="btn btn-cancelar" (click)="cancelarEdicionPublicacion()">Cancelar</button>

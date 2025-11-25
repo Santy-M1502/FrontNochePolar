@@ -121,6 +121,14 @@
   word-break: break-word;
 }
 
+/* protect any images inside comment lists */
+.comentarios-modal li img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 6px;
+}
+
 .comentarios-modal li strong {
   font-weight: 700;
   margin-right: 5px;

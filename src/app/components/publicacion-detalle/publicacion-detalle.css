@@ -15,6 +15,7 @@
   flex: 1;
   height: 100vh;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .detalle-wrapper {
@@ -23,6 +24,12 @@
   display: flex;
   flex-direction: column;
   gap: 22px;
+}
+
+/* prevent any nested element from forcing horizontal scroll */
+.detalle-wrapper, .detalle-wrapper * {
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .detalle-wrapper app-publicacion,
@@ -74,6 +81,7 @@
   border: 1px solid rgba(255,255,255,0.08);
   transition: background 0.2s;
   position: relative;
+  min-width: 0;
 }
 
 .comentario-card:hover {
@@ -93,6 +101,12 @@
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
+}
+
+/* Force avatar images to keep their expected sizing and shape */
+.avatar {
+  display: inline-block;
+  max-width: none;
 }
 
 .avatar.placeholder {
@@ -134,11 +148,28 @@
 .comentario-texto {
   display: -webkit-box;
   -webkit-line-clamp: 4; /* mostrar 4 líneas */
+  line-clamp: 4;
+  -webkit-line-clamp: 4; /* mostrar 4 líneas */
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: normal;
   word-break: break-word;
+}
+
+/* Ensure any images in the detail or comment area scale and do not overflow */
+.detalle-wrapper img,
+.comentario-card img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+/* helper class to force safe breaking in nested content */
+.comentario-card, .comentario-texto {
+  overflow-wrap: anywhere;
 }
 
 .comentario-footer {
@@ -230,8 +261,7 @@
   backdrop-filter: blur(8px);
   padding: 20px;
   border-radius: 14px;
-  width: 90%;
-  max-width: 420px;
+  width: 60%;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -250,6 +280,8 @@
   padding: 8px;
   font-family: Inter, system-ui, sans-serif;
   resize: vertical;
+  max-height: 120px;
+  min-height: 110px;
 }
 
 .contador-palabras {

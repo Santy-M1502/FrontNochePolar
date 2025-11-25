@@ -8,6 +8,11 @@
   flex-direction: row;
 }
 
+/* allow flex children to shrink to prevent overflow in narrow containers */
+.post-card {
+  min-width: 0;
+}
+
 .post-avatar {
   width: 48px;
   height: 48px;
@@ -20,6 +25,13 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+/* ensure body content can wrap and not force horizontal scrolling */
+.post-body {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .post-header {
@@ -69,6 +81,7 @@
   display: flex;
   flex-direction: column;
   z-index: 20;
+  min-width: 100px;
 }
 
 .options-menu button {
@@ -103,12 +116,15 @@
   font-size: 1rem;
 }
 
-.post-image {
-  width: 100%;
-  max-height: 300px;
-  object-fit: cover;
-  border-radius: 10px;
-  margin-top: 8px;
+/* Ensure long words/urls wrap and images don't overflow the card */
+.post-content {
+  white-space: pre-wrap; /* keep user newlines */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.post-image{
+  max-width: 500px;
 }
 
 .post-actions {

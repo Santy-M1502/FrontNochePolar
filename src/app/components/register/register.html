@@ -30,7 +30,7 @@
         <div class="form-section">
           <div class="field">
             <input id="username" type="text" formControlName="username" placeholder="USUARIO"
-                  [class.error]="controlInvalid('username')" />
+              [class.error]="controlInvalid('username')" maxlength="20" />
 
             <div class="mm-hint" *ngIf="controlTouched('username')">
               <small *ngIf="registerForm.get('username')?.errors?.['required']">El usuario es requerido</small>
@@ -43,7 +43,7 @@
         <div class="form-section two-cols">
           <div class="field">
             <input id="nombre" type="text" formControlName="nombre" placeholder="NOMBRE"
-                  [class.error]="controlInvalid('nombre')" />
+              [class.error]="controlInvalid('nombre')" maxlength="20" />
             <div class="mm-hint" *ngIf="controlTouched('nombre')">
               <small *ngIf="registerForm.get('nombre')?.errors?.['required']">El nombre es requerido</small>
               <small *ngIf="registerForm.get('nombre')?.errors?.['minlength']">Mínimo 3 caracteres</small>
@@ -52,7 +52,7 @@
 
           <div class="field">
             <input id="apellido" type="text" formControlName="apellido" placeholder="APELLIDO"
-                  [class.error]="controlInvalid('apellido')" />
+              [class.error]="controlInvalid('apellido')" maxlength="20" />
             <div class="mm-hint" *ngIf="controlTouched('apellido')">
               <small *ngIf="registerForm.get('apellido')?.errors?.['required']">El apellido es requerido</small>
               <small *ngIf="registerForm.get('apellido')?.errors?.['minlength']">Mínimo 3 caracteres</small>
@@ -64,7 +64,7 @@
         <div class="form-section">
           <div class="field">
             <input id="email" type="email" formControlName="email" placeholder="EMAIL"
-                  [class.error]="controlInvalid('email')" />
+              [class.error]="controlInvalid('email')" maxlength="50" />
             <div class="mm-hint" *ngIf="controlTouched('email')">
               <small *ngIf="registerForm.get('email')?.errors?.['required']">El email es requerido</small>
               <small *ngIf="registerForm.get('email')?.errors?.['email']">Email inválido</small>
@@ -125,13 +125,13 @@
         <div class="form-section">
           <div class="field">
             <textarea id="descripcion" rows="4" formControlName="descripcion" placeholder="DESCRIPCIÓN (opcional)"
-                      maxlength="200" (input)="onDescripcionInput($event)"></textarea>
+                      maxlength="20" (input)="onDescripcionInput($event)"></textarea>
 
             <div class="mm-hint descripcion-row">
               <div *ngIf="controlTouched('descripcion') && registerForm.get('descripcion')?.errors">
-                <small *ngIf="registerForm.get('descripcion')?.errors?.['maxlength']">Máx. 200 caracteres</small>
+                <small *ngIf="registerForm.get('descripcion')?.errors?.['maxlength']">Máx. 20 caracteres</small>
               </div>
-              <small [class.warning]="descripcionCount === 200">{{ descripcionCount }}/200</small>
+              <small [class.warning]="descripcionCount === 20">{{ descripcionCount }}/20</small>
             </div>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PublicacionesService } from '../../services/publication.service';
 import { SideNavComponent } from "../side-nav/side-nav";
@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 import { Chat } from "../chat/chat";
 import { ScrollToTopComponent } from '../scroll-to-top/scroll-to-top';
 import { Comentario } from '../../models/comentario.interface';
+import { Subscription } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { ComentariosService } from '../../services/comentarios.service';
 import { HumanNumberPipe } from '../../pipes/human-number.pipe';
@@ -35,7 +36,7 @@ export class PublicacionDetalleComponent implements OnInit {
 
   editarComentarioSeleccionado: Comentario | null = null;
   comentarioEditadoTexto = '';
-  maxPalabras = 200;
+  maxCaracteres = 20;
 
   constructor(
     private route: ActivatedRoute,
@@ -44,9 +45,15 @@ export class PublicacionDetalleComponent implements OnInit {
     private comentariosSrv: ComentariosService
   ) {}
 
+  private comentariosSub: Subscription | null = null;
+
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) this.cargarPublicacion(id);
+  }
+
+  ngOnDestroy(): void {
+    if (this.comentariosSub) this.comentariosSub.unsubscribe();
   }
 
   cargarPublicacion(id: string) {
@@ -88,6 +95,14 @@ export class PublicacionDetalleComponent implements OnInit {
           this.cargandoMas = false;
         }
       });
+
+    // subscribe to service comentarios$ to receive real-time updates (e.g., new comments)
+    if (!this.comentariosSub) {
+      this.comentariosSub = this.comentariosSrv.comentarios$.subscribe(list => {
+        // keep the local list in sync with the service
+        this.comentarios = list;
+      });
+    }
   }
 
   cargarMas() {
@@ -144,22 +159,21 @@ export class PublicacionDetalleComponent implements OnInit {
 
   comentar() {
     if (!this.nuevoComentario.trim()) return;
-    const texto = this.nuevoComentario;
-    this.nuevoComentario = '';
+    const texto = this.nuevoComentario.trim();
+    const token = this.authService.getToken();
+    if (!token) return;
 
-    const nuevo: Comentario = {
-      _id: Date.now().toString(),
-      usuario: { _id: 'anon', username: 'Anónimo', profileImage: 'https://i.pravatar.cc/48?img=65' },
-      texto,
-      likesCount: 0,
-      liked: false,
-      createdAt: new Date().toISOString(),
-      respuestas: [],
-      editado: false,
-      likes: []
-    };
-    this.comentarios.unshift(nuevo);
-    this.totalComentarios++;
+    this.nuevoComentario = '';
+    this.comentariosSrv.comentarPublicacion(this.publicacion._id, texto, token).subscribe({
+      next: (nuevo) => {
+        // the ComentariosService ya empuja el nuevo comentario al BehaviorSubject,
+        // nuestra suscripción a comentarios$ actualizará `this.comentarios`.
+        this.totalComentarios = (this.totalComentarios || 0) + 1;
+      },
+      error: (err) => {
+        console.error('[comentar] Error', err);
+      }
+    });
   }
 
   abrirModalEditar(comentario: Comentario) {
@@ -170,9 +184,9 @@ export class PublicacionDetalleComponent implements OnInit {
 
   guardarEdicion() {
     if (!this.editarComentarioSeleccionado) return;
-    const palabras = this.comentarioEditadoTexto.trim().split(/\s+/);
-    if (palabras.length > this.maxPalabras) palabras.length = this.maxPalabras;
-    this.editarComentarioSeleccionado.texto = palabras.join(' ');
+    const textoTrim = this.comentarioEditadoTexto.trim();
+    const truncated = textoTrim.length > this.maxCaracteres ? textoTrim.slice(0, this.maxCaracteres) : textoTrim;
+    this.editarComentarioSeleccionado.texto = truncated;
     this.editarComentarioSeleccionado.editado = true;
     this.editarComentarioSeleccionado = null;
     this.comentarioEditadoTexto = '';
@@ -180,7 +194,7 @@ export class PublicacionDetalleComponent implements OnInit {
 
   get palabrasComentarioEditado(): number {
     if (!this.comentarioEditadoTexto) return 0;
-    return this.comentarioEditadoTexto.trim().split(/\s+/).length;
+    return this.comentarioEditadoTexto.length;
   }
 
   cancelarEdicion() {

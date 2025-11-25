@@ -10,6 +10,7 @@
         placeholder="Título de la publicación"
         class="composer-title"
         (input)="onTitleInput()"
+        maxlength="20"
       />
       <label *ngIf="errorTitulo" class="error-label">{{ errorTitulo }}</label>
 
@@ -18,6 +19,7 @@
         placeholder="¿Qué estás pensando?"
         class="composer-text"
         (input)="onTextInput()"
+        maxlength="20"
       ></textarea>
       <label *ngIf="errorTexto" class="error-label">{{ errorTexto }}</label>
 

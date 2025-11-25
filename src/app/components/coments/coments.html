@@ -11,11 +11,11 @@
         [ngModel]="nuevoComentario()"
         (ngModelChange)="nuevoComentario.set($event); errorComentario.set('')"
         placeholder="Escribir comentario..."
-        maxlength="100"
+        maxlength="20"
       />
 
       <div class="comment-info">
-        <small class="contador">{{ nuevoComentario().length }}/100</small>
+        <small class="contador">{{ nuevoComentario().length }}/20</small>
         <label *ngIf="errorComentario()" class="error-label">
           {{ errorComentario() }}
         </label>

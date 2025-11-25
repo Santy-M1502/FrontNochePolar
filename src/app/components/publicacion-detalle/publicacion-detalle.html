@@ -27,7 +27,7 @@
               <img [src]="comentario.usuario.profileImage ?? 'https://i.pravatar.cc/48?img=65'" alt="avatar" class="avatar">
               <div class="usuario-info">
                 <div class="usuario-nombre-fecha">
-                  <strong>{{ comentario.usuario.username }}</strong>
+                  <strong class="truncate-20" [title]="comentario.usuario.username">{{ comentario.usuario.username }}</strong>
                   <span class="fecha">{{ comentario.createdAt | date:'short' }}</span>
                   <span *ngIf="comentario.editado" class="editado">(editado)</span>
                 </div>
@@ -41,7 +41,7 @@
               </div>
             </div>
 
-            <p class="comentario-texto">{{ comentario.texto }}</p>
+            <p class="comentario-texto truncate-20" [title]="comentario.texto">{{ comentario.texto }}</p>
 
             <div class="comentario-footer">
               <button class="btn like-btn" [class.liked]="comentario.liked"
@@ -68,8 +68,8 @@
         <div class="modal-overlay" *ngIf="editarComentarioSeleccionado">
           <div class="edit-modal">
             <h3>Editar comentario</h3>
-            <textarea [(ngModel)]="comentarioEditadoTexto" rows="4"></textarea>
-            <p class="contador-palabras">{{ palabrasComentarioEditado }}/{{ maxPalabras }} palabras</p>
+            <textarea [(ngModel)]="comentarioEditadoTexto" rows="4" [attr.maxlength]="maxCaracteres"></textarea>
+            <p class="contador-palabras">{{ palabrasComentarioEditado }}/{{ maxCaracteres }} caracteres</p>
             <div class="botones-modal">
               <button class="btn btn-guardar" (click)="guardarEdicion()">Guardar</button>
               <button class="btn btn-cancelar" (click)="cancelarEdicion()">Cancelar</button>
