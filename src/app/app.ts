@@ -24,11 +24,36 @@ import { LoadingDirective } from './directives/loading.directive';
 })
 export class App {
   showSessionModal = false;
+  showInvalidTokenModal = false;
 
   constructor(private authService: AuthService, private router: Router) {
     this.authService.sessionWarning$.subscribe(show => {
-      this.showSessionModal = show;
+      // only show session warning modal if user still has a valid token
+      if (show && this.authService.isAuthenticated()) {
+        this.showSessionModal = true;
+      } else {
+        this.showSessionModal = false;
+      }
     });
+
+    // listen for token invalidation (expired/invalid) and show modal then redirect
+    this.authService.tokenInvalid$.subscribe(reason => {
+      if (reason) {
+        this.showInvalidTokenModal = true;
+        // give user a short moment to see the modal, then redirect to login
+        setTimeout(() => {
+          this.showInvalidTokenModal = false;
+          try { this.router.navigate(['/login']); } catch (e) {}
+        }, 800);
+      }
+    });
+      // si el usuario queda en null (logout), redirigir al login
+      this.authService.currentUser$.subscribe(user => {
+        if (!user) {
+          try { this.showSessionModal = false; } catch (e) {}
+          try { this.router.navigate(['/login']); } catch (e) {}
+        }
+      });
   }
 
   ngOnInit() {
@@ -55,5 +80,7 @@ export class App {
 
   onLogout() {
     this.authService.endSession();
+    try { this.showSessionModal = false; } catch (e) {}
+    try { this.router.navigate(['/login']); } catch (e) {}
   }
 }

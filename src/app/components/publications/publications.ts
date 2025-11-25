@@ -8,11 +8,12 @@ import { ScrollToTopComponent } from "../scroll-to-top/scroll-to-top";
 import { Publicacion } from '../../models/publication.interface';
 import { AuthService } from '../../services/auth.service';
 import { PublicacionesService } from '../../services/publication.service';
+import { LoadingDirective } from '../../directives/loading.directive';
 
 @Component({
   selector: 'app-post-layout',
   standalone: true,
-  imports: [CommonModule, FormsModule, SideNavComponent, Chat, PublicacionComponent, ScrollToTopComponent],
+  imports: [CommonModule, FormsModule, SideNavComponent, Chat, PublicacionComponent, ScrollToTopComponent, LoadingDirective],
   templateUrl: './publications.html',
   styleUrls: ['./publications.css']
 })
@@ -24,7 +25,7 @@ export class Publications implements OnInit {
   busqueda = '';
   selectedImage: File | null = null;
   usuarioActualId: string | null = null;
-
+  isUploading = false
   errorTitulo = '';
   errorTexto = '';
   fileError = '';
@@ -90,6 +91,10 @@ export class Publications implements OnInit {
   }
 
   sendPost() {
+
+    if (this.isUploading) return;
+
+    this.isUploading = true;
     this.errorTitulo = '';
     this.errorTexto = '';
     this.fileError = '';
@@ -99,15 +104,19 @@ export class Publications implements OnInit {
 
     if (titulo.length < 3) this.errorTitulo = 'El título debe tener al menos 3 caracteres.';
     if (texto.length < 3) this.errorTexto = 'El texto debe tener al menos 3 caracteres.';
-    if (this.errorTitulo || this.errorTexto || this.fileError) return;
+
+    if (this.errorTitulo || this.errorTexto || this.fileError) {
+      this.isUploading = false;
+      return;
+    }
 
     const formData = new FormData();
     formData.append('titulo', titulo);
     formData.append('texto', texto);
     if (this.selectedImage) formData.append('imagen', this.selectedImage);
 
-    this.publicacionesService.crearPublicacion(formData)
-      .subscribe((p) => {
+    this.publicacionesService.crearPublicacion(formData).subscribe({
+      next: (p) => {
         const postConLike = { ...p, liked: false };
         this.posts.unshift(postConLike);
 
@@ -119,7 +128,14 @@ export class Publications implements OnInit {
         this.fileError = '';
 
         this.aplicarFiltro();
-      });
+      },
+      error: (err) => {
+        console.error(err);
+      },
+      complete: () => {
+        this.isUploading = false;
+      }
+    });
   }
 
   aplicarFiltro() {

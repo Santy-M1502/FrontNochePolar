@@ -32,7 +32,7 @@
       <label *ngIf="fileError" class="error-label">{{ fileError }}</label>
 
       <div class="composer-row">
-        <button class="btn primary" (click)="sendPost()">Publicar</button>
+        <button class="btn primary" (click)="sendPost()" [appLoading]="isUploading">Publicar</button>
       </div>
     </div>
 

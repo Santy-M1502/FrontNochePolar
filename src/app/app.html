@@ -9,3 +9,11 @@
     </div>
   </div>
 </div>
+
+<!-- Modal que aparece cuando el token se invalida/expira -->
+<div class="session-modal" *ngIf="showInvalidTokenModal">
+  <div class="session-modal-content">
+    <h3>🔒 Sesión inválida</h3>
+    <p>Tu sesión ya no es válida. Serás redirigido al inicio de sesión.</p>
+  </div>
+</div>

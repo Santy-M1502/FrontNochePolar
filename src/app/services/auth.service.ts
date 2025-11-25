@@ -18,6 +18,8 @@ export class AuthService {
   currentUser$ = this.currentUserSubject.asObservable();
   private sessionWarningSubject = new BehaviorSubject<boolean>(false);
   sessionWarning$ = this.sessionWarningSubject.asObservable();
+  private tokenInvalidSubject = new BehaviorSubject<string | null>(null);
+  tokenInvalid$ = this.tokenInvalidSubject.asObservable();
   constructor(private http: HttpClient) {
     const expiresAt = localStorage.getItem('sessionExpiresAt');
     if (expiresAt) {
@@ -68,7 +70,12 @@ export class AuthService {
       );
   }
 
-  logout(): void {
+  logout(reason: 'manual' | 'expired' | 'invalid' = 'manual'): void {
+    // if token was invalidated or expired, emit an event so UI can show a modal
+    if (reason === 'expired' || reason === 'invalid') {
+      try { this.tokenInvalidSubject.next(reason); } catch {}
+    }
+
     localStorage.removeItem('token');
     try { localStorage.removeItem('user'); } catch {}
     this.setUser(null);
@@ -149,19 +156,19 @@ export class AuthService {
       { token }
     ).pipe(
       tap({
-        next: (res) => {
-          if (res?.access_token) {
-            localStorage.setItem('token', res.access_token);
-            console.log('[AuthService] Token refrescado exitosamente:', res.access_token);
-          } else {
-            console.warn('[AuthService] La respuesta no tiene access_token', res);
+          next: (res) => {
+            if (res?.access_token) {
+              localStorage.setItem('token', res.access_token);
+              console.log('[AuthService] Token refrescado exitosamente:', res.access_token);
+            } else {
+              console.warn('[AuthService] La respuesta no tiene access_token', res);
+            }
+          },
+          error: (err) => {
+            console.error('[AuthService] Error al refrescar token:', err);
+            this.logout('invalid');
           }
-        },
-        error: (err) => {
-          console.error('[AuthService] Error al refrescar token:', err);
-          this.logout();
-        }
-      }),
+        }),
       map(res => res?.access_token || '')
     );
   }
@@ -181,10 +188,11 @@ export class AuthService {
         this.sessionWarningSubject.next(false);
         this.sessionWarningShown = false;
       },
-      error: (err) => {
+        error: (err) => {
         console.error(err);
-        // en caso de error, cerrar modal y logout si es necesario
+        // en caso de error, cerrar modal y logout marcando token inválido
         this.sessionWarningSubject.next(false);
+        this.logout('invalid');
       }
     });
   }
@@ -194,7 +202,7 @@ export class AuthService {
     this.clearTimers();
     localStorage.removeItem('sessionExpiresAt');
     this.sessionWarningSubject.next(false);
-    this.logout();
+    this.logout('manual');
   }
 
   private scheduleTimersFromExpires(expiresAt: number, warningBeforeMs = 5 * 60 * 1000) {
@@ -214,11 +222,11 @@ export class AuthService {
     if (timeUntilExpiry <= 0) {
       // Si ya expiró, forzar logout
       console.log('⏳ Sesión ya expiró. Logout.');
-      this.logout();
+      this.logout('expired');
     } else {
       this.expiryTimer = setTimeout(() => {
         console.log('⏳ Sesión expirada (timeout)');
-        this.logout();
+        this.logout('expired');
       }, timeUntilExpiry);
     }
   }
