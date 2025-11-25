@@ -1,4 +1,4 @@
-import { Component, HostListener, signal } from '@angular/core';
+import { Component, Input, AfterViewInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -40,27 +40,25 @@ import { CommonModule } from '@angular/common';
       visibility: visible;
       transform: scale(1);
     }
-
-    .scroll-top-btn:hover {
-      filter: brightness(1.15);
-      box-shadow: 0 6px 16px rgba(74, 126, 234, 0.6);
-    }
-
-    .scroll-top-btn:active {
-      transform: scale(0.95);
-    }
   `]
 })
-export class ScrollToTopComponent {
+export class ScrollToTopComponent implements AfterViewInit {
+
+  @Input() scrollTarget!: HTMLElement;   // << IMPORTANTE
   showBtn = signal(false);
 
-  @HostListener('window:scroll', [])
-  onWindowScroll() {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    this.showBtn.set(scrollTop > 300);
+  ngAfterViewInit() {
+    if (!this.scrollTarget) return;
+
+    this.scrollTarget.addEventListener('scroll', () => {
+      this.showBtn.set(this.scrollTarget.scrollTop > 300);
+    });
   }
 
   scrollToTop() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.scrollTarget?.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
   }
 }

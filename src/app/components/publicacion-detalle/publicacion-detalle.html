@@ -1,4 +1,4 @@
-<div class="body">
+<div class="body" #detalleArea>
   <app-side-nav></app-side-nav>
 
   <div class="detalle-container">
@@ -78,10 +78,10 @@
         </div>
 
       </div>
-    </ng-template>
+    </ng-template> 
   </div>
 
   <app-chat></app-chat>
 </div>
 
-<app-scroll-to-top></app-scroll-to-top>
+<app-scroll-to-top [scrollTarget]="detalleArea"></app-scroll-to-top>

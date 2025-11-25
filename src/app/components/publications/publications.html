@@ -1,7 +1,7 @@
 <div class="body">
   <app-side-nav></app-side-nav>
 
-  <div class="feed-area">
+  <div class="feed-area" #feedArea>
 
     <div class="composer">
       <input
@@ -61,8 +61,7 @@
     </div>
 
     <button class="btn load-more" (click)="cargarMas()">Cargar más</button>
-
+    <app-scroll-to-top [scrollTarget]="feedArea"></app-scroll-to-top>
   </div>
   <app-chat></app-chat>
-  <app-scroll-to-top></app-scroll-to-top>
 </div>
