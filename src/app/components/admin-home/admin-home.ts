@@ -7,11 +7,12 @@ import { AuthService } from '../../services/auth.service';
 import { SideNavComponent } from "../side-nav/side-nav";
 import { Chat } from "../chat/chat";
 import { EstadoColorDirective } from "../../directives/estado-color.directive";
+import { LoadingDirective } from "../../directives/loading.directive";
 
 @Component({
   selector: 'app-admin-home',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, SideNavComponent, Chat, FormsModule, EstadoColorDirective],
+  imports: [CommonModule, ReactiveFormsModule, SideNavComponent, Chat, FormsModule, EstadoColorDirective, LoadingDirective],
   templateUrl: './admin-home.html',
   styleUrls: ['./admin-home.css'],
 })
@@ -19,7 +20,7 @@ export class AdminHomeComponent {
   adminName = '';
   showAddUserModal = false;
   registerForm!: FormGroup;
-
+  isCreatingUser = false;
   searchText: string = "";
   filteredUsers:any[] = []
 
@@ -80,6 +81,8 @@ export class AdminHomeComponent {
     this.registerForm.markAllAsTouched();
     if (this.registerForm.invalid) return;
 
+    this.isCreatingUser = true;
+
     const { nombre, apellido, username, email, password, fechaNacimiento, perfil } = this.registerForm.value;
 
     const fechaISO = fechaNacimiento
@@ -101,10 +104,12 @@ export class AdminHomeComponent {
       next: (res) => {
         this.registerForm.reset();
         this.closeAddUserModal();
+        this.isCreatingUser = false;
       },
       error: (err) => {
         console.error('Error registrando usuario (admin):', err);
         this.registerForm.setErrors({ registroError: true });
+        this.isCreatingUser = false;
       }
     });
   }

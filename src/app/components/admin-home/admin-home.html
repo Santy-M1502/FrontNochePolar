@@ -91,7 +91,7 @@
       </div>
 
       <div class="button-row">
-        <button type="submit" class="btn primary">Crear usuario</button>
+        <button type="submit" class="btn primary" [appLoading]="isCreatingUser">Crear usuario</button>
         <button type="button" class="btn secondary" (click)="closeAddUserModal()">Cancelar</button>
       </div>
 

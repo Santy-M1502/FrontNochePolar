@@ -8,7 +8,6 @@ import { HumanNumberPipe } from "../../pipes/human-number.pipe";
 import { RelativeTimePipe } from "../../pipes/relative-time.pipe";
 
 import { HasRoleDirective } from "../../directives/has-role.directive";
-import { LoadingDirective } from "../../directives/loading.directive";
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Chart, registerables } from 'chart.js';

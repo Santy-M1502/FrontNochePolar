@@ -11,7 +11,6 @@ import { RelativeTimePipe } from './pipes/relative-time.pipe';
 
 // Directivas propias
 import { HasRoleDirective } from './directives/has-role.directive';
-import { DebounceClickDirective } from './directives/debounce-click.directive';
 import { LoadingDirective } from './directives/loading.directive';
 
 @Component({

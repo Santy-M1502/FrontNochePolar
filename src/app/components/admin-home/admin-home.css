@@ -210,6 +210,9 @@ h2 {
   margin-top: 5px;
   font-size: 14px;
   opacity: 0.8;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
 }
 
 .changeState{
