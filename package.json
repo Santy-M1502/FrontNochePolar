@@ -22,16 +22,18 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/common": "^20.1.0",
-    "@angular/compiler": "^20.1.0",
-    "@angular/core": "^20.1.0",
-    "@angular/forms": "^20.1.0",
-    "@angular/platform-browser": "^20.1.0",
-    "@angular/pwa": "^20.3.8",
-    "@angular/router": "^20.1.0",
-    "@angular/service-worker": "^20.1.0",
+    "@angular/common": "20.3.13",
+    "@angular/compiler": "20.3.13",
+    "@angular/core": "20.3.13",
+    "@angular/forms": "20.3.13",
+    "@angular/platform-browser": "20.3.13",
+    "@angular/router": "20.3.13",
+    "@angular/service-worker": "20.3.13",
+    "@angular/pwa": "20.3.8",
+
     "@nestjs/platform-socket.io": "^11.1.8",
     "@nestjs/websockets": "^11.1.8",
+
     "chart.js": "^4.5.1",
     "dotenv": "^17.2.3",
     "ng2-charts": "^8.0.0",
@@ -42,9 +44,10 @@
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
-    "@angular/build": "^20.1.6",
-    "@angular/cli": "^20.1.6",
-    "@angular/compiler-cli": "^20.1.0",
+    "@angular/build": "20.3.8",
+    "@angular/cli": "20.3.8",
+    "@angular/compiler-cli": "20.3.13",
+
     "@types/jasmine": "~5.1.0",
     "jasmine-core": "~5.8.0",
     "karma": "~6.4.0",
