@@ -26,15 +26,15 @@
 
       <div class="stats">
         <div class="stat">
-          <div class="num">{{ posts.length || 0 }}</div>
+          <div class="num">{{ posts.length || 0 | humanNumber }}</div>
           <div class="label">Publicaciones</div>
         </div>
         <div class="stat">
-          <div class="num">{{ user?.followers || 0 }}</div>
+          <div class="num">{{ user?.followers || 0 | humanNumber }}</div>
           <div class="label">Seguidores</div>
         </div>
         <div class="stat">
-          <div class="num">{{ user?.following || 0 }}</div>
+          <div class="num">{{ user?.following || 0 | humanNumber }}</div>
           <div class="label">Siguiendo</div>
         </div>
       </div>

@@ -39,7 +39,7 @@
         (click)="publicacion.liked ? quitarLike() : darLike(); $event.stopPropagation()"
       >
         <span class="moon-icon">{{ publicacion.liked ? '🌙' : '🌑' }}</span>
-        <span *ngIf="likesCount() > 0">{{ likesCount() }}</span>
+        <span *ngIf="likesCount() > 0">{{ likesCount() | humanNumber}}</span>
       </button>
 
       <app-comentarios

@@ -44,21 +44,26 @@ import { CommonModule } from '@angular/common';
 })
 export class ScrollToTopComponent implements AfterViewInit {
 
-  @Input() scrollTarget!: HTMLElement;   // << IMPORTANTE
+  @Input() scrollTarget!: HTMLElement;
   showBtn = signal(false);
 
   ngAfterViewInit() {
-    if (!this.scrollTarget) return;
+  const target = this.scrollTarget ?? window;
 
-    this.scrollTarget.addEventListener('scroll', () => {
-      this.showBtn.set(this.scrollTarget.scrollTop > 300);
-    });
-  }
+  target.addEventListener('scroll', () => {
+    const scrollPos = target instanceof Window
+      ? target.scrollY
+      : target.scrollTop;
 
-  scrollToTop() {
-    this.scrollTarget?.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
+    this.showBtn.set(scrollPos > 300);
+  });
+}
+
+scrollToTop() {
+  if (this.scrollTarget) {
+    this.scrollTarget.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+}
 }

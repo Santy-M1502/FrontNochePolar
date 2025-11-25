@@ -4,12 +4,10 @@ import { AuthService } from './services/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-// Pipes propias
 import { CapitalizePipe } from './pipes/capitalize.pipe';
 import { HumanNumberPipe } from './pipes/human-number.pipe';
 import { RelativeTimePipe } from './pipes/relative-time.pipe';
 
-// Directivas propias
 import { HasRoleDirective } from './directives/has-role.directive';
 import { LoadingDirective } from './directives/loading.directive';
 

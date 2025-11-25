@@ -10,12 +10,13 @@ import { ScrollToTopComponent } from '../scroll-to-top/scroll-to-top';
 import { Comentario } from '../../models/comentario.interface';
 import { AuthService } from '../../services/auth.service';
 import { ComentariosService } from '../../services/comentarios.service';
+import { HumanNumberPipe } from '../../pipes/human-number.pipe';
 
 @Component({
   selector: 'app-publicacion-detalle',
   templateUrl: './publicacion-detalle.html',
   styleUrls: ['./publicacion-detalle.css'],
-  imports: [SideNavComponent, PublicacionComponent, FormsModule, CommonModule, Chat, ScrollToTopComponent],
+  imports: [SideNavComponent, PublicacionComponent, FormsModule, CommonModule, Chat, ScrollToTopComponent, HumanNumberPipe],
 })
 export class PublicacionDetalleComponent implements OnInit {
   publicacion: any;

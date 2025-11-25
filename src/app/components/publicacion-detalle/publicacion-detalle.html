@@ -1,7 +1,7 @@
-<div class="body" #detalleArea>
+<div class="body">
   <app-side-nav></app-side-nav>
 
-  <div class="detalle-container">
+  <div class="detalle-container" #detalleArea>
 
     <ng-container *ngIf="cargando || error; else detalleOk">
       <div class="estado-box">
@@ -47,7 +47,7 @@
               <button class="btn like-btn" [class.liked]="comentario.liked"
                       (click)="comentario.liked ? quitarLike(comentario) : darLike(comentario)">
                 <span class="moon-icon">{{ comentario.liked ? '🌙' : '🌑' }}</span>
-                <span *ngIf="(comentario.likesCount ?? 0) > 0">{{ comentario.likesCount }}</span>
+                <span *ngIf="(comentario.likesCount ?? 0) > 0">{{ comentario.likesCount! | humanNumber}}</span>
               </button>
             </div>
           </div>

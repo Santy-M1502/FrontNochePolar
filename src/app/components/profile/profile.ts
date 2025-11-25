@@ -8,13 +8,14 @@ import { PublicacionComponent } from '../publication/publication';
 import { Chat } from '../chat/chat';
 import { SideNavComponent } from '../side-nav/side-nav';
 import { UserService } from '../../services/user.service';
+import { HumanNumberPipe } from '../../pipes/human-number.pipe';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
   templateUrl: './profile.html',
   styleUrls: ['./profile.css'],
-  imports: [CommonModule, SideNavComponent, Chat, PublicacionComponent],
+  imports: [CommonModule, SideNavComponent, Chat, PublicacionComponent, HumanNumberPipe],
 })
 export class ProfileComponent implements OnInit {
   user: any = null;

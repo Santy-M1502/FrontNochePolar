@@ -4,6 +4,7 @@
   background: linear-gradient(#111a33, #000);
   color: #e6e6e6;
   font-family: Inter, system-ui, sans-serif;
+  overflow-y: hidden;
 }
 
 .detalle-container {
@@ -12,6 +13,8 @@
   min-height: 100vh;
   color: #e6e6e6;
   flex: 1;
+  height: 100vh;
+  overflow-y: auto;
 }
 
 .detalle-wrapper {

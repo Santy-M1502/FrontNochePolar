@@ -13,11 +13,12 @@ import { UserService } from '../../services/user.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { FormsModule } from '@angular/forms';
+import { HumanNumberPipe } from '../../pipes/human-number.pipe';
 
 @Component({
   selector: 'app-publicacion',
   standalone: true,
-  imports: [CommonModule, ComentariosComponent, FormsModule, CommonModule],
+  imports: [CommonModule, ComentariosComponent, FormsModule, CommonModule, HumanNumberPipe],
   templateUrl: './publication.html',
   styleUrls: ['./publication.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
