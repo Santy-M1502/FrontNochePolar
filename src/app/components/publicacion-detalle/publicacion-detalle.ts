@@ -36,7 +36,7 @@ export class PublicacionDetalleComponent implements OnInit {
 
   editarComentarioSeleccionado: Comentario | null = null;
   comentarioEditadoTexto = '';
-  maxCaracteres = 20;
+  maxCaracteres = 100;
 
   constructor(
     private route: ActivatedRoute,
