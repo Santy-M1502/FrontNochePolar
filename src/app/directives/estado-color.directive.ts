@@ -10,7 +10,7 @@ export class EstadoColorDirective implements OnChanges {
   constructor(private el: ElementRef, private renderer: Renderer2) {}
 
   ngOnChanges() {
-    if (this.activo) {
+    if (!this.activo) {
       this.renderer.setStyle(this.el.nativeElement, 'background-color', '#aa3528ff');
       this.renderer.setStyle(this.el.nativeElement, 'color', 'white');
     } else {
