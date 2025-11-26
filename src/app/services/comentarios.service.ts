@@ -54,6 +54,11 @@ export class ComentariosService {
     });
   }
 
+  obtenerComentariosPorPublicacion2(publicacionId: string): Observable<Comentario[]> {
+    const url = `${this.apiUrl}/comentarios/publicacion/${publicacionId}`;
+    return this.http.get<Comentario[]>(url);
+  }
+
   // Comentar una publicación
   comentarPublicacion(publicacionId: string, texto: string, token: string): Observable<Comentario> {
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
@@ -100,5 +105,9 @@ export class ComentariosService {
   // Limpiar comentarios locales
   limpiarComentarios() {
     this._comentarios$.next([]);
+  }
+
+  obtenerComentariosPorPublicacion(publicacionId: string): Observable<Comentario[]> {
+    return this.http.get<Comentario[]>(`${this.apiUrl}/comentarios/publicacion/${publicacionId}`);
   }
 }

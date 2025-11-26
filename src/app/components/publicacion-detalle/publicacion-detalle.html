@@ -68,7 +68,7 @@
         <div class="modal-overlay" *ngIf="editarComentarioSeleccionado">
           <div class="edit-modal">
             <h3>Editar comentario</h3>
-            <textarea [(ngModel)]="comentarioEditadoTexto" rows="4" [attr.maxlength]="maxCaracteres"></textarea>
+            <textarea [(ngModel)]="comentarioEditadoTexto" rows="4" [maxlength]="maxCaracteres"></textarea>
             <p class="contador-palabras">{{ palabrasComentarioEditado }}/{{ maxCaracteres }} caracteres</p>
             <div class="botones-modal">
               <button class="btn btn-guardar" (click)="guardarEdicion()">Guardar</button>

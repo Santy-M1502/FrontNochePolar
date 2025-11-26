@@ -136,4 +136,11 @@ export class PublicacionesService {
     return this.http.get<Publicacion[]>(`${this.apiUrl}/publicaciones/usuario/${usuarioId}/inactivas`);
   }
 
+  obtenerPublicacionesPorUsuario(usuarioId: string, desde: string, hasta: string): Observable<Publicacion[]> {
+    const params = new HttpParams()
+      .set('desde', desde)
+      .set('hasta', hasta);
+    
+    return this.http.get<Publicacion[]>(`${this.apiUrl}/publicaciones/usuario/${usuarioId}/rango-fechas`, { params });
+  }
 }

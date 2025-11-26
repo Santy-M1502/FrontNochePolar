@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, of } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { Observable, BehaviorSubject, of, throwError } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 import { AuthResponse, LoginDto, User } from '../models/user.interface';
 import { environment } from '../../enviroments/enviroment';
 
@@ -66,6 +66,14 @@ export class AuthService {
             this.loadUserProfile(); 
             this.startSessionTimer();
           }
+        }),
+        catchError(error => {
+          if (error.status === 401) {
+            console.error('Usuario o contraseña incorrecta');
+          } else {
+            console.error('Error de login', error);
+          }
+          return throwError(() => error);
         })
       );
   }

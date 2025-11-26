@@ -8,6 +8,8 @@
   "display": "standalone",
   "background_color": "#0d1117",
   "theme_color": "#3b82f6",
+  "orientation":"portrait",
+  "categories":["red_social", "social_media"],
   "icons": [
     {
       "src": "assets/icons/icon-72x72.png",

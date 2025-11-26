@@ -39,7 +39,9 @@
 
         <ul class="summary-list">
           <li *ngFor="let p of postsByUser | slice:0:5">
-            {{ p.user | capitalize }} — {{ p.count | humanNumber }}
+            <button type="button" class="list-item-btn" (click)="abrirModalUsuario(p.userId, p.user)">
+              {{ p.user | capitalize }} — {{ p.count | humanNumber }}
+            </button>
           </li>
         </ul>
       </div>
@@ -65,9 +67,6 @@
                 [type]="chartTypes['comments']"
                 [options]="chartOptions">
         </canvas>
-
-        <div class="small-note">
-        </div>
       </div>
     </article>
 
@@ -94,7 +93,7 @@
 
         <ol class="post-list">
           <li *ngFor="let p of commentsPerPost | slice:0:6">
-            <button type="button" (click)="openPostDetail(p.id)" class="link-like">
+            <button type="button" (click)="abrirModalPublicacion(p.id)" class="list-item-btn">
               {{ p.postTitle }}
             </button>
             <span class="count">({{ p.count }})</span>
@@ -109,5 +108,93 @@
     <small>Última actualización: {{ now | relativeTime }}</small>
   </footer>
 </main>
+
+<div class="modal-overlay" *ngIf="modalVisible" (click)="cerrarModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ modalTitulo }}</h3>
+      <button type="button" class="modal-close" (click)="cerrarModal()">✕</button>
+    </div>
+
+    <div class="modal-body" *ngIf="!cargandoModal">
+      
+      <div *ngIf="modalTipo === 'usuario' && modalContenido">
+        <div class="modal-stats">
+          <div class="stat-card">
+            <span class="stat-label">Total publicaciones</span>
+            <span class="stat-value">{{ modalContenido.length }}</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Total likes</span>
+            <span class="stat-value">{{ getTotalLikes(modalContenido) }}</span>
+          </div>
+        </div>
+
+        <div class="publicaciones-lista">
+          <div class="publicacion-card" *ngFor="let pub of modalContenido">
+            <h4>{{ pub.titulo || 'Sin título' }}</h4>
+            <p class="pub-texto">{{ pub.texto }}</p>
+            <img *ngIf="pub.imagenUrl" [src]="pub.imagenUrl" alt="Imagen" class="pub-imagen">
+            <div class="pub-meta">
+              <span>❤️ {{ pub.likesCount || pub.likes?.length || 0 }}</span>
+              <span>💬 {{ pub.comentarios?.length || 0 }}</span>
+              <span>📅 {{ pub.createdAt | date:'short' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="modalTipo === 'publicacion' && modalContenido">
+        <div class="publicacion-detalle">
+          <div class="pub-info">
+            <p class="pub-autor">Por: {{ modalContenido.publicacion.usuario?.username || 'Desconocido' }}</p>
+            <p class="pub-fecha">{{ modalContenido.publicacion.createdAt | date:'medium' }}</p>
+          </div>
+          
+          <div class="pub-contenido">
+            <p>{{ modalContenido.publicacion.texto }}</p>
+            <img *ngIf="modalContenido.publicacion.imagenUrl" 
+                 [src]="modalContenido.publicacion.imagenUrl" 
+                 alt="Imagen"
+                 class="pub-imagen-grande">
+          </div>
+
+          <div class="modal-stats">
+            <div class="stat-card">
+              <span class="stat-label">❤️ Likes</span>
+              <span class="stat-value">{{ modalContenido.publicacion.likesCount || modalContenido.publicacion.likes?.length || 0 }}</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">💬 Comentarios</span>
+              <span class="stat-value">{{ modalContenido.comentarios?.length || 0 }}</span>
+            </div>
+          </div>
+
+          <div class="comentarios-section" *ngIf="modalContenido.comentarios?.length > 0">
+            <h4>Comentarios</h4>
+            <div class="comentario-item" *ngFor="let com of modalContenido.comentarios">
+              <div class="comentario-header">
+                <strong>{{ com.usuario?.username || 'Anónimo' }}</strong>
+                <span class="comentario-fecha">{{ com.createdAt | date:'short' }}</span>
+              </div>
+              <p>{{ com.texto }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="modal-loading" *ngIf="cargandoModal">
+      <p>Cargando...</p>
+    </div>
+  </div>
+</div>
+
+<div class="toast" *ngIf="toastVisible" [class.toast-success]="toastType === 'success'" 
+     [class.toast-error]="toastType === 'error'" [class.toast-info]="toastType === 'info'">
+  {{ toastMessage }}
+</div>
+
 <app-chat></app-chat>
 </div>

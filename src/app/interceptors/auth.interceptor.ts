@@ -17,6 +17,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return next(authReq).pipe(
     catchError(err => {
       if (err.status === 401) {
+        console.error('Token invalidos')
         authService.logout();
         router.navigate(['/login']);
       }
